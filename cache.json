@@ -1,1 +1,50 @@
-{}
+{
+  "sub-1004359_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "inputID": 2933481,
+        "toolConfigID": 721,
+        "taskID": 1351068,
+        "status": "New",
+        "outputID": null,
+        "isUsed": true
+      },
+      "Task2": {
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
+      },
+      "Result": {
+        "volume": null,
+        "isUsed": null
+      }
+    }
+  },
+  "sub-1016072_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "inputID": 2933478,
+        "toolConfigID": 721,
+        "taskID": 1351071,
+        "status": "New",
+        "outputID": null,
+        "isUsed": true
+      },
+      "Task2": {
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
+      },
+      "Result": {
+        "volume": null,
+        "isUsed": null
+      }
+    }
+  }
+}
