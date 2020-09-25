@@ -13,7 +13,7 @@ jobs: # A basic unit of work in a run
             sudo pip install PyGithub
       - run:
           command: |
-            python NeuroCI.py $CBRAIN_login $CBRAIN_password $github_login $github_password
+            python NeuroCI.py $cbrain_user $cbrain_password $github_user $github_password
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
