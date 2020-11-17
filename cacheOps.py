@@ -27,6 +27,14 @@ def generateCacheSubject(niftiFile, cbrain_userfileID): #inputs are string with 
               "outputID": None,
               "isUsed": None
             },
+            "Task3": {
+              "inputID": None,
+              "toolConfigID": None,
+              "taskID": None,
+              "status": None,
+              "outputID": None,
+              "isUsed": None
+            },
             "Result": {
               "volume": None,
               "isUsed": None
@@ -98,17 +106,34 @@ def updateStatuses(cache_filename, token):
           
 
                               
-def postFSLstats(cache_filename, token):
+def postFSLSubfolderExtractor(cache_filename, token):
     with open(cache_filename, "r+") as cacheFile:
         data = json.load(cacheFile)
         for file in data:
             if data[file]['FSL']['Task2']['isUsed'] == None and data[file]['FSL']['Task1']['status'] ==  "Completed":
-                jayson = cbrain_FSLStats(token, data[file]['FSL']['Task1']['outputID'])
+                jayson = cbrain_SubfolderFileExtractor(token, data[file]['FSL']['Task1']['outputID'], "output_all_fast_firstseg.nii.gz", data[file]['FSL']['Task1']['outputID'] + ".nii.gz" )
                 data[file]['FSL']['Task2']['inputID'] = data[file]['FSL']['Task1']['outputID']
                 data[file]['FSL']['Task2']['toolConfigID'] = jayson[0]['tool_config_id']
                 data[file]['FSL']['Task2']['taskID'] = jayson[0]["id"]
                 data[file]['FSL']['Task2']['status'] = jayson[0]["status"]
                 data[file]['FSL']['Task2']['isUsed'] = True
+        cacheFile.seek(0)  # rewind
+        json.dump(data, cacheFile, indent=2)
+        cacheFile.truncate() 
+
+
+
+def postFSLstats(cache_filename, token):
+    with open(cache_filename, "r+") as cacheFile:
+        data = json.load(cacheFile)
+        for file in data:
+            if data[file]['FSL']['Task3']['isUsed'] == None and data[file]['FSL']['Task2']['status'] ==  "Completed":
+                jayson = cbrain_FSLStats(token, data[file]['FSL']['Task2']['outputID'])
+                data[file]['FSL']['Task3']['inputID'] = data[file]['FSL']['Task2']['outputID']
+                data[file]['FSL']['Task3']['toolConfigID'] = jayson[0]['tool_config_id']
+                data[file]['FSL']['Task3']['taskID'] = jayson[0]["id"]
+                data[file]['FSL']['Task3']['status'] = jayson[0]["status"]
+                data[file]['FSL']['Task3']['isUsed'] = True
         cacheFile.seek(0)  # rewind
         json.dump(data, cacheFile, indent=2)
         cacheFile.truncate() 

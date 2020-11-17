@@ -193,3 +193,39 @@ def cbrain_download_text(fileID, token):
     else:
         print('Download failure')
         return 1 #probably change this error code
+
+
+
+def cbrain_SubfolderFileExtractor(token, fileID, filenameToExtract, fileNewName):
+    #note that filenameToExtract should include the extension
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+    params = (
+        ('cbrain_api_token', token),
+    )
+    data = {
+      "cbrain_task": { 
+        'tool_config_id': 2094,
+        'params': {
+          'interface_userfile_ids': [fileID],
+          'infolder': fileID,
+          'extracted': filenameToExtract,
+          'new_name': fileNewName},
+        'run_number': None, 
+        'results_data_provider_id': 179, 
+        'cluster_workdir_size': None, 
+        'workdir_archived': True, 
+        'description': ''}
+     }
+    # convert into JSON:
+    y = json.dumps(data)
+    response = requests.post('https://portal.cbrain.mcgill.ca/tasks', headers=headers, params=params, data=y)
+    if response.status_code == 200:
+        print(response.text)
+        jsonResponse = response.json()
+        return jsonResponse
+    else:
+        print("Task posting failed.")
+        return 1

@@ -34,11 +34,14 @@ with open('temp_CI_cache.json', 'w') as outfile: #create temporary cache file fo
 populateCacheFilenames('temp_CI_cache.json', token)
 
 postFSLfirst('temp_CI_cache.json', token)
-
 updateStatuses('temp_CI_cache.json', token)
+
+#postFSLSubfolderExtractor('temp_CI_cache.json', token)
+#updateStatuses('temp_CI_cache.json', token)
 
 #postFSLstats('temp_CI_cache.json', token)
 #updateStatuses('temp_CI_cache.json', token)
+
 #populateResults('sample_file.json', token)
 
 #read the modified temporary json and update the permanent cache on github
