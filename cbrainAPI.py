@@ -4,7 +4,6 @@ import sys
 import os
 
 ##################################################################################
-#The code for these API calls is reasonably self explanatory.
 
 def cbrain_login(username, password):
     headers = {
@@ -37,6 +36,7 @@ def cbrain_logout(token):
     response = requests.delete('https://portal.cbrain.mcgill.ca/session', headers=headers, params=params)
     if response.status_code == 200:
         print("Logout success")
+        return 0
     else:
         print("Logout failure")
         return 1
@@ -44,6 +44,7 @@ def cbrain_logout(token):
 
 
 def cbrain_listDP(dataprovider_ID, token):
+    dataprovider_ID = str(dataprovider_ID)
     headers = {
         'Accept': 'application/json',
     }
@@ -161,6 +162,7 @@ def cbrain_FSLStats(token, fileID):
 
 
 def cbrain_getTaskInfo(token, taskID):
+    taskID = str(taskID)
     headers = {
         'Accept': 'application/json',
     }
@@ -180,6 +182,7 @@ def cbrain_getTaskInfo(token, taskID):
 
 
 def cbrain_download_text(fileID, token):
+    fileID = str(fileID)
     headers = {
         'Accept': 'text',
     }
