@@ -63,6 +63,7 @@ def cbrain_listDP(dataprovider_ID, token):
 
     
 def cbrain_FSLFirst(token, fileID):
+    fileID = str(fileID)
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -72,8 +73,6 @@ def cbrain_FSLFirst(token, fileID):
     )
     data = {
       "cbrain_task": {
-        'type': 'CbrainTask::FslFirst', 
-        'user_id': 1887,
         'tool_config_id': 721,
         'params': {
           'interface_userfile_ids': [fileID], 
@@ -103,6 +102,7 @@ def cbrain_FSLFirst(token, fileID):
 
 
 def cbrain_FSLStats(token, fileID):
+    fileID = str(fileID)
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -112,9 +112,6 @@ def cbrain_FSLStats(token, fileID):
     )
     data = {
       "cbrain_task": {
-        "type": "CbrainTask::Fslstats",
-        "user_id": 1887,
-        "bourreau_id": 39,
         "tool_config_id": 1698,
         "params": {
           "interface_userfile_ids": [
@@ -201,6 +198,7 @@ def cbrain_download_text(fileID, token):
 
 def cbrain_SubfolderFileExtractor(token, fileID, filenameToExtract, fileNewName):
     #note that filenameToExtract should include the extension
+    fileID = str(fileID)
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

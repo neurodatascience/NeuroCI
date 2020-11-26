@@ -131,7 +131,212 @@ class TestcbrainAPI(unittest.TestCase):
 			mock_request.assert_called_once_with(url, headers=headers, params=params, allow_redirects=True)
 
 
-	#def
+
+	def test_cbrain_FSLFirst_incorrect(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": {
+					'tool_config_id': 721,
+					'params': {
+						'interface_userfile_ids': [fileID], 
+						'input_file': fileID, 
+						'prefix': 'output', 
+						'brain_extracted': False, 
+						'three_stage': False, 
+						'verbose': False       
+				}, 
+				'run_number': None, 
+				'results_data_provider_id': 179, 
+				'cluster_workdir_size': None, 
+				'workdir_archived': True,  
+				'description': ''}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 401
+			self.assertEqual(cbrainAPI.cbrain_FSLFirst(token, fileID), 1)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
+	def test_cbrain_FSLFirst_correct(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": {
+					'tool_config_id': 721,
+					'params': {
+						'interface_userfile_ids': [fileID], 
+						'input_file': fileID, 
+						'prefix': 'output', 
+						'brain_extracted': False, 
+						'three_stage': False, 
+						'verbose': False       
+				}, 
+				'run_number': None, 
+				'results_data_provider_id': 179, 
+				'cluster_workdir_size': None, 
+				'workdir_archived': True,  
+				'description': ''}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 200
+			expected = {"aJSON":123,"testing":"123"}
+			mock_request.return_value.json.return_value = expected
+			self.assertEqual(cbrainAPI.cbrain_FSLFirst(token, fileID), expected)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
+
+
+	def test_cbrain_FSLStats_incorrect(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": {
+					"tool_config_id": 1698,
+					"params": {
+						"interface_userfile_ids": [fileID],
+						"input_file": fileID,
+						"t": False,
+						"l": "16.5",
+						"u": "17.5",
+						"a": False,
+						"n": False,
+						"r": False,
+						"R": False,
+						"e": False,
+						"E": False,
+						"v": False,
+						"V": True,
+						"m": False,
+						"M": False,
+						"s": False,
+						"S": False,
+						"w": False,
+						"x": False,
+						"X": False,
+						"c": False,
+						"C": False},
+					"run_number": None,
+					"results_data_provider_id": 27,
+					"cluster_workdir_size": 40960,
+					"workdir_archived": False,
+					"description": ""}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 401
+			self.assertEqual(cbrainAPI.cbrain_FSLStats(token, fileID), 1)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
+	def test_cbrain_FSLFSLStats_correct(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": {
+					"tool_config_id": 1698,
+					"params": {
+						"interface_userfile_ids": [fileID],
+						"input_file": fileID,
+						"t": False,
+						"l": "16.5",
+						"u": "17.5",
+						"a": False,
+						"n": False,
+						"r": False,
+						"R": False,
+						"e": False,
+						"E": False,
+						"v": False,
+						"V": True,
+						"m": False,
+						"M": False,
+						"s": False,
+						"S": False,
+						"w": False,
+						"x": False,
+						"X": False,
+						"c": False,
+						"C": False},
+					"run_number": None,
+					"results_data_provider_id": 27,
+					"cluster_workdir_size": 40960,
+					"workdir_archived": False,
+					"description": ""}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 200
+			expected = {"aJSON":123,"testing":"123"}
+			mock_request.return_value.json.return_value = expected
+			self.assertEqual(cbrainAPI.cbrain_FSLStats(token, fileID), expected)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
+
+	def test_cbrain_SubfolderFileExtractor_incorrect(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			filenameToExtract = "extractMePlz"
+			fileNewName = "extractTo"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": { 
+        			'tool_config_id': 2094,
+        			'params': {
+         				'interface_userfile_ids': [fileID],
+          				'infolder': fileID,
+          				'extracted': filenameToExtract,
+          				'new_name': fileNewName},
+					'run_number': None, 
+					'results_data_provider_id': 179, 
+					'cluster_workdir_size': None, 
+					'workdir_archived': True, 
+					'description': ''}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 401
+			self.assertEqual(cbrainAPI.cbrain_SubfolderFileExtractor(token, fileID, filenameToExtract, fileNewName), 1)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
+	def test_cbrain_SubfolderFileExtractor_correct(self):
+		with patch('cbrainAPI.requests.post') as mock_request:
+			token = "token"
+			fileID = "123"
+			filenameToExtract = "extractMePlz"
+			fileNewName = "extractTo"
+			url = 'https://portal.cbrain.mcgill.ca/tasks'
+			headers = {'Content-Type': 'application/json', 'Accept': 'application/json',}
+			params = (('cbrain_api_token', token),)
+			data = {
+				"cbrain_task": { 
+        			'tool_config_id': 2094,
+        			'params': {
+         				'interface_userfile_ids': [fileID],
+          				'infolder': fileID,
+          				'extracted': filenameToExtract,
+          				'new_name': fileNewName},
+					'run_number': None, 
+					'results_data_provider_id': 179, 
+					'cluster_workdir_size': None, 
+					'workdir_archived': True, 
+					'description': ''}
+			}
+			y = json.dumps(data)
+			mock_request.return_value.status_code = 200
+			expected = {"aJSON":123,"testing":"123"}
+			mock_request.return_value.json.return_value = expected
+			self.assertEqual(cbrainAPI.cbrain_SubfolderFileExtractor(token, fileID, filenameToExtract, fileNewName), expected)
+			mock_request.assert_called_once_with(url, headers=headers, params=params, data=y)
 
 if __name__ == '__main__':
 	unittest.main()
