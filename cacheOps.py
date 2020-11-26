@@ -61,6 +61,7 @@ def populateCacheFilenames(filename, token):
         file.seek(0)  # rewind
         json.dump(data, file, indent=2)
         file.truncate() 
+        return data #currently for testing purposes only
         
 
 
