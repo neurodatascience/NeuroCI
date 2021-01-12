@@ -192,7 +192,7 @@ def cbrain_download_text(fileID, token):
         return response.text
     else:
         print('Download failure')
-        return 1 #probably change this error code
+        return 1
 
 
 
