@@ -2,64 +2,64 @@
   "sub-1004359_ses-PREBL00_run-001_T1w.nii.gz": {
     "FSL": {
       "Task1": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 721,
-        "outputID": 3321966,
         "inputID": 2933481,
-        "taskID": 1619127
+        "toolConfigID": 721,
+        "taskID": 1619193,
+        "status": "New",
+        "outputID": null,
+        "isUsed": true
       },
       "Task2": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 2094,
-        "outputID": 3321999,
-        "inputID": 3321966,
-        "taskID": 1619145
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
       },
       "Task3": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 1698,
-        "outputID": 3322008,
-        "inputID": 3321999,
-        "taskID": 1619151
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
       },
       "Result": {
-        "volume": "1715 1715.000000 \n",
-        "isUsed": true
+        "volume": null,
+        "isUsed": null
       }
     }
   },
   "sub-1016072_ses-PREBL00_run-001_T1w.nii.gz": {
     "FSL": {
       "Task1": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 721,
-        "outputID": 3321957,
         "inputID": 2933478,
-        "taskID": 1619130
+        "toolConfigID": 721,
+        "taskID": 1619196,
+        "status": "New",
+        "outputID": null,
+        "isUsed": true
       },
       "Task2": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 2094,
-        "outputID": 3322002,
-        "inputID": 3321957,
-        "taskID": 1619148
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
       },
       "Task3": {
-        "status": "Completed",
-        "isUsed": true,
-        "toolConfigID": 1698,
-        "outputID": 3322005,
-        "inputID": 3322002,
-        "taskID": 1619154
+        "inputID": null,
+        "toolConfigID": null,
+        "taskID": null,
+        "status": null,
+        "outputID": null,
+        "isUsed": null
       },
       "Result": {
-        "volume": "3995 3995.000000 \n",
-        "isUsed": true
+        "volume": null,
+        "isUsed": null
       }
     }
   }
