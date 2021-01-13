@@ -23,10 +23,10 @@ github_instance = Github(github_user, github_password)
 
 #Get newest version of cache from github 
 #repo = github_instance.get_user().get_repo("NDR-CI")
-#repo = github_instance.get_repo("jacobsanz97/NDR-CI")
-#cache_file = repo.get_contents("/cache.json")
-#raw_cache_data = cache_file.decoded_content #binary to string so able to write json
-#base64_string = raw_cache_data.decode('UTF-8')
+repo = github_instance.get_repo("jacobsanz97/NDR-CI")
+cache_file = repo.get_contents("/cache.json")
+raw_cache_data = cache_file.decoded_content #binary to string so able to write json
+base64_string = raw_cache_data.decode('UTF-8')
 with open('temp_CI_cache.json', 'w') as outfile: #create temporary cache file for CI
     outfile.write(base64_string + '\n')
 
