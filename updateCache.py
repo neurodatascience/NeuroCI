@@ -26,12 +26,12 @@ token = cbrain_login(cbrain_user, cbrain_password)
 #cache_file = repo.get_contents("/cache.json")
 #raw_cache_data = cache_file.decoded_content #binary to string so able to write json
 #base64_string = raw_cache_data.decode('UTF-8')
-with open('temp_CI_cache.json', 'r+') as outfile: #create temporary cache file for CI
-    #outfile.write(base64_string + '\n')
+#with open('temp_CI_cache.json', 'r+') as outfile: #create temporary cache file for CI
+#    #outfile.write(base64_string + '\n')
 
 
 #Perform computations and update cache
-populateCacheFilenames('temp_CI_cache.json', token)
+#populateCacheFilenames('temp_CI_cache.json', token)
 updateStatuses('temp_CI_cache.json', token)
 postFSLfirst('temp_CI_cache.json', token)
 postFSLSubfolderExtractor('temp_CI_cache.json', token)

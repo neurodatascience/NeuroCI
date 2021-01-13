@@ -98,6 +98,8 @@ def updateStatuses(cache_filename, token):
                                 data[file]['FSL'][Task_NumStr]["outputID"] = jayson['params']['_cbrain_output_outputs'][0]
                             if '_cbrain_output_output' in jayson['params']:
                                 data[file]['FSL'][Task_NumStr]["outputID"] =  jayson['params']['_cbrain_output_output'][0]
+                            if '_cbrain_output_outfile' in jayson['params']:
+                                data[file]['FSL'][Task_NumStr]["outputID"] =  jayson['params']['_cbrain_output_outfile'][0]
                         else:
                             #Task not completed, just update status
                             data[file]['FSL'][Task_NumStr]["status"] = jayson["status"]
@@ -112,7 +114,7 @@ def postFSLSubfolderExtractor(cache_filename, token):
         data = json.load(cacheFile)
         for file in data:
             if data[file]['FSL']['Task2']['isUsed'] == None and data[file]['FSL']['Task1']['status'] ==  "Completed":
-                jayson = cbrain_SubfolderFileExtractor(token, data[file]['FSL']['Task1']['outputID'], "output_all_fast_firstseg.nii.gz", data[file]['FSL']['Task1']['outputID'] + ".nii.gz" )
+                jayson = cbrain_SubfolderFileExtractor(token, data[file]['FSL']['Task1']['outputID'], "output_all_fast_firstseg.nii.gz", str(data[file]['FSL']['Task1']['outputID']) + ".nii.gz" )
                 data[file]['FSL']['Task2']['inputID'] = data[file]['FSL']['Task1']['outputID']
                 data[file]['FSL']['Task2']['toolConfigID'] = jayson[0]['tool_config_id']
                 data[file]['FSL']['Task2']['taskID'] = jayson[0]["id"]

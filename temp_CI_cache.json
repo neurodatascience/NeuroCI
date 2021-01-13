@@ -1,0 +1,66 @@
+{
+  "sub-1004359_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 721, 
+        "outputID": 3321966, 
+        "inputID": 2933481, 
+        "taskID": 1619127
+      }, 
+      "Task2": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 2094, 
+        "outputID": 3321999, 
+        "inputID": 3321966, 
+        "taskID": 1619145
+      }, 
+      "Task3": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 1698, 
+        "outputID": 3322008, 
+        "inputID": 3321999, 
+        "taskID": 1619151
+      }, 
+      "Result": {
+        "volume": "1715 1715.000000 \n", 
+        "isUsed": true
+      }
+    }
+  }, 
+  "sub-1016072_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 721, 
+        "outputID": 3321957, 
+        "inputID": 2933478, 
+        "taskID": 1619130
+      }, 
+      "Task2": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 2094, 
+        "outputID": 3322002, 
+        "inputID": 3321957, 
+        "taskID": 1619148
+      }, 
+      "Task3": {
+        "status": "Completed", 
+        "isUsed": true, 
+        "toolConfigID": 1698, 
+        "outputID": 3322005, 
+        "inputID": 3322002, 
+        "taskID": 1619154
+      }, 
+      "Result": {
+        "volume": "3995 3995.000000 \n", 
+        "isUsed": true
+      }
+    }
+  }
+}
