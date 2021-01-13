@@ -1,0 +1,66 @@
+{
+  "sub-1004359_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "status": "New", 
+        "isUsed": true, 
+        "toolConfigID": 721, 
+        "outputID": null, 
+        "inputID": 2933481, 
+        "taskID": 1619103
+      }, 
+      "Task2": {
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Task3": {
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Result": {
+        "volume": null, 
+        "isUsed": null
+      }
+    }
+  }, 
+  "sub-1016072_ses-PREBL00_run-001_T1w.nii.gz": {
+    "FSL": {
+      "Task1": {
+        "status": "New", 
+        "isUsed": true, 
+        "toolConfigID": 721, 
+        "outputID": null, 
+        "inputID": 2933478, 
+        "taskID": 1619106
+      }, 
+      "Task2": {
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Task3": {
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Result": {
+        "volume": null, 
+        "isUsed": null
+      }
+    }
+  }
+}
