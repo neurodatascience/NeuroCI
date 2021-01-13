@@ -12,14 +12,13 @@ from cacheOps import *
 
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
-github_user = sys.argv[3]
-github_password = sys.argv[4]
+github_token = sys.argv[3]
 
 ##################################################################################
 
 #Logins
 token = cbrain_login(cbrain_user, cbrain_password)
-github_instance = Github(github_user, github_password)
+github_instance = Github(github_token)
 
 #Get newest version of cache from github 
 #repo = github_instance.get_user().get_repo("NDR-CI")
@@ -47,10 +46,10 @@ updateStatuses('temp_CI_cache.json', token)
 
 #read the modified temporary json and update the permanent cache on github
 #Deposit temporary cache in artefact extraction directory.
-#with open('temp_CI_cache.json', 'r') as infile:
-#    data = json.load(infile)
-#    json_data = json.dumps(data, indent=2) 
-#    repo.update_file("/cache.json", "Updated computations in cache", json_data, cache_file.sha)
+with open('temp_CI_cache.json', 'r') as infile:
+    data = json.load(infile)
+    json_data = json.dumps(data, indent=2) 
+    repo.update_file("cache.json", "Updated computations in cache", json_data, cache_file.sha)
 
 #Logout
 cbrain_logout(token) 
