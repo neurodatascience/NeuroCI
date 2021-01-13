@@ -21,7 +21,7 @@ token = cbrain_login(cbrain_user, cbrain_password)
 github_instance = Github(github_token)
 
 #Get newest version of cache from github 
-repo = github_instance.get_user().get_repo("NDR-CI")
+repo = github_instance.get_repo("jacobsanz97/NDR-CI")
 cache_file = repo.get_contents("/cache.json")
 raw_cache_data = cache_file.decoded_content #binary to string so able to write json
 base64_string = raw_cache_data.decode('UTF-8')
