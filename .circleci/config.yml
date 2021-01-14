@@ -13,26 +13,7 @@ jobs: # A basic unit of work in a run
             sudo pip install PyGithub
       - run:
           command: |
-            python NeuroCI.py $cbrain_user $cbrain_password $github_token
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          path: /home/circleci/work_dir
-          destination: artifact-file
-  schedule: # runs not using Workflows must have a `build` job as entry point 
-    # directory where steps are run
-    working_directory: ~/work_dir
-    docker: # run the steps with Docker
-      - image: circleci/python:3.6.4
-    steps: # steps that comprise the `build` job
-      - checkout
-      - run:
-          command: |
-            sudo pip install requests
-            sudo pip install PyGithub
-      - run:
-          command: |
-            python updateCache.py $cbrain_user $cbrain_password $github_token
+            python NeuroCI.py $cbrain_user $cbrain_password $json_bin $json_token
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
@@ -54,4 +35,4 @@ workflows:
               only:
                 - master
     jobs:
-      - schedule
+      - build
