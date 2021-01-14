@@ -50,14 +50,15 @@ def populateCacheFilenames(filename, token):
     filelist = []
     dpBrowse = cbrain_listDP('318', token)
     for entry in dpBrowse:
-        if 'userfile_id' in entry: #and if key not in json? see comment below
+        if 'userfile_id' in entry: #if it's a registered file, add to list.
             filelist.append([entry['name'],entry['userfile_id']])
     with open(filename, "r+") as file:
         data = json.load(file)
         for entry in filelist:
-            #if entry[name] is not in json...maybe update already does this?
-            leaf = generateCacheSubject(entry[0], entry[1])
-            data.update(leaf)
+            #if entry[name] is not in json...add to cache
+            if entry[0] not in data:
+            	leaf = generateCacheSubject(entry[0], entry[1])
+            	data.update(leaf)
         file.seek(0)  # rewind
         json.dump(data, file, indent=2)
         file.truncate() 

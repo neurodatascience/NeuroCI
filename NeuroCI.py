@@ -29,6 +29,7 @@ token = cbrain_login(cbrain_user, cbrain_password)
 
 jsonBin = sys.argv[3]
 jsonToken = sys.argv[4]
+jsonToken = "$2b$10$qfOjWBjmC6j4WlXbeo9jx.jRc38wZQ2ZK7UGaxfnAr0ImWDpdAM5a"
 
 
 url = 'https://api.jsonbin.io/b/' + jsonBin + '/latest'
