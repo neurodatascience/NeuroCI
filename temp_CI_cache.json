@@ -2,63 +2,95 @@
   "sub-1004359_ses-PREBL00_run-001_T1w.nii.gz": {
     "FSL": {
       "Task1": {
-        "status": "Completed", 
+        "status": "New", 
         "isUsed": true, 
         "toolConfigID": 721, 
-        "outputID": 3321966, 
+        "outputID": null, 
         "inputID": 2933481, 
-        "taskID": 1619127
+        "taskID": 1619220
       }, 
       "Task2": {
-        "status": "Completed", 
-        "isUsed": true, 
-        "toolConfigID": 2094, 
-        "outputID": 3321999, 
-        "inputID": 3321966, 
-        "taskID": 1619145
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
       }, 
       "Task3": {
-        "status": "Completed", 
-        "isUsed": true, 
-        "toolConfigID": 1698, 
-        "outputID": 3322008, 
-        "inputID": 3321999, 
-        "taskID": 1619151
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
       }, 
       "Result": {
-        "volume": "1715 1715.000000 \n", 
-        "isUsed": true
+        "volume": null, 
+        "isUsed": null
       }
     }
   }, 
   "sub-1016072_ses-PREBL00_run-001_T1w.nii.gz": {
     "FSL": {
       "Task1": {
-        "status": "Completed", 
+        "status": "New", 
         "isUsed": true, 
         "toolConfigID": 721, 
-        "outputID": 3321957, 
+        "outputID": null, 
         "inputID": 2933478, 
-        "taskID": 1619130
+        "taskID": 1619223
       }, 
       "Task2": {
-        "status": "Completed", 
-        "isUsed": true, 
-        "toolConfigID": 2094, 
-        "outputID": 3322002, 
-        "inputID": 3321957, 
-        "taskID": 1619148
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
       }, 
       "Task3": {
-        "status": "Completed", 
-        "isUsed": true, 
-        "toolConfigID": 1698, 
-        "outputID": 3322005, 
-        "inputID": 3322002, 
-        "taskID": 1619154
+        "status": null, 
+        "isUsed": null, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
       }, 
       "Result": {
-        "volume": "3995 3995.000000 \n", 
+        "volume": null, 
+        "isUsed": null
+      }
+    }
+  }, 
+  "filename": {
+    "FSL": {
+      "Task1": {
+        "status": null, 
+        "isUsed": true, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Task2": {
+        "status": null, 
+        "isUsed": true, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Task3": {
+        "status": null, 
+        "isUsed": true, 
+        "toolConfigID": null, 
+        "outputID": null, 
+        "inputID": null, 
+        "taskID": null
+      }, 
+      "Result": {
+        "volume": null, 
         "isUsed": true
       }
     }

@@ -42,7 +42,7 @@ updateStatuses('temp_CI_cache.json', token)
 #Deposit temporary cache in artefact extraction directory.
 with open('temp_CI_cache.json', 'r') as infile:
     data = json.load(infile)
-    json_data = json.dumps(data, indent=2)    
+    json_data = json.dumps(data, indent=2) 
     repo.update_file("cache.json", "Updated computations in cache", json_data, cache_file.sha)
 
 #Logout
