@@ -13,13 +13,12 @@ jobs: # A basic unit of work in a run
             sudo pip install PyGithub
       - run:
           command: |
-            python NeuroCI.py $cbrain_user $cbrain_password $json_bin $json_token
+            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: /home/circleci/work_dir
           destination: artifact-file
-
 
 workflows:
   version: 2.1
@@ -29,7 +28,7 @@ workflows:
   schedule-workflow:
     triggers:
       - schedule:
-          cron: "0 0 1 * *"
+          cron: "0 0 * * 0"
           filters:
             branches:
               only:
