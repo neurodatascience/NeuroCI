@@ -1,4 +1,5 @@
 import requests
+import yaml
 import json
 import sys
 import os
@@ -9,56 +10,64 @@ from cbrainAPI import *
 from cacheOps import *
 
 ##################################################################################
+
+def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids):
+
+	for dataset in experiment_definition['Datasets']:
+
+		download_cache(dataset  + '.json', CCI_token)	#Downloads newest cache to json file
+		print('Downloaded newest cache for: ' + dataset  + '.json')
+		
+		update_statuses(dataset  + '.json', cbrain_token)	#Updates the contents of a cache to reflect CBRAIN task statuses
+		print('Updated statuses in cache for: ' + dataset  + '.json')
+		
+		for pipeline in experiment_definition['Pipelines']:
+			
+			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset])	#Populates a cache with any new files found
+			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline)
+			
+			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
+			print('Posted tasks for: ' + dataset  + '.json' + ', ' +  pipeline)
+		
+		populate_results(dataset  + '.json', cbrain_token)
+		print('Populated results for ' + dataset + '.json')
+		#extract_results()
+		#analysis(expdef[script])
+		update_statuses(dataset  + '.json', cbrain_token)
+		print('Updated statuses in cache for: ' + dataset  + '.json')	
+
+##################################################################################
+
 #Obtain login credentials from args, stored in CI environment variables.
 
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
 CCI_token = sys.argv[3]
+cbrain_token = cbrain_login(cbrain_user, cbrain_password)
 
 ##################################################################################
 
-#Logins
-token = cbrain_login(cbrain_user, cbrain_password)
+#Main code execution section
 
-headers = {'Circle-Token': CCI_token}
-response = requests.get('https://circleci.com/api/v1.1/project/github/jacobsanz97/NDR-CI/latest/artifacts', headers=headers)
-
-linkToCache = ""
-if response.status_code == 200:
-    literalList = literal_eval(response.text)
-    for file in literalList:
-        if 'temp_CI_cache.json' in file['url']:
-            linkToCache = file['url']
-else:
-    print("Error loading CircleCI artifacts")
-    print(response.text)
-
-response = requests.get(linkToCache, headers=headers)
-if response.status_code == 200:
-    jsonCache = json.loads(response.text)
-else:
-    print(response.text)
-    jsonCache = json.loads("{}")
-    print("Cache file not initialized...Creating a new one.")
-
-with open('temp_CI_cache.json', 'w') as outfile: #create temporary cache file for CI
-    json.dump(jsonCache, outfile)
+with open('Experiment_Definition.yaml') as file: #Load experiment definition
+	try:
+		experiment_definition  = yaml.safe_load(file)
+	except yaml.YAMLError as exception: #yaml file not valid
+		print('The Experiment Definition file is not valid')
+		print(exception)
 
 
-print('written cache to temp file')
+with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRAIN DP_IDs and toolconfig IDs
+	try:
+		cbrain_ids  = yaml.safe_load(file)
+	except yaml.YAMLError as exception: #yaml file not valid
+		print('The configuration file is not valid')
+		print(exception)
 
-#Perform computations and update cache
-populateCacheFilenames('temp_CI_cache.json', token)
-print('populated cache filenames')
-updateStatuses('temp_CI_cache.json', token)
-postFSLfirst('temp_CI_cache.json', token)
-postFSLSubfolderExtractor('temp_CI_cache.json', token)
-postFSLstats('temp_CI_cache.json', token)
-print('posted tasks')
-populateResults('temp_CI_cache.json', token)
-updateStatuses('temp_CI_cache.json', token)
+main(cbrain_token, CCI_token, experiment_definition, cbrain_ids)
 
-print("Done with scheduled computations")
+print("Finished the scheduled computations")
 
-#Logout
-cbrain_logout(token) 
+##################################################################################
+
+

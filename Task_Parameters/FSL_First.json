@@ -1,0 +1,8 @@
+{
+    "interface_userfile_ids": ["fileID"], 
+    "input_file": "fileID", 
+    "prefix": "output", 
+    "brain_extracted": false, 
+    "three_stage": false, 
+    "verbose": false       
+}

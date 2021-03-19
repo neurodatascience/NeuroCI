@@ -1,0 +1,35 @@
+##########################################################################################
+
+Datasets:
+
+  Prevent-AD:
+    Active: true
+    Blocklist:
+    - blacklistedfile.nii.gz
+
+  Compass-ND:
+    Active: false
+    Blocklist:
+    - 123.nii.gz
+
+##########################################################################################
+
+Pipelines:
+
+  FSL:
+    Active: true
+    Components:
+      FSL_First:
+        Parameter_dictionary: ./Task_Parameters/FSL_First.json
+      Subfolder_File_Extractor:
+        Parameter_dictionary: ./Task_Parameters/Subfolder_File_Extractor_FSL.json
+      FSL_Stats:
+        Parameter_dictionary: ./Task_Parameters/FSL_Stats.json
+
+
+##########################################################################################
+
+#Path to the analysis script
+Analysis_script_path: ./Analysis_Scripts/script.py
+
+##########################################################################################

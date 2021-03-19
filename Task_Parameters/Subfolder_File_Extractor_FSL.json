@@ -1,0 +1,6 @@
+{
+          "interface_userfile_ids": ["fileID"],
+          "infolder": "fileID",
+          "extracted": "output_all_fast_firstseg.nii.gz",
+          "new_name": "extracted_file.nii.gz"
+}

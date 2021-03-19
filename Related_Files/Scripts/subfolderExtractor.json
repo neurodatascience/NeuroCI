@@ -1,0 +1,38 @@
+{
+    "name": "Subfolder File Extractor",
+    "description": "Extracts, renames and outputs a specified file from an input folder.",
+    "tool-version": "v0.1.0",
+    "schema-version": "0.5",
+    "command-line": "prefix=\"$(realpath [INPUT_FOLDER])\" ; full=\"$(realpath [INPUT_FOLDER]/[FILE_EXTRACTED])\" ; stripped=\"$(dirname $full)\" ; if [ \"$stripped\" != \"$prefix\" ] ; then echo Error: Extraction path not inside source. ; exit 2 ; fi ; if [ \"$(basename [NEW_NAME])\" != [NEW_NAME] ] ; then echo Error: Destination new name is not a base name. ; exit 2 ; fi ; cp -p -r [INPUT_FOLDER]/[FILE_EXTRACTED] [NEW_NAME] || exit 2 ; ",
+    "inputs": [
+		{
+    		"id" : "infolder",
+    		"name" : "Input folder",
+    		"type" : "File",
+   		"description" : "Input Folder",
+    		"value-key" : "[INPUT_FOLDER]"
+		},
+		{
+    		"id" : "extracted",
+    		"name" : "File to be Extracted",
+    		"type" : "String",
+   		"description" : "The name of the file which needs to be extracted from the Folder",
+    		"value-key" : "[FILE_EXTRACTED]"
+		},
+		{
+    		"id" : "new_name",
+    		"name" : "Rename the extracted file",
+    		"type" : "String",
+   		"description" : "Rename the extracted file",
+    		"value-key" : "[NEW_NAME]"
+		}
+    ],
+    "output-files": [
+        {
+            "id": "outfile",
+            "name": "Extracted, renamed file",
+            "optional": false,
+            "path-template": "[NEW_NAME]"
+        }
+    ]
+}
