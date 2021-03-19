@@ -4,7 +4,7 @@ jobs: # A basic unit of work in a run
     # directory where steps are run
     working_directory: ~/work_dir
     docker: # run the steps with Docker
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.6.9
     steps: # steps that comprise the `build` job
       - checkout
       - run:
