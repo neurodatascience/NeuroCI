@@ -11,11 +11,11 @@ from cacheOps import *
 
 ##################################################################################
 
-def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids):
+def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url):
 
 	for dataset in experiment_definition['Datasets']:
 
-		download_cache(dataset  + '.json', CCI_token)	#Downloads newest cache to json file
+		download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
 		print('Downloaded newest cache for: ' + dataset  + '.json')
 		
 		update_statuses(dataset  + '.json', cbrain_token)	#Updates the contents of a cache to reflect CBRAIN task statuses
@@ -43,6 +43,8 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids):
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
 CCI_token = sys.argv[3]
+CCI_user = sys.argv[4]
+CCI_repo = sys.argv[5]
 cbrain_token = cbrain_login(cbrain_user, cbrain_password)
 
 ##################################################################################
@@ -64,7 +66,10 @@ with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRA
 		print('The configuration file is not valid')
 		print(exception)
 
-main(cbrain_token, CCI_token, experiment_definition, cbrain_ids)
+latest_artifacts_url = "https://circleci.com/api/v1.1/project/github/" + CCI_user + "/" + CCI_repo + "/latest/artifacts"
+print("latest artifacts url: " + latest_artifacts_url)
+
+main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url)
 
 print("Finished the scheduled computations")
 

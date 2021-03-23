@@ -11,10 +11,11 @@ from cbrainAPI import *
 #############################################
 
 '''Downloads newst cache file to json, or if it's not found in the circleCI artifacts, creates a new cache file'''
-def download_cache(cache_file, CCI_token):
+def download_cache(cache_file, CCI_token, latest_artifacts_url):
 
 	headers = {'Circle-Token': CCI_token}
-	response = requests.get('https://circleci.com/api/v1.1/project/github/jacobsanz97/NDR-CI/latest/artifacts', headers=headers)	#finds the link to the cache file amongst all the artifacts
+	response = requests.get(latest_artifacts_url, headers=headers)	#finds the link to the cache file amongst all the artifacts
+	#example URL for this repo: https://circleci.com/api/v1.1/project/github/jacobsanz97/NDR-CI/latest/artifacts
 
 	link_to_cache = ""
 	if response.status_code == 200:
@@ -45,7 +46,7 @@ def generate_cache_subject(nifti_file, cbrain_userfile_ID, pipeline, experiment_
 	data = { nifti_file: {
 		pipeline: {}}}
 		
-	result = {"volume": None, "isUsed": None}
+	result = {"result": None, "isUsed": None}
 	
 	component_number = 0 #Keeps track of the order of the component (we need to flag the first one)
 	for pipeline_component in experiment_definition['Pipelines'][pipeline]['Components']:
@@ -205,7 +206,7 @@ def populateResults(cache_filename, cbrain_token):
 						if data[file][pipeline_name]['Result']['isUsed'] == None and data[file][pipeline_name][previous_string]['status'] == "Completed":
 							fileID = data[file][pipeline_name][previous_string]['outputID']
 							vol = cbrain_download_text(fileID, cbrain_token)
-							data[file][pipeline_name]['Result']['volume'] = vol
+							data[file][pipeline_name]['Result']['result'] = vol
 							data[file][pipeline_name]['Result']['isUsed'] = True
 					previous_string = pipeline_component_str
 					
