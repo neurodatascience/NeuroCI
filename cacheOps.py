@@ -27,13 +27,14 @@ def download_cache(cache_file, CCI_token, latest_artifacts_url):
 		print("Error loading CircleCI artifacts")
 		print(response.text)
 	
-	response = requests.get(link_to_cache, headers=headers)	#download the cache file to json
-	if response.status_code == 200:
-		json_cache = json.loads(response.text)
-	else:	#Cache file couldn't be loaded, so we create an empty json
+	try:
+		response = requests.get(link_to_cache, headers=headers)	#download the cache file to json
+	except:
 		print(response.text)
-		json_cache = json.loads("{}")
-		print("Cache file not initialized...Creating a new one.")
+		json_cache = json.loads("{}") #Cache file couldn't be loaded, so we create an empty json
+		print("Cache file not found...Creating a new one.")		
+	else:
+		json_cache = json.loads(response.text)
 
 	with open(cache_file, 'w') as outfile: #create cache file for CI
 		json.dump(json_cache, outfile)
