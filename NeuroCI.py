@@ -67,9 +67,6 @@ with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRA
 		print('The configuration file is not valid')
 		print(exception)
 
-#latest_artifacts_url = "https://circleci.com/api/v1.1/project/github/" + CCI_user + "/" + CCI_repo + "/latest/artifacts"
-print("latest artifacts url: " + latest_artifacts_url)
-
 main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url)
 
 print("Finished the scheduled computations")
