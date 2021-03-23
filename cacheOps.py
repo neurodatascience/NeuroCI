@@ -15,7 +15,8 @@ def download_cache(cache_file, CCI_token, latest_artifacts_url):
 
 	headers = {'Circle-Token': CCI_token}
 	print(latest_artifacts_url)
-	response = requests.get(latest_artifacts_url, headers=headers)	#finds the link to the cache file amongst all the artifacts
+	response = requests.get(str(latest_artifacts_url), headers=headers)	#finds the link to the cache file amongst all the artifacts
+	print(response.request.url)
 	#example URL for this repo: https://circleci.com/api/v1.1/project/github/jacobsanz97/NDR-CI/latest/artifacts
 
 	link_to_cache = ""
