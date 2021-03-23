@@ -11,9 +11,10 @@ jobs: # A basic unit of work in a run
           command: |
             sudo pip install requests
             sudo pip install PyGithub
+            sudo pip install pyyaml
       - run:
           command: |
-            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token
+            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token $CIRCLE_USERNAME $CIRCLE_PROJECT_REPONAME
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
