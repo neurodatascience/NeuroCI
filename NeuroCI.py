@@ -43,8 +43,9 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
 CCI_token = sys.argv[3]
-CCI_user = sys.argv[4]
-CCI_repo = sys.argv[5]
+#CCI_user = sys.argv[4]
+#CCI_repo = sys.argv[5]
+latest_artifacts_url = sys.argv[4]
 cbrain_token = cbrain_login(cbrain_user, cbrain_password)
 
 ##################################################################################
@@ -66,7 +67,7 @@ with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRA
 		print('The configuration file is not valid')
 		print(exception)
 
-latest_artifacts_url = "https://circleci.com/api/v1.1/project/github/" + CCI_user + "/" + CCI_repo + "/latest/artifacts"
+#latest_artifacts_url = "https://circleci.com/api/v1.1/project/github/" + CCI_user + "/" + CCI_repo + "/latest/artifacts"
 print("latest artifacts url: " + latest_artifacts_url)
 
 main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url)
