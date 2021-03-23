@@ -30,7 +30,6 @@ def download_cache(cache_file, CCI_token, latest_artifacts_url):
 	try:
 		response = requests.get(link_to_cache, headers=headers)	#download the cache file to json
 	except:
-		print(response.text)
 		json_cache = json.loads("{}") #Cache file couldn't be loaded, so we create an empty json
 		print("Cache file not found...Creating a new one.")		
 	else:
@@ -129,7 +128,7 @@ def update_statuses(cache_filename, cbrain_token):
 							#Task not completed, just update status
 							data[file][pipeline_name][task_name_str]["status"] = jayson["status"]
 		cache_file.seek(0)
-		json.dump(data, cacheFile, indent=2)
+		json.dump(data, cache_file, indent=2)
 		cache_file.truncate()
 
 
