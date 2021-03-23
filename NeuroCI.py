@@ -43,8 +43,6 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
 CCI_token = sys.argv[3]
-#CCI_user = sys.argv[4]
-#CCI_repo = sys.argv[5]
 latest_artifacts_url = sys.argv[4]
 cbrain_token = cbrain_login(cbrain_user, cbrain_password)
 
@@ -66,6 +64,8 @@ with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRA
 	except yaml.YAMLError as exception: #yaml file not valid
 		print('The configuration file is not valid')
 		print(exception)
+
+print("Using artifacts from : " + latest_artifacts_url)
 
 main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url)
 
