@@ -139,7 +139,7 @@ def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, 
 	
 	for pipeline_component in experiment_definition['Pipelines'][pipeline]['Components']:
 		
-		with open(experiment_definition['Pipelines']['Components'][pipeline_component]['Parameter_dictionary'], "r+") as param_file:	#Load parameters for current pipeline component
+		with open(experiment_definition['Pipelines'][pipeline]['Components'][pipeline_component]['Parameter_dictionary'], "r+") as param_file:	#Load parameters for current pipeline component
 			parameter_dictionary = json.load(param_file)
 			
 			if component_number == 0:										

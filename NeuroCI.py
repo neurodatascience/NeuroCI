@@ -71,6 +71,7 @@ main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifact
 
 print("Finished the scheduled computations")
 
+cbrain_logout(cbrain_token)
 ##################################################################################
 
 
