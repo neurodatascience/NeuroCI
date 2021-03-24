@@ -159,7 +159,7 @@ def first_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache
 		for filename in data:
 			if data[filename][pipeline_name][pipeline_component]['isUsed'] == None:
 				
-				userfile_id = data[filename][pipeline][pipeline_component]['inputID']
+				userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
 				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
 				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
 				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
