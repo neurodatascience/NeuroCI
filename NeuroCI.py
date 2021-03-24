@@ -23,7 +23,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		
 		for pipeline in experiment_definition['Pipelines']:
 			
-			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset])	#Populates a cache with any new files found
+			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
 			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline)
 			
 			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)

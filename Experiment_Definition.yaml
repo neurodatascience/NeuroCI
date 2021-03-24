@@ -3,21 +3,14 @@
 Datasets:
 
   Prevent-AD:
-    Active: true
     Blocklist:
     - blacklistedfile.nii.gz
-
-  Compass-ND:
-    Active: false
-    Blocklist:
-    - 123.nii.gz
 
 ##########################################################################################
 
 Pipelines:
 
   FSL:
-    Active: true
     Components:
       FSL_First:
         Parameter_dictionary: ./Task_Parameters/FSL_First.json
