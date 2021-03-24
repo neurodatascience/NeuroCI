@@ -177,7 +177,7 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
 		for filename in data:
-			if data[filename][pipeline_name][pipeline_component]['isUsed'] == None and data[file][pipeline_name][previous_pipeline_component]['status'] == "Completed":
+			if data[filename][pipeline_name][pipeline_component]['isUsed'] == None and data[filename][pipeline_name][previous_pipeline_component]['status'] == "Completed":
 				
 				userfile_id = data[filename][pipeline_name][previous_pipeline_component]['outputID']	#output of last task
 				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
