@@ -193,7 +193,7 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 
 
 '''Fetches the text from a file on CBRAIN and writes it to the cache. Originally this designed for extracting a hippocampal volume from an FSL Stats text output'''
-def populateResults(cache_filename, cbrain_token):
+def populate_results(cache_filename, cbrain_token):
 	
 	with open(cache_filename, "r+") as cache_file:
 		data = json.load(cache_file)
