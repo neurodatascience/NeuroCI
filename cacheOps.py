@@ -147,6 +147,9 @@ def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, 
 			else:
 				nth_task_handler(cbrain_token, parameter_dictionary, cbrain_ids['Tool_Config_IDs'][pipeline_component], dataset + '.json', pipeline_component, previous_pipeline_component, pipeline)
 
+			if experiment_definition['Resubmit_failed_tasks']['Active'] == True:
+				task_resubmit_handler(cbrain_token, parameter_dictionary, cbrain_ids['Tool_Config_IDs'][pipeline_component], dataset + '.json', pipeline_component, pipeline, experiment_definition['Resubmit_failed_tasks']['Blocklist'])
+			
 		previous_pipeline_component = pipeline_component
 		component_number = component_number + 1
 
@@ -182,6 +185,27 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 				userfile_id = data[filename][pipeline_name][previous_pipeline_component]['outputID']	#output of last task
 				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
 				data[filename][pipeline_name][pipeline_component]['inputID'] = userfile_id
+				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
+				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
+				data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
+				data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				
+		file.seek(0)	# rewind
+		json.dump(data, file, indent=2)
+		file.truncate()
+
+def task_resubmit_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name, task_blocklist):
+	
+	task_fail_statuses = ['Failed To Setup', 'Failed On Cluster', 'Terminated']
+	with open(cache_file, "r+") as file:
+		data = json.load(file)
+		for filename in data:
+
+			#Check the status to see if the task has failed, and check if the task is meant to be resubmitted or if it is in the blocklist.
+			if data[filename][pipeline_name][pipeline_component]['status'] in task_fail_statuses and data[filename][pipeline_name][pipeline_component]['taskID'] not in task_blocklist:
+				
+				userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
+				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
 				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
 				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
 				data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]

@@ -4,7 +4,7 @@ Datasets:
 
   Prevent-AD:
     Blocklist:
-    - blacklistedfile.nii.gz
+    - blocklistedfile.nii.gz
 
 ##########################################################################################
 
@@ -25,4 +25,10 @@ Pipelines:
 #Path to the analysis script
 Analysis_script_path: ./Analysis_Scripts/script.py
 
+##########################################################################################
+
+Resubmit_failed_tasks:
+  Active: True
+  Blocklist: #Provide list of CBRAIN Task IDs to not resubmit.
+  - 123456
 ##########################################################################################
