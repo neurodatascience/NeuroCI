@@ -4,7 +4,7 @@ Datasets:
 
   Prevent-AD:
     Blocklist:
-    - blocklistedfile.nii.gz
+    - Auditory_processing_Registered_PREVENTAD.csv #Ensures no pipelines iterate on this file (hearing loss data).
 
 ##########################################################################################
 
