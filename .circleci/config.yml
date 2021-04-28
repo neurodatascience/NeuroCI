@@ -10,7 +10,7 @@ jobs: # A basic unit of work in a run
       - run:
           command: |
             sudo pip install requests
-            sudo pip install PyGithub
+          #  sudo pip install PyGithub
             sudo pip install pyyaml
             sudo pip install numpy
             sudo pip install matplotlib
