@@ -11,6 +11,7 @@ jobs: # A basic unit of work in a run
           command: |
             sudo pip install requests
             sudo pip install pyyaml
+            sudo pip install PyGithub
             sudo pip install numpy
             sudo pip install matplotlib
       - run:
