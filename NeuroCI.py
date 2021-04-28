@@ -3,7 +3,7 @@ import yaml
 import json
 import sys
 import os
-from github import Github
+#from github import Github
 from ast import literal_eval
 
 from cbrainAPI import *

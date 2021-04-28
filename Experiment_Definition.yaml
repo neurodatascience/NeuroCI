@@ -5,6 +5,7 @@ Datasets:
   Prevent-AD:
     Blocklist:
     - blocklistedfile.nii.gz
+    - Auditory_processing_Registered_PREVENTAD.csv
 
 ##########################################################################################
 
@@ -18,12 +19,6 @@ Pipelines:
         Parameter_dictionary: ./Task_Parameters/Subfolder_File_Extractor_FSL.json
       FSL_Stats:
         Parameter_dictionary: ./Task_Parameters/FSL_Stats.json
-
-
-##########################################################################################
-
-#Path to the analysis script
-Analysis_script_path: ./Analysis_Scripts/script.py
 
 ##########################################################################################
 

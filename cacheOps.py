@@ -194,6 +194,7 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 		json.dump(data, file, indent=2)
 		file.truncate()
 
+'''Resubmits a task that has failed'''
 def task_resubmit_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name, task_blocklist):
 	
 	task_fail_statuses = ['Failed To Setup', 'Failed On Cluster', 'Terminated']
