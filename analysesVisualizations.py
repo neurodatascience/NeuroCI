@@ -73,8 +73,10 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 					hearing_loss_list.append(hearing_loss)
 					volume_list.append(volume)
 
-	corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD')
-	boxplot(volume_list, pipeline_name, 'Prevent-AD')
+	if len(volume_list) >= 1 and len(hearing_loss_list)>=1: #If there is at least one data point.
+		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD')
+		boxplot(volume_list, pipeline_name, 'Prevent-AD')
+		print('Generated plots for ' + cache_file + '/' + pipeline_name)
 
 preventAD_data_file = 'Auditory_processing_Registered_PREVENTAD.csv'
 preventAD_cache_file = 'Prevent-AD.json'
