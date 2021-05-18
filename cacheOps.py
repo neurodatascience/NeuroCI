@@ -83,9 +83,13 @@ def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data
 	filelist = []
 	data_provider_browse = cbrain_list_data_provider(str(data_provider_id), cbrain_token) #Query CBRAIN to list all files in data provider.
 	
-	for entry in data_provider_browse:
-		if 'userfile_id' in entry: #if it's a registered file, add to filelist.
-			filelist.append([entry['name'], entry['userfile_id']])
+	try:
+		for entry in data_provider_browse:
+			if 'userfile_id' in entry: #if it's a registered file, add to filelist.
+				filelist.append([entry['name'], entry['userfile_id']])
+	except Exception as e:
+		print("Error in browsing data provider, will continue using the filelist from the previous CI run")
+		return #skips the function without crashing
 			
 	with open(cache_file, "r+") as file:
 		data = json.load(file)

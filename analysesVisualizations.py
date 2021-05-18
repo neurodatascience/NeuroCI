@@ -14,25 +14,26 @@ from cacheOps import *
 ###########################################################################################################################
 #General functions
 
+'''Generates a simple boxplot, not used for now.'''
 def boxplot(volume_list, pipeline_name, dataset_name):
     data = np.array(volume_list).astype(np.float)
     fig1, ax1 = plt.subplots()
-    ax1.set_title('Right? Hippocampal Volumes')
+    ax1.set_title('Left Hippocampal Volumes (mm3)')
     ax1.boxplot(data)
     plt.xticks([1], [dataset_name + '/' + pipeline_name])
     plt.savefig('./artifacts/' + dataset_name + '_' + pipeline_name + '_box' + '.png') # Saves in artifact directory
     #plt.show()
     
-
+'''Scatter plot and line of best fit'''
 def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
     x = np.array(hearing_loss_list).astype(np.float)
     y = np.array(volume_list).astype(np.float)
     b, m = polyfit(x, y, 1)
     plt.plot(x, y, '.')
     plt.plot(x, b + m * x, '-')
-    plt.title('Right? Hippocampal Volumes vs Worse_ear_dsi')
+    plt.title('Left Hippocampal Volumes vs Worse_ear_dsi')
     plt.xlabel('Worse_ear_dsi')
-    plt.ylabel('Hippocampal Volume')
+    plt.ylabel('Hippocampal Volume (mm3)')
     plt.savefig('./artifacts/' + dataset_name + '_' + pipeline_name + '_corr' + '.png') # Saves in artifact directory
     #plt.show()
     
@@ -67,7 +68,12 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 				volume = cache[entry][pipeline_name]['Result']['result']
 				volume = volume.partition(' ')[0]
 				subject, visit = preventAD_get_labels_from_filename(entry)
-				hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file)
+				
+				try:
+					hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file)
+				except Exception as e:
+					print("Error getting CSV file measures for Prevent-AD.")
+					return #skips the plotting
 				
 				if hearing_loss != None: #only visualize if we have a hearing loss measure for subject/visit
 					hearing_loss_list.append(hearing_loss)
@@ -75,7 +81,7 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 
 	if len(volume_list) >= 1 and len(hearing_loss_list)>=1: #If there is at least one data point.
 		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD')
-		boxplot(volume_list, pipeline_name, 'Prevent-AD')
+		#boxplot(volume_list, pipeline_name, 'Prevent-AD')
 		print('Generated plots for ' + cache_file + '/' + pipeline_name)
 
 preventAD_data_file = 'Auditory_processing_Registered_PREVENTAD.csv'
