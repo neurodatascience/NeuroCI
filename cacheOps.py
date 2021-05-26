@@ -114,23 +114,31 @@ def update_statuses(cache_filename, cbrain_token):
 			for (pipeline_name, task_name) in pipeline.items():
 				for (task_name_str, params) in task_name.items():
 					
-					if task_name_str != "Result" and params["taskID"] != None: #If this is a task (not a result) with an existent ID on CBRAIN...
-						jayson = cbrain_get_task_info(cbrain_token, str(params["taskID"])) #Query CBRAIN for the task info
+					if task_name_str != "Result" and params["taskID"] != None: #If this is a task (not a result) with an existent ID on CBRAIN..
 						
-						if jayson['status'] == "Completed":
-							#Task completed, update status and get output file ID
-							data[file][pipeline_name][task_name_str]["status"] = jayson["status"]
-							#differentiate between one and many outputs
-							if '_cbrain_output_outputs' in jayson['params']:
-								data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_outputs'][0]
-							if '_cbrain_output_output' in jayson['params']:
-								data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_output'][0]
-							if '_cbrain_output_outfile' in jayson['params']:
-								data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_outfile'][0]
-								
-						else:
-							#Task not completed, just update status
-							data[file][pipeline_name][task_name_str]["status"] = jayson["status"]
+						try:
+							
+							jayson = cbrain_get_task_info(cbrain_token, str(params["taskID"])) #Query CBRAIN for the task info
+							
+							if jayson['status'] == "Completed":
+								#Task completed, update status and get output file ID
+								data[file][pipeline_name][task_name_str]["status"] = jayson["status"]
+								#differentiate between one and many outputs
+								if '_cbrain_output_outputs' in jayson['params']:
+									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_outputs'][0]
+								if '_cbrain_output_output' in jayson['params']:
+									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_output'][0]
+								if '_cbrain_output_outfile' in jayson['params']:
+									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_outfile'][0]
+									
+							else:
+								#Task not completed, just update status
+								data[file][pipeline_name][task_name_str]["status"] = jayson["status"]
+						
+						except Exception as e:	
+							pass
+							
+							
 		cache_file.seek(0)
 		json.dump(data, cache_file, indent=2)
 		cache_file.truncate()
@@ -166,13 +174,18 @@ def first_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache
 		for filename in data:
 			if data[filename][pipeline_name][pipeline_component]['isUsed'] == None:
 				
-				userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
-				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
-				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
-				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
-				data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
-				data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				try:
 				
+					userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
+					jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
+					data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
+					data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
+					data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
+					data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				
+				except Exception as e:
+					pass
+					
 		file.seek(0)	# rewind
 		json.dump(data, file, indent=2)
 		file.truncate()
@@ -186,14 +199,19 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 		for filename in data:
 			if data[filename][pipeline_name][pipeline_component]['isUsed'] == None and data[filename][pipeline_name][previous_pipeline_component]['status'] == "Completed":
 				
-				userfile_id = data[filename][pipeline_name][previous_pipeline_component]['outputID']	#output of last task
-				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
-				data[filename][pipeline_name][pipeline_component]['inputID'] = userfile_id
-				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
-				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
-				data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
-				data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				try:
 				
+					userfile_id = data[filename][pipeline_name][previous_pipeline_component]['outputID']	#output of last task
+					jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
+					data[filename][pipeline_name][pipeline_component]['inputID'] = userfile_id
+					data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
+					data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
+					data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
+					data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				
+				except Exception as e:
+					pass
+					
 		file.seek(0)	# rewind
 		json.dump(data, file, indent=2)
 		file.truncate()
@@ -209,12 +227,17 @@ def task_resubmit_handler(cbrain_token, parameter_dictionary, tool_config_id, ca
 			#Check the status to see if the task has failed, and check if the task is meant to be resubmitted or if it is in the blocklist.
 			if data[filename][pipeline_name][pipeline_component]['status'] in task_fail_statuses and data[filename][pipeline_name][pipeline_component]['taskID'] not in task_blocklist:
 				
-				userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
-				jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
-				data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
-				data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
-				data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
-				data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+				try:
+				
+					userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
+					jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
+					data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
+					data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
+					data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
+					data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+					
+				except Exception as e:
+					pass
 				
 		file.seek(0)	# rewind
 		json.dump(data, file, indent=2)
@@ -232,11 +255,20 @@ def populate_results(cache_filename, cbrain_token):
 				for (pipeline_component_str, params) in pipeline_component.items():
 					
 					if pipeline_component_str == "Result": #Find the task before the result in the json
+						
 						if data[file][pipeline_name]['Result']['isUsed'] == None and data[file][pipeline_name][previous_string]['status'] == "Completed":
+							
 							fileID = data[file][pipeline_name][previous_string]['outputID']
-							vol = cbrain_download_text(fileID, cbrain_token)
-							data[file][pipeline_name]['Result']['result'] = vol
-							data[file][pipeline_name]['Result']['isUsed'] = True
+							
+							try:
+								
+								vol = cbrain_download_text(fileID, cbrain_token)
+								data[file][pipeline_name]['Result']['result'] = vol
+								data[file][pipeline_name]['Result']['isUsed'] = True
+							
+							except Exception as e:
+								pass
+								
 					previous_string = pipeline_component_str
 					
 		cache_file.seek(0)	# rewind
