@@ -16,7 +16,7 @@ jobs: # A basic unit of work in a run
             sudo pip install matplotlib
       - run:
           command: |
-            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/168/artifacts
+            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/latest/artifacts
             mkdir artifacts
             cp *.json artifacts
             python analysesVisualizations.py $cbrain_user $cbrain_password
