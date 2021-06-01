@@ -67,7 +67,7 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 				
 				volume = cache[entry][pipeline_name]['Result']['result']
 				
-				if len(volume.split()) > 1: #If there is more than one word in the result string - necessary for FSL, but maybe not for other pipelines in future.
+				if volume != 1: #If there is more than one word in the result string - necessary for FSL, but maybe not for other pipelines in future.
 					volume = volume.partition(' ')[0] #Get the first word 
 					subject, visit = preventAD_get_labels_from_filename(entry)
 					
