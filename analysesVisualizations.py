@@ -66,18 +66,20 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 			if cache[entry][pipeline_name]['Result']['result'] != None:
 				
 				volume = cache[entry][pipeline_name]['Result']['result']
-				volume = volume.partition(' ')[0]
-				subject, visit = preventAD_get_labels_from_filename(entry)
 				
-				try:
-					hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file)
-				except Exception as e:
-					print("Error getting CSV file measures for Prevent-AD.")
-					return #skips the plotting
-				
-				if hearing_loss != None: #only visualize if we have a hearing loss measure for subject/visit
-					hearing_loss_list.append(hearing_loss)
-					volume_list.append(volume)
+				if len(volume.split()) > 1: #If there is more than one word in the result string - necessary for FSL, but maybe not for other pipelines in future.
+					volume = volume.partition(' ')[0] #Get the first word 
+					subject, visit = preventAD_get_labels_from_filename(entry)
+					
+					try:
+						hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file)
+					except Exception as e:
+						print("Error getting CSV file measures for Prevent-AD.")
+						return #skips the plotting
+					
+					if hearing_loss != None: #only visualize if we have a hearing loss measure for subject/visit
+						hearing_loss_list.append(hearing_loss)
+						volume_list.append(volume)
 
 	if len(volume_list) >= 1 and len(hearing_loss_list)>=1: #If there is at least one data point.
 		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD')
