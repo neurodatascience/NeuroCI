@@ -170,7 +170,7 @@ def cbrain_download_file(userfile_ID, filename, cbrain_token):
     
     response = requests.get(url, headers=headers, params=params, allow_redirects=True)
     if response.status_code == 200:
-        open(filename, 'w').write(response.content)
+        open(filename, 'wb').write(response.content)
         print("Downloaded file " + filename)
         return 0
     else:
