@@ -144,7 +144,7 @@ def update_statuses(cache_filename, cbrain_token):
 		cache_file.truncate()
 
 
-'''Iterates over each component in a pipelines, organizes, and feeds the necessary data to the functions which post tasks on CBRAIN and update the caches'''
+'''Iterates over each component in a pipeline, organizes, and feeds the necessary data to the functions which post tasks on CBRAIN and update the caches'''
 def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset):
 
 	component_number = 0 #Keeps track of the order of the component (we need to flag the first one)

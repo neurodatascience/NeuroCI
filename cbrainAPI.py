@@ -170,8 +170,9 @@ def cbrain_download_file(userfile_ID, filename, cbrain_token):
     
     response = requests.get(url, headers=headers, params=params, allow_redirects=True)
     if response.status_code == 200:
-        open(filename, 'wb').write(response.content)
+        open(filename, 'w').write(response.content)
         print("Downloaded file " + filename)
+        return 0
     else:
         print('File download failure: ' + filename)
         return 1
@@ -182,13 +183,17 @@ def cbrain_download_DP_file(filename, data_provider_id, cbrain_token):
     
 	data_provider_browse = cbrain_list_data_provider(str(data_provider_id), cbrain_token) #Query CBRAIN to list all files in data provider.
 	print(data_provider_browse)
-    
-	for entry in data_provider_browse:
-		if 'userfile_id' in entry and entry['name'] == filename: #if it's a registered file, and filename matches
-			print("Found registered file: " + filename + " in Data Provider with ID " + str(data_provider_id))
-			cbrain_download_file(entry['userfile_id'], filename, cbrain_token)
-			return 0
-		else:
-			print("File " + filename + " not found in Data Provider " + str(data_provider_id))
-			return 1
-
+	
+	try:
+		for entry in data_provider_browse:
+			if 'userfile_id' in entry and entry['name'] == filename: #if it's a registered file, and filename matches
+				print("Found registered file: " + filename + " in Data Provider with ID " + str(data_provider_id))
+				cbrain_download_file(entry['userfile_id'], filename, cbrain_token)
+				return 0
+			else:
+				print("File " + filename + " not found in Data Provider " + str(data_provider_id))
+				return 1
+				
+	except Exception as e:
+		print("Error in browsing data provider or file download")
+		return

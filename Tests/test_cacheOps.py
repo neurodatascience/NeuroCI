@@ -50,6 +50,44 @@ class TestcacheOps(unittest.TestCase):
 			}
 		}}
 		self.assertEqual(cacheOps.generateCacheSubject(niftiFile, cbrain_userfileID), data)
+		
+		
+	def test_generate_cache_subject(self):
+		niftiFile = "test.nii.gz"
+		cbrain_userfileID = "123"
+		data = { niftiFile: {
+			"FSL": { #For Future expansion to more pipelines...take 'FSL' as fn input?
+				"Task1": {
+					"inputID": cbrain_userfileID,
+					"toolConfigID": None,
+					"taskID": None,
+					"status": None,
+					"outputID": None,
+					"isUsed": None
+				},
+				"Task2": {
+					"inputID": None,
+					"toolConfigID": None,
+					"taskID": None,
+					"status": None,
+					"outputID": None,
+					"isUsed": None
+				},
+				"Task3": {
+					"inputID": None,
+					"toolConfigID": None,
+					"taskID": None,
+					"status": None,
+					"outputID": None,
+					"isUsed": None
+				},
+				"Result": {
+					"volume": None,
+					"isUsed": None
+				}
+			}
+		}}
+		self.assertEqual(cacheOps.generateCacheSubject(niftiFile, cbrain_userfileID), data)
 
 			#run listDP and make a fake output from its real output
 			#json.load some fake data in with patch json.load
