@@ -10,7 +10,7 @@ from cbrainAPI import *
 
 #############################################
 
-'''Downloads newst cache file to json, or if it's not found in the circleCI artifacts, creates a new cache file'''
+'''Downloads newest cache file to json, or if it's not found in the circleCI artifacts, creates a new cache file'''
 def download_cache(cache_file, CCI_token, latest_artifacts_url):
 
 	headers = {'Circle-Token': CCI_token}
@@ -262,7 +262,15 @@ def populate_results(cache_filename, cbrain_token):
 							
 							try:
 								
-								vol = cbrain_download_text(fileID, cbrain_token)
+								#Note that result population is hardcoded, as the pipelines all produce different outputs that need different parsing procedures.
+								if pipeline_name == "FSL":
+									vol_string = cbrain_download_text(fileID, cbrain_token)
+									vol = vol_string.split()[0] #get first word
+								
+								if pipeline_name == "FreeSurfer":
+									asegstats_string = cbrain_download_text(fileID, cbrain_token)
+									vol = retrieve_FreeSurfer_volume(asegstats_string, "Left-Hippocampus")
+								
 								data[file][pipeline_name]['Result']['result'] = vol
 								data[file][pipeline_name]['Result']['isUsed'] = True
 							
@@ -275,3 +283,12 @@ def populate_results(cache_filename, cbrain_token):
 		json.dump(data, cache_file, indent=2)
 		cache_file.truncate()
 
+
+def retrieve_FreeSurfer_volume(asegstats_string, structName):
+#Take as input the path aseg.stats file from the freesurfer output as a string, and the StructName field.
+	lines = asegstats_string.splitlines()
+	reader = csv.reader(lines, delimiter=" ")
+	for row in reader:
+		if structName in row:
+			index = row.index(structName)
+			return row[index-2] #Returns the word which is two before the name of the structure.

@@ -14,10 +14,19 @@ Pipelines:
     Components:
       FSL_First:
         Parameter_dictionary: ./Task_Parameters/FSL_First.json
-      Subfolder_File_Extractor:
+      Subfolder_File_Extractor_FSL:
         Parameter_dictionary: ./Task_Parameters/Subfolder_File_Extractor_FSL.json
       FSL_Stats:
         Parameter_dictionary: ./Task_Parameters/FSL_Stats.json
+
+  FreeSurfer:
+    Components:
+      FreeSurfer_Recon_all:
+        Parameter_dictionary: ./Task_Parameters/FreeSurfer_recon_all.json
+      Subfolder_File_Extractor_FreeSurfer_1:
+        Parameter_dictionary: ./Task_Parameters/Subfolder_File_Extractor_FreeSurfer_1.json
+      Subfolder_File_Extractor_FreeSurfer_2:
+        Parameter_dictionary: ./Task_Parameters/Subfolder_File_Extractor_FreeSurfer_2.json
 
 ##########################################################################################
 
