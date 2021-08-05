@@ -94,10 +94,15 @@ def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
 		for entry in filelist:
+			
 			if entry[0] not in data and entry[0] not in blocklist:	#if entry[name] is not in cache AND is not in the blocklist...add to cache
 				leaf = generate_cache_subject(entry[0], entry[1], pipeline, experiment_definition)
 				data.update(leaf)
-		
+				
+			if entry[0] not in blocklist: #if already in cache, just add entry for new pipeline.
+				leaf = generate_cache_subject(entry[0], entry[1], pipeline, experiment_definition)
+				data[entry[0]][pipeline] = leaf[entry[0]][pipeline]
+			
 		file.seek(0)	# rewind
 		json.dump(data, file, indent=2)
 		file.truncate() 
