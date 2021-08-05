@@ -15,7 +15,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 
 	for dataset in experiment_definition['Datasets']:
 
-		#download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
+		download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
 		print('Downloaded newest cache for: ' + dataset  + '.json')
 		
 		update_statuses(dataset  + '.json', cbrain_token)	#Updates the contents of a cache to reflect CBRAIN task statuses
@@ -26,7 +26,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
 			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline)
 			
-			#pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
+			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
 			print('Posted tasks for: ' + dataset  + '.json' + ', ' +  pipeline)
 		
 		populate_results(dataset  + '.json', cbrain_token)
