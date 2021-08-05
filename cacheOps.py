@@ -99,7 +99,7 @@ def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data
 				leaf = generate_cache_subject(entry[0], entry[1], pipeline, experiment_definition)
 				data.update(leaf)
 				
-			if entry[0] not in blocklist: #if already in cache, just add entry for new pipeline.
+			if entry[0] not in blocklist and pipeline not in data[entry[0]]: #if already in cache, just add entry for new pipeline.
 				leaf = generate_cache_subject(entry[0], entry[1], pipeline, experiment_definition)
 				data[entry[0]][pipeline] = leaf[entry[0]][pipeline]
 			
