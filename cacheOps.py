@@ -135,6 +135,8 @@ def update_statuses(cache_filename, cbrain_token):
 									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_output'][0]
 								if '_cbrain_output_outfile' in jayson['params']:
 									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['_cbrain_output_outfile'][0]
+								if 'outfile_id' in jayson['params']:
+									data[file][pipeline_name][task_name_str]["outputID"] = jayson['params']['outfile_id']
 									
 							else:
 								#Task not completed, just update status
