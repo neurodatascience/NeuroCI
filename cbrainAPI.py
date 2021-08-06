@@ -152,6 +152,7 @@ def cbrain_download_text(userfile_ID, cbrain_token):
 		return response.text
 	else:
 		print('Download failure')
+		print(respone.status_code)
 		return 1
 
 
