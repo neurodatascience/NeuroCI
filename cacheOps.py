@@ -293,7 +293,7 @@ def populate_results(cache_filename, cbrain_token):
 
 
 def retrieve_FreeSurfer_volume(asegstats_string, structName):
-#Take as input the path aseg.stats file from the freesurfer output as a string, and the StructName field.
+#Take as input the aseg.stats file from the freesurfer output as a string, and the StructName field.
 	lines = asegstats_string.splitlines()
 	reader = csv.reader(lines, delimiter=" ")
 	for row in reader:

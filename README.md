@@ -4,7 +4,7 @@
 
 ## Neuroimaging Dynamic Recomputation - Continuous Integration
 
-### Use Python 3.7 or later
+### Use Python version 3.7 or later
 
 ## Overview
 **Goal:** To build a generic CI framework for the evaluation of neuroimaging results, which iteratively evaluates and updates results as new data, pipelines, or processing conditions become available. It allows users to systematically evaluate the variability and robustness of results within their neuroscience domain, and facilitate reproducibility.
@@ -36,7 +36,7 @@ It is work in progress :)
 * (3) Edit the Experiment Definition yaml file to add the pipelines and datasets, make sure the pipeline components are in the correct order. 
 Add the relevant CBRAIN IDs for tools and data providers in the  Config_Files/CBRAIN_IDs.yaml file, and add the task parameter json files to the Task_Parameters directory. Provide the path to the parameters for each component in the Experiment Definition. Note that the names by which you refer to the pipelines and datasets have to be written identically in the config file and the Experiment Definition.
 
-* (5) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit.
+* (5) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit. You will also have to add some code to the populate_results in the cacheOps.py module to ensure the results are extracted and placed in the cache in the specific way the pipeline beign integrated requires. Similarly, the code for the update_statuses function in cacheOps.py may need to be updated depending on the specific pipeline's CBRAIN ID output key.
 
 * (6) In CircleCI, and create a new pipeline for your forked repo.
 
