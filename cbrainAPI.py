@@ -198,3 +198,27 @@ def cbrain_download_DP_file(filename, data_provider_id, cbrain_token):
 	except Exception as e:
 		print("Error in browsing data provider or file download")
 		return
+
+
+'''Makes sure a file in a data provider is synchronized with CBRAIN'''	
+def cbrain_sync_file(userfile_id_list, cbrain_token):
+	#userfile_id_list can either be a string eg. '3663657', or a list eg. ['3663729', '3663714']
+	headers = {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+	}
+
+	params = (
+		('file_ids[]', userfile_id_list),
+		('cbrain_api_token', token),
+	)
+
+	response = requests.post('https://portal.cbrain.mcgill.ca/userfiles/sync_multiple', headers=headers, params=params)
+
+	if response.status_code == 200:
+		print("Synchronized userfiles " + str(userfile_id_list))
+		return
+	else:
+		print("Userfile sync failed for IDs: " + str(userfile_id_list))
+		print(response.status_code)
+		return

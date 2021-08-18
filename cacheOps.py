@@ -266,7 +266,8 @@ def populate_results(cache_filename, cbrain_token):
 						if data[file][pipeline_name]['Result']['isUsed'] == None and data[file][pipeline_name][previous_string]['status'] == "Completed":
 							
 							fileID = data[file][pipeline_name][previous_string]['outputID']
-							print("Streaming text for fileID: " + str(fileID)) 
+							print("Streaming text for fileID: " + str(fileID))
+							cbrain_sync_file(str(fileID), cbrain_token)
 							
 							try:
 								
