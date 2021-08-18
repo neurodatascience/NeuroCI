@@ -210,7 +210,7 @@ def cbrain_sync_file(userfile_id_list, cbrain_token):
 
 	params = (
 		('file_ids[]', userfile_id_list),
-		('cbrain_api_token', token),
+		('cbrain_api_token', cbrain_token),
 	)
 
 	response = requests.post('https://portal.cbrain.mcgill.ca/userfiles/sync_multiple', headers=headers, params=params)
