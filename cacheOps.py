@@ -279,6 +279,7 @@ def populate_results(cache_filename, cbrain_token):
 								if pipeline_name == "FreeSurfer":
 									asegstats_string = cbrain_download_text(fileID, cbrain_token)
 									vol = retrieve_FreeSurfer_volume(asegstats_string, "Left-Hippocampus")
+									print(vol)
 								
 								data[file][pipeline_name]['Result']['result'] = vol
 								data[file][pipeline_name]['Result']['isUsed'] = True
