@@ -31,10 +31,12 @@ def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
     b, m = polyfit(x, y, 1)
     plt.plot(x, y, '.')
     plt.plot(x, b + m * x, '-')
-    plt.title('Left Hippocampal Volumes vs Worse_ear_dsi')
+    plt.ylim(ymin=0)
+    plt.title('Left Hippocampal Volumes vs Worse_ear_dsi' + '\n' + dataset_name + ' with ' + pipeline_name)
     plt.xlabel('Worse_ear_dsi')
     plt.ylabel('Hippocampal Volume (mm3)')
     plt.savefig('./artifacts/' + dataset_name + '_' + pipeline_name + '_corr' + '.png') # Saves in artifact directory
+    plt.close() #so we have separate figures and not overlaid.
     #plt.show()
     
 ####################################################################################################################
