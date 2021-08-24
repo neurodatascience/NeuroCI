@@ -30,8 +30,8 @@ Pipelines:
 
 ##########################################################################################
 
-Resubmit_failed_tasks:
-  Active: True
-  Blocklist: #Provide list of CBRAIN Task IDs to not resubmit.
+Resubmit_tasks:
+  taskIDs:
   - 123456
+  - 678910
 ##########################################################################################

@@ -167,8 +167,9 @@ def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, 
 			else:
 				nth_task_handler(cbrain_token, parameter_dictionary, cbrain_ids['Tool_Config_IDs'][pipeline_component], dataset + '.json', pipeline_component, previous_pipeline_component, pipeline)
 
-			if experiment_definition['Resubmit_failed_tasks']['Active'] == True:
-				task_resubmit_handler(cbrain_token, parameter_dictionary, cbrain_ids['Tool_Config_IDs'][pipeline_component], dataset + '.json', pipeline_component, pipeline, experiment_definition['Resubmit_failed_tasks']['Blocklist'])
+
+			if len(experiment_definition['Resubmit_tasks']['taskIDs']) > 0: #if there are any tasks to resubmit...
+				task_resubmission_handler(cbrain_token, parameter_dictionary, cbrain_ids['Tool_Config_IDs'][pipeline_component], dataset + '.json', pipeline_component, pipeline, experiment_definition['Resubmit_tasks']['taskIDs'])
 			
 		previous_pipeline_component = pipeline_component
 		component_number = component_number + 1
@@ -224,30 +225,53 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 		json.dump(data, file, indent=2)
 		file.truncate()
 
-'''Resubmits a task that has failed'''
-def task_resubmit_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name, task_blocklist):
-	
-	task_fail_statuses = ['Failed To Setup', 'Failed On Cluster', 'Terminated']
+'''Resubmits a task, and sets all subsequent pipeline component dependencies  to null in the cache'''
+def task_resubmission_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name, rerun_ID_list):
+
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
 		for filename in data:
 
-			#Check the status to see if the task has failed, and check if the task is meant to be resubmitted or if it is in the blocklist.
-			if data[filename][pipeline_name][pipeline_component]['status'] in task_fail_statuses and data[filename][pipeline_name][pipeline_component]['taskID'] not in task_blocklist:
-				
-				try:
-				
-					userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
-					jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
-					data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
-					data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
-					data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
-					data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+			if 'taskID' in data[filename][pipeline_name][pipeline_component]:
+
+				if data[filename][pipeline_name][pipeline_component]['taskID'] in rerun_ID_list:
+                                      
+					try:
+						userfile_id = data[filename][pipeline_name][pipeline_component]['inputID']
+						jayson = cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary)
+						data[filename][pipeline_name][pipeline_component]['toolConfigID'] = jayson[0]['tool_config_id']
+						data[filename][pipeline_name][pipeline_component]['taskID'] = jayson[0]["id"]
+						data[filename][pipeline_name][pipeline_component]['status'] = jayson[0]["status"]
+						data[filename][pipeline_name][pipeline_component]['isUsed'] = True
+						print("Reposting " + str(data[filename][pipeline_name][pipeline_component]['taskID']))
 					
-				except Exception as e:
-					pass
-				
-		file.seek(0)	# rewind
+					except Exception as e:
+						pass
+					
+					#The code section sets all the subsequent pipeline components following the reposted task to null
+					pipeline_length = len(data[filename][pipeline_name].items()) #total number of components in pipeline
+					curr_index = list(data[filename][pipeline_name].keys()).index(pipeline_component) #index of current (reposted) component
+					
+					index_counter = 0
+					for component in data[filename][pipeline_name].items():
+						
+						#if we are on a component after the one being submitted, and not the result
+						if index_counter > curr_index and index_counter < pipeline_length-1:
+							data[filename][pipeline_name][component[0]]['inputID'] = None
+							data[filename][pipeline_name][component[0]]['toolConfigID'] = None
+							data[filename][pipeline_name][component[0]]['taskID'] = None
+							data[filename][pipeline_name][component[0]]['status'] = None
+							data[filename][pipeline_name][component[0]]['outputID'] = None
+							data[filename][pipeline_name][component[0]]['isUsed'] = None                       
+						
+						#if we are on the result component of the pipeline
+						if index_counter > curr_index and index_counter == pipeline_length-1:
+							data[filename][pipeline_name][component[0]]['result'] = None
+							data[filename][pipeline_name][component[0]]['isUsed'] = None       
+						
+						index_counter += 1
+		
+		file.seek(0) # rewind
 		json.dump(data, file, indent=2)
 		file.truncate()
 
