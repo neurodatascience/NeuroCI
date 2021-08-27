@@ -26,6 +26,14 @@ def boxplot(volume_list, pipeline_name, dataset_name):
     
 '''Scatter plot and line of best fit'''
 def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
+	
+    index = 0
+    for elem in hearing_loss_list:
+        if elem == 'NA': #remove NA
+            del hearing_loss_list[index]
+            del volume_list[index]
+        index = index + 1
+    
     x = np.array(hearing_loss_list).astype(np.float)
     y = np.array(volume_list).astype(np.float)
     b, m = polyfit(x, y, 1)
