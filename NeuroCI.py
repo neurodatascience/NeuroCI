@@ -5,6 +5,8 @@ import sys
 import os
 #from github import Github
 from ast import literal_eval
+import time
+import datetime
 
 from cbrainAPI import *
 from cacheOps import *
@@ -18,13 +20,17 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
 		print('Downloaded newest cache for: ' + dataset  + '.json')
 		
+		start = time.time()
 		update_statuses(dataset  + '.json', cbrain_token)	#Updates the contents of a cache to reflect CBRAIN task statuses
-		print('Updated statuses in cache for: ' + dataset  + '.json')
+		end = time.time()
+		print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
 		
 		for pipeline in experiment_definition['Pipelines']:
 			
+			start = time.time()
 			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
-			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline)
+			end = time.time()
+			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline + " in" + str(datetime.timedelta(seconds=(end - start))))
 			
 			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
 			print('Posted tasks for: ' + dataset  + '.json' + ', ' +  pipeline)
@@ -33,8 +39,11 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		print('Populated results for ' + dataset + '.json')
 		#extract_results()
 		#analysis(expdef[script])
+		
+		start = time.time()
 		update_statuses(dataset  + '.json', cbrain_token)
-		print('Updated statuses in cache for: ' + dataset  + '.json')	
+		end = time.time()
+		print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
 
 ##################################################################################
 
