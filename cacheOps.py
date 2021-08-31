@@ -120,7 +120,7 @@ def update_statuses(cache_filename, cbrain_token):
 			for (pipeline_name, task_name) in pipeline.items():
 				for (task_name_str, params) in task_name.items():
 					
-					if task_name_str != "Result" and params["taskID"] != None: #If this is a task (not a result) with an existent ID on CBRAIN..
+					if task_name_str != "Result" and params["taskID"] != None and params["status"] != "Completed": #If this is a task (not a result) with an existent ID on CBRAIN, and hasn't yet run to completion
 						
 						try:
 							
