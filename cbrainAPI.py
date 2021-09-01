@@ -148,8 +148,6 @@ def cbrain_get_task_info_from_list(task_list, task_ID):
 	for task in task_list:
 		if task_ID == task['id'] or int(task_ID) == task['id']:
 			return task
-		else:
-			print("Task ID not found in tasklist: " + str(task_ID))
     
 
 '''Obtains information on the progress of a single task by querying for a single task'''
