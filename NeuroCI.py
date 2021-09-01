@@ -20,8 +20,11 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
 		print('Downloaded newest cache for: ' + dataset  + '.json')
 		
+		task_list = cbrain_get_all_tasks(cbrain_token) #Gets the complete list of tasks for the user on CBRAIN
+		print('Fetched the list of tasks for the CBRAIN user')
+		
 		start = time.time()
-		update_statuses(dataset  + '.json', cbrain_token)	#Updates the contents of a cache to reflect CBRAIN task statuses
+		update_statuses(dataset  + '.json', task_list)	#Updates the contents of a cache to reflect CBRAIN task statuses
 		end = time.time()
 		print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
 		

@@ -111,8 +111,48 @@ def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictio
 		print(response.content)
 		return 1
 
+'''Gets the list of all the tasks of the user on CBRAIN'''
+def cbrain_get_all_tasks(cbrain_token):
 
-'''Obtains information on the progress of a task, for checking completion statuses'''
+	headers = {
+		'Accept': 'application/json',
+	}
+	params = {
+		'cbrain_api_token': cbrain_token,
+		'page': 1,
+		'per_page': 1000
+	}
+	url = 'https://portal.cbrain.mcgill.ca/tasks'
+	task_list = []
+    
+	while True:
+		
+		response = requests.get(url, headers=headers, params=params)
+		
+		if response.status_code == 200:
+			jsonResponse = response.json()
+			task_list += jsonResponse
+			params['page'] += 1
+		else:
+			print("Task list retrieval failed.")
+			return 1
+		
+		if len(jsonResponse) < params['per_page']:
+			break
+		
+	return task_list
+
+'''Obtains info on the progress of a single task, given the list of all tasks for the user'''
+def cbrain_get_task_info_from_list(task_list, task_ID):
+	
+	for task in task_list:
+		if task_ID == task['id'] or int(task_ID) == task['id']:
+			return task
+		else:
+			print("Task ID not found in tasklist: " + str(task_ID))
+    
+
+'''Obtains information on the progress of a single task by querying for a single task'''
 def cbrain_get_task_info(cbrain_token, task_ID):
 	
 	task_ID = str(task_ID)

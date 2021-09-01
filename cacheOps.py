@@ -112,7 +112,7 @@ def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data
 
 
 '''Updates a cache file with the newest task statuses from CBRAIN'''
-def update_statuses(cache_filename, cbrain_token):
+def update_statuses(cache_filename, task_list):
 	
 	with open(cache_filename, "r+") as cache_file:
 		data = json.load(cache_file)
@@ -124,7 +124,7 @@ def update_statuses(cache_filename, cbrain_token):
 						
 						try:
 							
-							jayson = cbrain_get_task_info(cbrain_token, str(params["taskID"])) #Query CBRAIN for the task info
+							jayson = cbrain_get_task_info_from_list(task_list, params["taskID"])
 							
 							if jayson['status'] == "Completed":
 								#Task completed, update status and get output file ID
