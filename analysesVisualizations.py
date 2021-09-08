@@ -27,22 +27,17 @@ def boxplot(volume_list, pipeline_name, dataset_name):
 '''Scatter plot and line of best fit'''
 def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
 	
+    new_hl_list = []
+    new_vol_list = []
     index = 0
-    index_list = [] #will hold the indices if troublesome values
-    for elem in hearing_loss_list: #mark the index where a troublesome value (can't be cast to a float) is located in the arrays
-        try:
-            curr_hl = float(hearing_loss_list[index])
-            curr_vol = float(volume_list[index])
-        except Exception as e:
-            index_list.append(index) #mark the offending indices.
+    for elem in hearing_loss_list:
+        if elem != 'NA': #Append to new list if value is not NA
+            new_hl_list.append(hearing_loss_list[index])
+            new_vol_list.append(volume_list[index])
         index = index + 1
-
-    for my_index in index_list: #remove 'NA' or other obstructive values from plotting
-        del hearing_loss_list[my_index]
-        del volume_list[my_index]
     
-    x = np.array(hearing_loss_list).astype(np.float)
-    y = np.array(volume_list).astype(np.float)
+    x = np.array(new_hl_list).astype(np.float)
+    y = np.array(new_vol_list).astype(np.float)
     b, m = polyfit(x, y, 1)
     plt.plot(x, y, '.')
     plt.plot(x, b + m * x, '-')
