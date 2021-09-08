@@ -28,11 +28,18 @@ def boxplot(volume_list, pipeline_name, dataset_name):
 def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
 	
     index = 0
-    for elem in hearing_loss_list:
-        if elem == 'NA': #remove NA
-            del hearing_loss_list[index]
-            del volume_list[index]
+    index_list = [] #will hold the indices if troublesome values
+    for elem in hearing_loss_list: #mark the index where a troublesome value (can't be cast to a float) is located in the arrays
+        try:
+            curr_hl = float(hearing_loss_list[index])
+            curr_vol = float(volume_list[index])
+        except Exception as e:
+            index_list.append(index) #mark the offending indices.
         index = index + 1
+
+    for my_index in index_list: #remove 'NA' or other obstructive values from plotting
+        del hearing_loss_list[my_index]
+        del volume_list[my_index]
     
     x = np.array(hearing_loss_list).astype(np.float)
     y = np.array(volume_list).astype(np.float)
