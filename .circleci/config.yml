@@ -15,6 +15,7 @@ jobs: # A basic unit of work in a run
             sudo pip install numpy
             sudo pip install matplotlib
       - run:
+          no_output_timeout: 10m #change this to set the limit for how long it can run...useful for when Beluga crashes.
           command: |
             python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/latest/artifacts
             mkdir artifacts
@@ -34,7 +35,7 @@ workflows:
   schedule-workflow:
     triggers:
       - schedule:
-          cron: "0 0 * * 0" #0 0 * * 0 for weekly, 0 * * * * for hourly, 0 0,6,12,18 * * * for every 6hrs, 0 0 * * * for daily.
+          cron: "0 0,8,16 * * *" #0 0 * * 0 for weekly, 0 * * * * for hourly, 0 0,6,12,18 * * * for every 6hrs, 0 0 * * * for daily.
           filters:
             branches:
               only:
