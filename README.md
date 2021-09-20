@@ -27,22 +27,33 @@ It is work in progress :)
 * [CircleCI account](https://circleci.com/)
 
 ## How to run this platform
-*Note that the structure of many of the following files I mention can easily be learnt by looking at the files and how I currently have them setup.*
+* **Note that the structure of many of the following files I mention can easily be learnt by looking at the files and how I currently have them setup. These instructions include adding your own pipelines and datasets.**
+
+* **If you just want to run the software with the existing integrated pipelines and datasets, many of these steps can be skipped. In this case you would just have to follow steps: 1, 2, 5, 10, 11, 12.**
 
 * (1) Create the required accounts to run this platform.
 
 * (2) Fork this repository.
 
-* (3) Edit the Experiment Definition yaml file to add the pipelines and datasets, make sure the pipeline components are in the correct order. 
-Add the relevant CBRAIN IDs for tools and data providers in the  Config_Files/CBRAIN_IDs.yaml file, and add the task parameter json files to the Task_Parameters directory. Provide the path to the parameters for each component in the Experiment Definition. Note that the names by which you refer to the pipelines and datasets have to be written identically in the config file and the Experiment Definition.
+* (3) Edit the Experiment Definition yaml file to add the pipelines and datasets, make sure the pipeline components are specified in the correct order.
+ 
+* (4) Add the relevant CBRAIN IDs for tools and data providers in the  *Config_Files/CBRAIN_IDs.yaml* file.
 
-* (5) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit. You will also have to add some code to the populate_results in the cacheOps.py module to ensure the results are extracted and placed in the cache in the specific way the pipeline beign integrated requires. Similarly, the code for the update_statuses function in cacheOps.py may need to be updated depending on the specific pipeline's CBRAIN ID output key.
+* (5) Create and add, or modify the pipeline parameter json files to the *Task_Parameters* directory. These are the parameters which the tool will run on in CBRAIN.  Currently I find that the easiest way to create a new parameter json file is to run a single task with the pipeline through CBRAIN, then querying the task through the *cbrain_get_task_info* function in *cbrainAPI.py*, and then copying and pasting the 'params' field with desired modifications into a json file.
 
-* (6) In CircleCI, and create a new pipeline for your forked repo.
+* (6) Provide the path to the parameters for each component in the Experiment Definition. Note that the names by which you refer to the pipelines and datasets have to be written identically in the config file and the Experiment Definition.
 
-* (7) Modify the environment variables in CircleCI. Add your CBRAIN credentials as 'cbrain_user' and 'cbrain_password'. Generate a CircleCI token and add is as 'CCI_token' (to be able to download the latest cache file from the artifacts). You will also need to add your GitHub deploy key to the project's SSH Keys in CircleCI.
+* (7) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit. 
 
-* (8) Modify the circleCI config file in .circleci/config.yml. Make sure the cron-job is running at the desired frequency, and make sure all of your outputs (By default I have this setup as all json cache files and the plots) are deposited in the 'artifacts' directory which is created in this file.
+* (8) Depending on the output format of the pipeline you will likely have to add some code to the *populate_results* function in the *cacheOps.py* module to ensure the results are extracted and placed in the cache in the specific way. 
+
+* (9) Similarly to the previous step, the code for the *update_statuses* function in *cacheOps.py* may need to be updated depending on the specific pipeline's CBRAIN ID output key, which in turn depends on the Boutiques descriptor for the pipeline.
+
+* (10) In CircleCI, and create a new pipeline for your forked repo.
+
+* (11) Go to the project settings on CircleCI. Modify the environment variables in CircleCI project settings. Add your CBRAIN credentials as 'cbrain_user' and 'cbrain_password'. Generate a CircleCI token and add it as 'CCI_token' (this is to be able to download the latest cache file from the artifacts). You will also need to add your GitHub deploy key[add your GitHub deploy key](https://circleci.com/docs/2.0/gh-bb-integration/#:~:text=Go%20to%20https%3A%2F%2Fgithub,then%20click%20%E2%80%9CAdd%20key%E2%80%9D.)  to the project's SSH Keys in CircleCI. 
+
+* (12) Modify the circleCI config file in *.circleci/config.yml*. Make sure the cron-job is running at the desired frequency, and make sure all of your outputs (By default I have this setup as all json cache files and the plots) are deposited in the 'artifacts' directory which is created in this file.
 
 ## File and data layout and descriptions
 
@@ -74,7 +85,7 @@ The main Python modules are:
 The main function is a simple nested loop. The outer loop iterates over the datasets in the experiment definition, downloads the latest cache file  (json file which keeps track of intermediate computations and completed computation results from CBRAIN for a single dataset) from the previous circleCI run, and queries CBRAIN in order to update all of the task statuses. 
 The inner loop iterates over the pipelines in the experiment definition file. It adds any new files available in the data provider to the cache, and calls the pipeline manager to deal with the posting of tasks for each component of the current pipeline and dataset.
 
-* **cacheOps.py:** Contains any and all functions that in some way, shape, or form perform operations on the dataset cache files. These range from downloading the latest cache file, to generating a new cache file from scratch, generating new subjects, to updating task and result statuses in a cache file, etc.
+* **cacheOps.py:** Contains functions that perform operations on the dataset cache files. These range from downloading the latest cache file, to generating a new cache file from scratch, generating new subjects, to updating task and result statuses in a cache file, etc.
 One function that is important to highlight is the pipeline manager, which iterates over each component in a pipeline, organizes, and feeds the necessary data to the functions which post tasks on CBRAIN and update the caches with the newest progress in computations.
 
 * **cbrainAPI.py:** Contains all of the API calls used to communicate with CBRAIN. Each API call has it's own function.
@@ -86,6 +97,11 @@ For example, for Prevent-AD, this function iterates through the cache, matches t
 
 While I may indeed someday make an entire written document for each individual function, for now I recommend parsing through the code and seeing the comments and docstrings in it to understand it. I've spent some time trying to make the code and commenting informative and modular.
 
-## Quick fixes
+## Quick tips, fixes and other notes.
 
-* If code crashes or CBRAIN fails before the cache json file is produced, then the "previous' ' cache doesn't exist in the CI, and the next build starts computations again from scratch (or in the case of a cbrain download failure, it just populates the cache with '1'). This is remedied by changing the circleCI config file from '$latest' to the number of the last successful run, running it, and then changing it back to '$latest' when it has finished. Working on a less hacky fix for this soon :)
+* Note that the first time the circleCI run of this softwrae attempts to populate the results into a json, it will likely say there is an error populating it in the terminal output, giving something along the lines of:
+*Streaming text for fileID: 3700641
+Synchronized userfiles 3700641
+Download failure
+401*
+If this is the case, don't worry! The file synchronization doesn't occur instantaneously, so it doesn't find the file on CBRAIN to download until a minute or two have passed. It should download with no issues the next time the CI runs a few hours later.
