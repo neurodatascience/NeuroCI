@@ -16,8 +16,8 @@ from cbrainAPI import (
 ###########################################################################################################################
 #General functions
 
-'''Generates a simple boxplot, not used for now.'''
 def boxplot(volume_list, pipeline_name, dataset_name):
+    """Generates a simple boxplot, not used for now."""
     data = np.array(volume_list).astype(np.float)
     fig1, ax1 = plt.subplots()
     ax1.set_title('Left Hippocampal Volumes (mm3)')
@@ -26,9 +26,8 @@ def boxplot(volume_list, pipeline_name, dataset_name):
     plt.savefig('./artifacts/' + dataset_name + '_' + pipeline_name + '_box' + '.png') # Saves in artifact directory
     #plt.show()
     
-'''Scatter plot and line of best fit'''
 def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
-	
+    """Scatter plot and line of best fit."""
     new_hl_list = []
     new_vol_list = []
     index = 0

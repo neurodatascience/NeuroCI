@@ -4,8 +4,8 @@ import requests
 
 ##################################################################################
 
-'''Posts API call to CBRAIN to obtain a authentication token given a username and password'''
 def cbrain_login(username, password):
+	"""Posts API call to CBRAIN to obtain a authentication token given a username and password."""
 	
 	headers = {
 		'Content-Type': 'application/x-www-form-urlencoded',
@@ -28,8 +28,8 @@ def cbrain_login(username, password):
 		return 1
 
 
-'''End a CBRAIN session'''
 def cbrain_logout(cbrain_token):
+	"""Ends a CBRAIN session."""
 	
 	headers = {
 		'Accept': 'application/json',
@@ -46,10 +46,10 @@ def cbrain_logout(cbrain_token):
 	else:
 		print("Logout failure")
 		return 1
-   
 
-'''Lists all files in a CBRAIN data provider'''
+
 def cbrain_list_data_provider(data_provider_ID, cbrain_token):
+	"""Lists all files in a CBRAIN data provider."""
 	
 	data_provider_ID = str(data_provider_ID)
 	headers = {
@@ -70,8 +70,8 @@ def cbrain_list_data_provider(data_provider_ID, cbrain_token):
 		return 1
 
 
-'''Posts a task in CBRAIN'''
 def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary):
+	"""Posts a task in CBRAIN."""
 	
 	userfile_id = str(userfile_id)
 	
@@ -109,8 +109,9 @@ def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictio
 		print(response.content)
 		return 1
 
-'''Gets the list of all the tasks of the user on CBRAIN'''
+
 def cbrain_get_all_tasks(cbrain_token):
+	"""Gets the list of all the tasks of the user on CBRAIN."""
 
 	headers = {
 		'Accept': 'application/json',
@@ -140,16 +141,17 @@ def cbrain_get_all_tasks(cbrain_token):
 		
 	return task_list
 
-'''Obtains info on the progress of a single task, given the list of all tasks for the user'''
+
 def cbrain_get_task_info_from_list(task_list, task_ID):
+	"""Obtains info on the progress of a single task, given the list of all tasks for the user."""
 	
 	for task in task_list:
 		if task_ID == task['id'] or int(task_ID) == task['id']:
 			return task
-    
 
-'''Obtains information on the progress of a single task by querying for a single task'''
+
 def cbrain_get_task_info(cbrain_token, task_ID):
+	"""Obtains information on the progress of a single task by querying for a single task."""
 	
 	task_ID = str(task_ID)
 	headers = {
@@ -171,8 +173,9 @@ def cbrain_get_task_info(cbrain_token, task_ID):
 		return 1
 
 
-'''Downloads the text from a file on CBRAIN'''
+
 def cbrain_download_text(userfile_ID, cbrain_token):
+	"""Downloads the text from a file on CBRAIN."""
 	
 	userfile_ID = str(userfile_ID)
 	headers = {
@@ -193,9 +196,8 @@ def cbrain_download_text(userfile_ID, cbrain_token):
 		return 1
 
 
-'''Downloads a file from CBRAIN and saves it, given a userfile ID'''
 def cbrain_download_file(userfile_ID, filename, cbrain_token):
-
+    """Downloads a file from CBRAIN and saves it, given a userfile ID."""
     fileID = str(userfile_ID)
     headers = {
         'Accept': 'application/json',
@@ -216,9 +218,8 @@ def cbrain_download_file(userfile_ID, filename, cbrain_token):
         return 1
 
 
-'''Given a filename and data provider, download the file from the data provider'''
 def cbrain_download_DP_file(filename, data_provider_id, cbrain_token):
-    
+	"""Given a filename and data provider, download the file from the data provider."""
 	data_provider_browse = cbrain_list_data_provider(str(data_provider_id), cbrain_token) #Query CBRAIN to list all files in data provider.
 	print(data_provider_browse)
 	
@@ -237,8 +238,8 @@ def cbrain_download_DP_file(filename, data_provider_id, cbrain_token):
 		return
 
 
-'''Makes sure a file in a data provider is synchronized with CBRAIN'''	
 def cbrain_sync_file(userfile_id_list, cbrain_token):
+	"""Makes sure a file in a data provider is synchronized with CBRAIN."""
 	#userfile_id_list can either be a string eg. '3663657', or a list eg. ['3663729', '3663714']
 	headers = {
 		'Content-Type': 'application/json',

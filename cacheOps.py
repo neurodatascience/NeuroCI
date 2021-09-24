@@ -14,8 +14,8 @@ from cbrainAPI import (
 
 #############################################
 
-'''Downloads newest cache file to json, or if it's not found in the circleCI artifacts, creates a new cache file'''
 def download_cache(cache_file, CCI_token, latest_artifacts_url):
+	"""Downloads newest cache file to json, or if it's not found in the circleCI artifacts, creates a new cache file."""
 
 	headers = {'Circle-Token': CCI_token}
 	response = requests.get(str(latest_artifacts_url), headers=headers)	#finds the link to the cache file amongst all the artifacts
@@ -44,8 +44,8 @@ def download_cache(cache_file, CCI_token, latest_artifacts_url):
 	print('written cache to temp file')
 
 
-'''Creates a template for a cache entry (cbrain data provider file), for a specific pipeline. Provides a userfile ID as a starting point for task computations'''
 def generate_cache_subject(nifti_file, cbrain_userfile_ID, pipeline, experiment_definition):
+	"""Creates a template for a cache entry (cbrain data provider file), for a specific pipeline. Provides a userfile ID as a starting point for task computations."""
 
 	data = { nifti_file: {
 		pipeline: {}}}
@@ -81,8 +81,9 @@ def generate_cache_subject(nifti_file, cbrain_userfile_ID, pipeline, experiment_
 	return data
 
 
-'''Generates the template for every file in a cache, for a specific pipeline'''
 def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data_provider_id, experiment_definition):
+	"""Generates the template for every file in a cache, for a specific pipeline."""
+
 
 	filelist = []
 	data_provider_browse = cbrain_list_data_provider(str(data_provider_id), cbrain_token) #Query CBRAIN to list all files in data provider.
@@ -114,8 +115,9 @@ def populate_cache_filenames(cache_file, cbrain_token, blocklist, pipeline, data
 
 
 
-'''Updates a cache file with the newest task statuses from CBRAIN'''
 def update_statuses(cache_filename, task_list):
+	"""Updates a cache file with the newest task statuses from CBRAIN."""
+	
 	
 	with open(cache_filename, "r+") as cache_file:
 		data = json.load(cache_file)
@@ -155,8 +157,8 @@ def update_statuses(cache_filename, task_list):
 		cache_file.truncate()
 
 
-'''Iterates over each component in a pipeline, organizes, and feeds the necessary data to the functions which post tasks on CBRAIN and update the caches'''
 def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset):
+	"""Iterates over each component in a pipeline, organizes, and feeds the necessary data to the functions which post tasks on CBRAIN and update the caches."""
 
 	component_number = 0 #Keeps track of the order of the component (we need to flag the first one)
 	
@@ -178,8 +180,8 @@ def pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, 
 		component_number = component_number + 1
 
 
-'''Handles the cache writing for the first task in a pipeline, and calls to post the task to CBRAIN'''
 def first_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name):
+	"""Handles the cache writing for the first task in a pipeline, and calls to post the task to CBRAIN."""
 	
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
@@ -203,8 +205,8 @@ def first_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache
 		file.truncate()
 
 
-'''Handles the cache writing and task posting for any pipeline component except the first task'''
 def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, previous_pipeline_component, pipeline_name):	
+	"""Handles the cache writing and task posting for any pipeline component except the first task."""
 		
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
@@ -228,8 +230,8 @@ def nth_task_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_f
 		json.dump(data, file, indent=2)
 		file.truncate()
 
-'''Resubmits a task, and sets all subsequent pipeline component dependencies  to null in the cache'''
 def task_resubmission_handler(cbrain_token, parameter_dictionary, tool_config_id, cache_file, pipeline_component, pipeline_name, rerun_ID_list):
+	"""Resubmits a task, and sets all subsequent pipeline component dependencies  to null in the cache."""
 
 	with open(cache_file, "r+") as file:
 		data = json.load(file)
@@ -279,8 +281,11 @@ def task_resubmission_handler(cbrain_token, parameter_dictionary, tool_config_id
 		file.truncate()
 
 
-'''Fetches the text from a file on CBRAIN and writes it to the cache. Originally this designed for extracting a hippocampal volume from an FSL Stats text output'''
 def populate_results(cache_filename, cbrain_token):
+	"""Fetches the text from a file on CBRAIN and writes it to the cache.
+	
+	Originally this is designed to extract a hippocampal volume from an FSL Stats text output.
+	"""
 	
 	with open(cache_filename, "r+") as cache_file:
 		data = json.load(cache_file)
