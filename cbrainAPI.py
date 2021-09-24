@@ -277,7 +277,7 @@ class CbrainAPI:
             self._url_cbrain_sync_multiple, headers=headers, params=params)
 
         if response.status_code == requests.status_codes.codes['OK']:
-            print(f"Synchronized userfiles {userfile_id_list}"))
+            print(f"Synchronized userfiles {userfile_id_list}")
             return
         else:
             self.failure(
