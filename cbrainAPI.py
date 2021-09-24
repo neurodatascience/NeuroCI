@@ -23,6 +23,9 @@ class CbrainAPI:
         self._token = self.login(username, password)
         atexit.register(self.logout)
 
+    def warning(self, msg):
+        print(msg, file=sys.stderr)
+
     def failure(self, msg):
         print(msg, file=sys.stderr)
         sys.exit(1)
@@ -92,7 +95,7 @@ class CbrainAPI:
         if response.status_code == requests.status_codes.codes['OK']:
             return response.json()
         else:
-            self.failure('DP browse failure')
+            self.warning('DP browse failure')
 
     def post_task(self, userfile_id, tool_config_id, parameter_dictionary):
         '''Posts a task in CBRAIN'''
@@ -130,7 +133,7 @@ class CbrainAPI:
             jsonResponse = response.json()
             return jsonResponse
         else:
-            self.failure(
+            self.warning(
                 f"Task posting failed.{os.path.sep}{response.content}")
 
     def get_all_tasks(self):
@@ -156,7 +159,7 @@ class CbrainAPI:
                 task_list += jsonResponse
                 params['page'] += 1
             else:
-                self.failure("Task list retrieval failed.")
+                self.warning("Task list retrieval failed.")
 
             if len(jsonResponse) < params['per_page']:
                 break
@@ -190,7 +193,7 @@ class CbrainAPI:
             jsonResponse = response.json()
             return jsonResponse
         else:
-            self.failure("Task Info retrieval failed.")
+            self.warning("Task Info retrieval failed.")
 
     def download_text(self, userfile_ID):
         '''Downloads the text from a file on CBRAIN'''
@@ -211,7 +214,7 @@ class CbrainAPI:
             return response.text
         else:
             msg = f'Download failure{os.path.sep}{response.status_code}'
-            self.failure(msg)
+            self.warning(msg)
 
     def download_file(self, userfile_ID, filename):
         '''Downloads a file from CBRAIN and saves it, given a userfile ID'''
@@ -234,7 +237,7 @@ class CbrainAPI:
             print(f"Downloaded file {filename}")
             return 0
         else:
-            self.failure(f'File download failure: {filename}')
+            self.warning(f'File download failure: {filename}')
 
     '''Given a filename and data provider, download the file from the data provider'''
 
@@ -254,10 +257,10 @@ class CbrainAPI:
                     return 0
                 else:
                     msg = f"File {filename} not found in Data Provider {data_provider_id}"
-                    self.failure(msg)
+                    self.warning(msg)
 
         except Exception as e:
-            self.failure("Error in browsing data provider or file download")
+            self.warning("Error in browsing data provider or file download")
 
     '''Makes sure a file in a data provider is synchronized with CBRAIN'''
 
@@ -280,5 +283,5 @@ class CbrainAPI:
             print(f"Synchronized userfiles {userfile_id_list}")
             return
         else:
-            self.failure(
+            self.warning(
                 f"Userfile sync failed for IDs: {userfile_id_list}{os.path.sep}{response.status_code}")
