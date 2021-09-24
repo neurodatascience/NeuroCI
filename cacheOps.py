@@ -1,13 +1,16 @@
-import requests
-import yaml
-import json
-import sys
-import os
-import csv
-from github import Github
 from ast import literal_eval
+import csv
+import json
 
-from cbrainAPI import *
+import requests
+
+from cbrainAPI import (
+	cbrain_list_data_provider,
+	cbrain_post_task,
+	cbrain_get_task_info_from_list,
+	cbrain_download_text,
+	cbrain_sync_file
+)
 
 #############################################
 

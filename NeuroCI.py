@@ -1,15 +1,21 @@
-import requests
-import yaml
-import json
-import sys
-import os
-#from github import Github
-from ast import literal_eval
-import time
 import datetime
+import sys
+import time
 
-from cbrainAPI import *
-from cacheOps import *
+import yaml
+
+from cacheOps import (
+	download_cache,
+	populate_cache_filenames,
+	update_statuses,
+	pipeline_manager,
+	populate_results
+)
+from cbrainAPI import (
+	cbrain_login,
+	cbrain_logout,
+	cbrain_get_all_tasks
+)
 
 ##################################################################################
 

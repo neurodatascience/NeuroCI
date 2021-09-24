@@ -1,15 +1,17 @@
-import requests
+import csv
 import json
-import yaml
-from csv import reader
-import numpy as np
-import matplotlib.pyplot as plt
-from numpy.polynomial.polynomial import polyfit
 import sys
-import os
 
-from cbrainAPI import *
-from cacheOps import *
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy.polynomial.polynomial import polyfit
+import yaml
+
+from cbrainAPI import (
+	cbrain_login,
+	cbrain_logout,
+	cbrain_download_file
+)
 
 ###########################################################################################################################
 #General functions
@@ -60,7 +62,7 @@ def preventAD_get_labels_from_filename(filename):
 
 def preventAD_get_measure_from_csv(subject, visit, data_file):
 	with open(data_file, 'r') as read_obj:
-		csv_reader = reader(read_obj)
+		csv_reader = csv.reader(read_obj)
 		for row in csv_reader:
 			if row[1] == subject and row[2]==visit:
 				return row[19] #change this to get a different column in CSV
