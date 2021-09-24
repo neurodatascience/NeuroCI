@@ -1,263 +1,287 @@
 import requests
 import json
+import atexit
 import sys
 import os
-import csv
-
 ##################################################################################
 
 '''Posts API call to CBRAIN to obtain a authentication token given a username and password'''
-def cbrain_login(username, password):
-	
-	headers = {
-		'Content-Type': 'application/x-www-form-urlencoded',
-		'Accept': 'application/json',
-	}
-	data = {
-	'login': username,
-	'password': password
-	}
-	
-	response = requests.post('https://portal.cbrain.mcgill.ca/session', headers=headers, data=data)
-	
-	if response.status_code == 200:
-		print("Login success")
-		print(response.content)
-		jsonResponse = response.json()
-		return jsonResponse["cbrain_api_token"]
-	else:
-		print("Login failure")
-		return 1
 
 
-'''End a CBRAIN session'''
-def cbrain_logout(cbrain_token):
-	
-	headers = {
-		'Accept': 'application/json',
-	}
-	params = (
-		('cbrain_api_token', cbrain_token),
-	)
-	
-	response = requests.delete('https://portal.cbrain.mcgill.ca/session', headers=headers, params=params)
-	
-	if response.status_code == 200:
-		print("Logout success")
-		return 0
-	else:
-		print("Logout failure")
-		return 1
-   
+class CbrainAPI:
 
-'''Lists all files in a CBRAIN data provider'''
-def cbrain_list_data_provider(data_provider_ID, cbrain_token):
-	
-	data_provider_ID = str(data_provider_ID)
-	headers = {
-		'Accept': 'application/json',
-	}
-	params = (
-		('id', data_provider_ID),
-		('cbrain_api_token', cbrain_token),
-	)
-	url = 'https://portal.cbrain.mcgill.ca/data_providers/' + data_provider_ID + '/browse'
-	
-	response = requests.get(url, headers=headers, params=params, allow_redirects=True)
-	
-	if response.status_code == 200:
-		return response.json()
-	else:
-		print('DP browse failure')
-		return 1
+    _url_cbrain_portal = 'https://portal.cbrain.mcgill.ca'
+    _url_cbrain_session = os.path.join(_url_cbrain_portal, 'session')
+    _url_cbrain_data_providers = os.path.join(
+        _url_cbrain_portal, 'data_providers')
+    _url_cbrain_tasks = os.path.join(_url_cbrain_portal, 'tasks')
+    _url_cbrain_userfiles = os.path.join(_url_cbrain_portal, 'userfiles')
+    _url_cbrain_sync_multiple = os.path.join(
+        _url_cbrain_userfiles, 'sync_multiple')
 
+    def __init__(self, username, password):
+        self._token = self.login(username, password)
+        atexit.register(self.logout)
 
-'''Posts a task in CBRAIN'''
-def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictionary):
-	
-	userfile_id = str(userfile_id)
-	
-	#Parse the parameter dictionary json, and insert the userfile IDs.
-	parameter_dictionary['interface_userfile_ids'] = [userfile_id]
-	parameter_dictionary['input_file'] = userfile_id
+    def warning(self, msg):
+        print(msg, file=sys.stderr)
 
-	headers = {
-		'Content-Type': 'application/json',
-		'Accept': 'application/json',
-	}
-	params = (
-		('cbrain_api_token', cbrain_token),
-	)
-	data = {
-		"cbrain_task": {
-			'tool_config_id': tool_config_id,
-			'params': parameter_dictionary, 
-			'run_number': None, 
-			'results_data_provider_id': 179, #Using Beluga
-			'cluster_workdir_size': None, 
-			'workdir_archived': True,  
-			'description': ''}
-	}
+    def failure(self, msg):
+        print(msg, file=sys.stderr)
+        sys.exit(1)
 
-	y = json.dumps(data)	#convert data field to JSON:
-	response = requests.post('https://portal.cbrain.mcgill.ca/tasks', headers=headers, params=params, data=y)
+    def get_token(self):
+        return self._token
 
-	if response.status_code == 200:
-		print(response.text)
-		jsonResponse = response.json()
-		return jsonResponse
-	else:
-		print("Task posting failed.")
-		print(response.content)
-		return 1
+    def login(self, username, password):
 
-'''Gets the list of all the tasks of the user on CBRAIN'''
-def cbrain_get_all_tasks(cbrain_token):
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+        }
 
-	headers = {
-		'Accept': 'application/json',
-	}
-	params = {
-		'cbrain_api_token': cbrain_token,
-		'page': 1,
-		'per_page': 1000
-	}
-	url = 'https://portal.cbrain.mcgill.ca/tasks'
-	task_list = []
-    
-	while True:
-		
-		response = requests.get(url, headers=headers, params=params)
-		
-		if response.status_code == 200:
-			jsonResponse = response.json()
-			task_list += jsonResponse
-			params['page'] += 1
-		else:
-			print("Task list retrieval failed.")
-			return 1
-		
-		if len(jsonResponse) < params['per_page']:
-			break
-		
-	return task_list
+        data = {
+            'login': username,
+            'password': password
+        }
 
-'''Obtains info on the progress of a single task, given the list of all tasks for the user'''
-def cbrain_get_task_info_from_list(task_list, task_ID):
-	
-	for task in task_list:
-		if task_ID == task['id'] or int(task_ID) == task['id']:
-			return task
-    
+        response = requests.post(
+            self._url_cbrain_session, headers=headers, data=data)
 
-'''Obtains information on the progress of a single task by querying for a single task'''
-def cbrain_get_task_info(cbrain_token, task_ID):
-	
-	task_ID = str(task_ID)
-	headers = {
-		'Accept': 'application/json',
-	}
-	params = (
-		('id', task_ID),
-		('cbrain_api_token', cbrain_token)
-	)
-	url = 'https://portal.cbrain.mcgill.ca/tasks/' + task_ID
-	
-	response = requests.get(url, headers=headers, params=params)
-	
-	if response.status_code == 200:
-		jsonResponse = response.json()
-		return jsonResponse
-	else:
-		print("Task Info retrieval failed.")
-		return 1
+        if response.status_code == requests.status_codes.codes['OK']:
+            print("Login success")
+            print(response.content)
+            jsonResponse = response.json()
+            return jsonResponse["cbrain_api_token"]
+        else:
+            self.failure("Login failure")
 
+    def logout(self):
+        '''End a CBRAIN session'''
 
-'''Downloads the text from a file on CBRAIN'''
-def cbrain_download_text(userfile_ID, cbrain_token):
-	
-	userfile_ID = str(userfile_ID)
-	headers = {
-		'Accept': 'text',
-	}
-	params = (
-		('cbrain_api_token', cbrain_token),
-	)
-	url = 'https://portal.cbrain.mcgill.ca/userfiles/' + userfile_ID + '/content'
-	
-	response = requests.get(url, headers=headers, params=params, allow_redirects=True)
-	
-	if response.status_code == 200:
-		return response.text
-	else:
-		print('Download failure')
-		print(response.status_code)
-		return 1
+        headers = {
+            'Accept': 'application/json',
+        }
+        params = (
+            ('cbrain_api_token', self.get_token()),
+        )
 
+        response = requests.delete(
+            self._url_cbrain_session, headers=headers, params=params)
 
-'''Downloads a file from CBRAIN and saves it, given a userfile ID'''
-def cbrain_download_file(userfile_ID, filename, cbrain_token):
+        if response.status_code == requests.status_codes.codes['OK']:
+            print("Logout success")
+            return 0
+        else:
+            self.failure("Logout failure")
 
-    fileID = str(userfile_ID)
-    headers = {
-        'Accept': 'application/json',
-    }
-    params = (
-        ('id', fileID),
-        ('cbrain_api_token', cbrain_token),
-    )
-    url = 'https://portal.cbrain.mcgill.ca/userfiles/' + fileID + '/content'
-    
-    response = requests.get(url, headers=headers, params=params, allow_redirects=True)
-    if response.status_code == 200:
-        open(filename, 'wb').write(response.content)
-        print("Downloaded file " + filename)
-        return 0
-    else:
-        print('File download failure: ' + filename)
-        return 1
+    def list_data_provider(self, data_provider_ID):
+        '''Lists all files in a CBRAIN data provider'''
 
+        data_provider_ID = str(data_provider_ID)
+        headers = {
+            'Accept': 'application/json',
+        }
+        params = (
+            ('id', data_provider_ID),
+            ('cbrain_api_token', self.get_token()),
+        )
+        url = os.path.join(self._url_cbrain_data_providers,
+                           data_provider_ID, 'browse')
 
-'''Given a filename and data provider, download the file from the data provider'''
-def cbrain_download_DP_file(filename, data_provider_id, cbrain_token):
-    
-	data_provider_browse = cbrain_list_data_provider(str(data_provider_id), cbrain_token) #Query CBRAIN to list all files in data provider.
-	print(data_provider_browse)
-	
-	try:
-		for entry in data_provider_browse:
-			if 'userfile_id' in entry and entry['name'] == filename: #if it's a registered file, and filename matches
-				print("Found registered file: " + filename + " in Data Provider with ID " + str(data_provider_id))
-				cbrain_download_file(entry['userfile_id'], filename, cbrain_token)
-				return 0
-			else:
-				print("File " + filename + " not found in Data Provider " + str(data_provider_id))
-				return 1
-				
-	except Exception as e:
-		print("Error in browsing data provider or file download")
-		return
+        response = requests.get(url, headers=headers,
+                                params=params, allow_redirects=True)
 
+        if response.status_code == requests.status_codes.codes['OK']:
+            return response.json()
+        else:
+            self.warning('DP browse failure')
 
-'''Makes sure a file in a data provider is synchronized with CBRAIN'''	
-def cbrain_sync_file(userfile_id_list, cbrain_token):
-	#userfile_id_list can either be a string eg. '3663657', or a list eg. ['3663729', '3663714']
-	headers = {
-		'Content-Type': 'application/json',
-		'Accept': 'application/json',
-	}
+    def post_task(self, userfile_id, tool_config_id, parameter_dictionary):
+        '''Posts a task in CBRAIN'''
 
-	params = (
-		('file_ids[]', userfile_id_list),
-		('cbrain_api_token', cbrain_token),
-	)
+        userfile_id = str(userfile_id)
 
-	response = requests.post('https://portal.cbrain.mcgill.ca/userfiles/sync_multiple', headers=headers, params=params)
+        # Parse the parameter dictionary json, and insert the userfile IDs.
+        parameter_dictionary['interface_userfile_ids'] = [userfile_id]
+        parameter_dictionary['input_file'] = userfile_id
 
-	if response.status_code == 200:
-		print("Synchronized userfiles " + str(userfile_id_list))
-		return
-	else:
-		print("Userfile sync failed for IDs: " + str(userfile_id_list))
-		print(response.status_code)
-		return
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+        params = (
+            ('cbrain_api_token', self.get_token()),
+        )
+        data = {
+            "cbrain_task": {
+                'tool_config_id': tool_config_id,
+                'params': parameter_dictionary,
+                'run_number': None,
+                'results_data_provider_id': 179,  # Using Beluga
+                'cluster_workdir_size': None,
+                'workdir_archived': True,
+                'description': ''}
+        }
+
+        y = json.dumps(data)  # convert data field to JSON:
+        response = requests.post(
+            self._url_cbrain_tasks, headers=headers, params=params, data=y)
+
+        if response.status_code == requests.status_codes.codes['OK']:
+            print(response.text)
+            jsonResponse = response.json()
+            return jsonResponse
+        else:
+            self.warning(
+                f"Task posting failed.{os.path.sep}{response.content}")
+
+    def get_all_tasks(self):
+        '''Gets the list of all the tasks of the user on CBRAIN'''
+
+        headers = {
+            'Accept': 'application/json',
+        }
+        params = {
+            'cbrain_api_token': self.get_token(),
+            'page': 1,
+            'per_page': 1000
+        }
+        task_list = []
+
+        while True:
+
+            response = requests.get(
+                self._url_cbrain_tasks, headers=headers, params=params)
+
+            if response.status_code == requests.status_codes.codes['OK']:
+                jsonResponse = response.json()
+                task_list += jsonResponse
+                params['page'] += 1
+            else:
+                self.warning("Task list retrieval failed.")
+
+            if len(jsonResponse) < params['per_page']:
+                break
+
+        return task_list
+
+    def get_task_info_from_list(self, task_list, task_ID):
+        '''Obtains info on the progress of a single task, given the list of all tasks for the user'''
+
+        for task in task_list:
+            if task_ID == task['id'] or int(task_ID) == task['id']:
+                return task
+
+    def get_task_info(self, task_ID):
+        '''Obtains information on the progress of a single task by querying for a single task'''
+
+        task_ID = str(task_ID)
+        headers = {
+            'Accept': 'application/json',
+        }
+        params = (
+            ('id', task_ID),
+            ('cbrain_api_token', self.get_token())
+        )
+
+        url = os.path.join(self._url_cbrain_tasks, task_ID)
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == requests.status_codes.codes['OK']:
+            jsonResponse = response.json()
+            return jsonResponse
+        else:
+            self.warning("Task Info retrieval failed.")
+
+    def download_text(self, userfile_ID):
+        '''Downloads the text from a file on CBRAIN'''
+
+        userfile_ID = str(userfile_ID)
+        headers = {
+            'Accept': 'text',
+        }
+        params = (
+            ('cbrain_api_token', self.get_token()),
+        )
+        url = os.path.join(self._url_cbrain_userfiles, userfile_ID, 'content')
+
+        response = requests.get(url, headers=headers,
+                                params=params, allow_redirects=True)
+
+        if response.status_code == requests.status_codes.codes['OK']:
+            return response.text
+        else:
+            msg = f'Download failure{os.path.sep}{response.status_code}'
+            self.warning(msg)
+
+    def download_file(self, userfile_ID, filename):
+        '''Downloads a file from CBRAIN and saves it, given a userfile ID'''
+
+        fileID = str(userfile_ID)
+        headers = {
+            'Accept': 'application/json',
+        }
+        params = (
+            ('id', fileID),
+            ('cbrain_api_token', self.get_token()),
+        )
+
+        url = os.path.join(self._url_cbrain_userfiles, fileID, 'content')
+
+        response = requests.get(url, headers=headers,
+                                params=params, allow_redirects=True)
+        if response.status_code == requests.status_codes.codes['OK']:
+            open(filename, 'wb').write(response.content)
+            print(f"Downloaded file {filename}")
+            return 0
+        else:
+            self.warning(f'File download failure: {filename}')
+
+    '''Given a filename and data provider, download the file from the data provider'''
+
+    def download_DP_file(self, filename, data_provider_id):
+
+        # Query CBRAIN to list all files in data provider.
+        data_provider_browse = self.list_data_provider(str(data_provider_id))
+        print(data_provider_browse)
+
+        try:
+            for entry in data_provider_browse:
+                # if it's a registered file, and filename matches
+                if 'userfile_id' in entry and entry['name'] == filename:
+                    print(
+                        f"Found registered file: {filename} in Data Provider with ID {data_provider_id}")
+                    self.download_file(entry['userfile_id'], filename)
+                    return 0
+                else:
+                    msg = f"File {filename} not found in Data Provider {data_provider_id}"
+                    self.warning(msg)
+
+        except Exception as e:
+            self.warning("Error in browsing data provider or file download")
+
+    '''Makes sure a file in a data provider is synchronized with CBRAIN'''
+
+    def sync_file(self, userfile_id_list):
+        # userfile_id_list can either be a string eg. '3663657', or a list eg. ['3663729', '3663714']
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+
+        params = (
+            ('file_ids[]', userfile_id_list),
+            ('cbrain_api_token', self.get_token()),
+        )
+
+        response = requests.post(
+            self._url_cbrain_sync_multiple, headers=headers, params=params)
+
+        if response.status_code == requests.status_codes.codes['OK']:
+            print(f"Synchronized userfiles {userfile_id_list}")
+            return
+        else:
+            self.warning(
+                f"Userfile sync failed for IDs: {userfile_id_list}{os.path.sep}{response.status_code}")
