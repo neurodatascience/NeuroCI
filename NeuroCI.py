@@ -46,13 +46,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		
 		populate_results(dataset  + '.json', cbrain_token)
 		print('Populated results for ' + dataset + '.json')
-		#extract_results()
-		#analysis(expdef[script])
-		
-		#start = time.time()
-		#update_statuses(dataset  + '.json', cbrain_token)
-		#end = time.time()
-		#print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
+
 
 ##################################################################################
 
