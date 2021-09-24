@@ -1,89 +1,101 @@
-import requests
-import yaml
-import json
-import sys
+import argparse
 import os
-#from github import Github
-from ast import literal_eval
-import time
-import datetime
 
-from cbrainAPI import *
-from cacheOps import *
+import cacheOps
+import cbrainAPI
+import neuroCIdata
+import utils
 
 ##################################################################################
 
-def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url):
+_json_extension = "json"
 
-	for dataset in experiment_definition['Datasets']:
 
-		download_cache(dataset  + '.json', CCI_token, latest_artifacts_url)	#Downloads newest cache to json file
-		print('Downloaded newest cache for: ' + dataset  + '.json')
-		
-		task_list = cbrain_get_all_tasks(cbrain_token) #Gets the complete list of tasks for the user on CBRAIN
-		print('Fetched the list of tasks for the CBRAIN user')
-		
-		start = time.time()
-		update_statuses(dataset  + '.json', task_list)	#Updates the contents of a cache to reflect CBRAIN task statuses
-		end = time.time()
-		print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
-		
-		for pipeline in experiment_definition['Pipelines']:
-			
-			start = time.time()
-			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
-			end = time.time()
-			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline + " in" + str(datetime.timedelta(seconds=(end - start))))
-			
-			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
-			print('Posted tasks for: ' + dataset  + '.json' + ', ' +  pipeline)
-		
-		populate_results(dataset  + '.json', cbrain_token)
-		print('Populated results for ' + dataset + '.json')
-		#extract_results()
-		#analysis(expdef[script])
-		
-		#start = time.time()
-		#update_statuses(dataset  + '.json', cbrain_token)
-		#end = time.time()
-		#print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
+def run(args, cbrain_api, cbrain_ids, experiment_definition):
+
+    for dataset in experiment_definition['Datasets']:
+
+        # Downloads newest cache to json file
+        dataset_filename = os.path.extsep.join(dataset, _json_extension)
+        cacheOps.download_cache(
+            dataset_filename, args.CCI_token, args.artifacts_url)
+        print(f'Downloaded newest cache for: {dataset_filename}')
+        # Gets the complete list of tasks for the user on CBRAIN
+        task_list = cbrain_api.get_all_tasks(args.cbrain_token)
+        print('Fetched the list of tasks for the CBRAIN user')
+
+        # Updates the contents of a cache to reflect CBRAIN task statuses
+        with utils.measure_time() as execution_time:
+            cacheOps.update_statuses(dataset_filename, task_list)
+
+        print((f"Updated statuses in cache for: "
+               f"{dataset_filename} in {execution_time()}"))
+
+        for pipeline in experiment_definition['Pipelines']:
+
+            with utils.measure_time() as execution_time:
+                # Populates a cache with any new files found
+                blocklist = experiment_definition['Datasets'][dataset]['Blocklist']
+                cbrain_dataset = cbrain_ids['Data_Provider_IDs'][dataset]
+                cacheOps.populate_cache_filenames(dataset_filename,
+                                                  args.cbrain_token,
+                                                  blocklist,
+                                                  pipeline,
+                                                  cbrain_dataset,
+                                                  experiment_definition)
+
+            print((f"Populated cache filenames for: "
+                   f"{dataset_filename}, {pipeline} in {execution_time()}"))
+            cacheOps.pipeline_manager(args.cbrain_token, experiment_definition,
+                                      cbrain_ids, pipeline, dataset)
+            print(f'Posted tasks for: {dataset_filename}, {pipeline}')
+
+        cacheOps.populate_results(cbrain_api, dataset_filename)
+        print(f'Populated results for {dataset_filename}')
+  # extract_results()
+# analysis(expdef[script])
+
+# start = time.time()
+# update_statuses(dataset  + '.json', cbrain_token)
+# end = time.time()
+# print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
 
 ##################################################################################
 
-#Obtain login credentials from args, stored in CI environment variables.
-
-cbrain_user = sys.argv[1]
-cbrain_password = sys.argv[2]
-CCI_token = sys.argv[3]
-latest_artifacts_url = sys.argv[4]
-cbrain_token = cbrain_login(cbrain_user, cbrain_password)
-
-##################################################################################
-
-#Main code execution section
-
-with open('Experiment_Definition.yaml') as file: #Load experiment definition
-	try:
-		experiment_definition  = yaml.safe_load(file)
-	except yaml.YAMLError as exception: #yaml file not valid
-		print('The Experiment Definition file is not valid')
-		print(exception)
+# Obtain login credentials from args, stored in CI environment variables.
 
 
-with open('./Config_Files/CBRAIN_IDs.yaml') as file: #Load mappings for all CBRAIN DP_IDs and toolconfig IDs
-	try:
-		cbrain_ids  = yaml.safe_load(file)
-	except yaml.YAMLError as exception: #yaml file not valid
-		print('The configuration file is not valid')
-		print(exception)
+def parse_args():
 
-print("Using artifacts from : " + latest_artifacts_url)
-
-main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_artifacts_url)
-
-print("Finished the scheduled computations")
-
-cbrain_logout(cbrain_token)
-##################################################################################
+    parser = argparse.ArgumentParser('NeuroCI', help='to add...')
+    parser.add_argument('--cbrain-user', help="CBRAIN user", required=True)
+    parser.add_argument('--cbrain-password',
+                        help="CBRAIN password", required=True)
+    parser.add_argument('--CCI-token', help="CCI_token", required=True)
+    parser.add_argument('--artifacts-url', help="artifacts-url", required=True)
+    args = parser.parse_args()
+    return args
 
 
+def main():
+    args = parse_args()
+    cbrain_api = cbrainAPI.CbrainAPI(args.cbrain_user, args.cbrain_password)
+
+    ##################################################################################
+
+    # Main code execution section
+
+    experiment_definition = utils.get_yaml_file(
+        neuroCIdata.experiment_definition_path, "Experiment Definition")
+
+    # Load mappings for all CBRAIN DP_IDs and toolconfig IDs
+    cbrain_ids = utils.get_yaml_file(
+        neuroCIdata.cbrain_ids_path, "Configuration")
+
+    print(f"Using artifacts from : {args.artifacts_url}")
+
+    run(args, cbrain_api, cbrain_ids, experiment_definition)
+
+    print("Finished the scheduled computations")
+
+    ##################################################################################
