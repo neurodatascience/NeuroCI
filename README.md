@@ -29,8 +29,6 @@ It is work in progress :)
 ## How to run this platform
 * **Note that the structure of many of the following files I mention can easily be learnt by looking at the files and how I currently have them setup. These instructions include adding your own pipelines and datasets.**
 
-* **If you just want to run the software with the existing integrated pipelines and datasets, many of these steps can be skipped. In this case you would just have to follow steps: 1, 2, 5, 10, 11, 12.**
-
 * (1) Create the required accounts to run this platform.
 
 * (2) Fork this repository.
@@ -49,11 +47,15 @@ It is work in progress :)
 
 * (9) Similarly to the previous step, the code for the *update_statuses* function in *cacheOps.py* may need to be updated depending on the specific pipeline's CBRAIN ID output key, which in turn depends on the Boutiques descriptor for the pipeline.
 
-* (10) In CircleCI, and create a new pipeline for your forked repo.
+* (10) In CircleCI, and create a new project for your forked repo. Use the *.circleci/config.yml* from the repo as your circleCI config file.
 
-* (11) Go to the project settings on CircleCI. Modify the environment variables in CircleCI project settings. Add your CBRAIN credentials as 'cbrain_user' and 'cbrain_password'. Generate a CircleCI token and add it as 'CCI_token' (this is to be able to download the latest cache file from the artifacts). You will also need to add your GitHub deploy key[add your GitHub deploy key](https://circleci.com/docs/2.0/gh-bb-integration/#:~:text=Go%20to%20https%3A%2F%2Fgithub,then%20click%20%E2%80%9CAdd%20key%E2%80%9D.)  to the project's SSH Keys in CircleCI. 
+* (11) Go to the CircleCI project settings. Modify the environment variables in CircleCI. Add your CBRAIN credentials in environment variables called 'cbrain_user' and 'cbrain_password'
 
-* (12) Modify the circleCI config file in *.circleci/config.yml*. Make sure the cron-job is running at the desired frequency, and make sure all of your outputs (By default I have this setup as all json cache files and the plots) are deposited in the 'artifacts' directory which is created in this file.
+* (12) In the CircleCI project settings, generate a CircleCI token and add it as 'CCI_token' to the CircleCI environment variables (to be able to download the latest cache file from the artifacts using their API). 
+
+* (13) Note that this step is probably already automatically done by CircleCI (but worth checking): In the forked GitHub repo settings, go to the ‘Deploy keys’ tab in the project’s settings, generate a key, and paste this into the CircleCI Project Settings ‘SSH Keys’ tab.
+
+* (14) Modify the circleCI config file in *.circleci/config.yml*. Make sure the cron-job is running at the desired frequency, and make sure all of your outputs (By default I have this setup as all json cache files and the plots) are deposited in the 'artifacts' directory which is created in this file.
 
 ## File and data layout and descriptions
 
