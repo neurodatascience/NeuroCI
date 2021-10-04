@@ -17,7 +17,7 @@ jobs: # A basic unit of work in a run
       - run:
           no_output_timeout: 10m #change this to set the limit for how long it can run...useful for when Beluga crashes.
           command: |
-            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/377/artifacts
+            python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/latest/artifacts
             mkdir artifacts
             cp *.json artifacts
             python analysesVisualizations.py $cbrain_user $cbrain_password
