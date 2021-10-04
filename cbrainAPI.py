@@ -125,6 +125,7 @@ def cbrain_get_all_tasks(cbrain_token):
 	url = 'https://portal.cbrain.mcgill.ca/tasks'
 	task_list = []
     
+	previousResponse = []
 	while True:
 		
 		response = requests.get(url, headers=headers, params=params)
@@ -137,9 +138,13 @@ def cbrain_get_all_tasks(cbrain_token):
 			print("Task list retrieval failed.")
 			return 1
 		
+		#Stop getting the next page.
 		if len(jsonResponse) < params['per_page']:
 			break
-		
+		if jsonResponse == previousResponse:
+			break
+		previousResponse = jsonResponse	
+			
 	return task_list
 
 '''Obtains info on the progress of a single task, given the list of all tasks for the user'''
