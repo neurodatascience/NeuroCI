@@ -75,7 +75,7 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 		cache = json.load(file)
 		for entry in cache:
 			
-			if cache[entry][pipeline_name]['Result']['result'] != None:
+			if cache[entry][pipeline_name]['Result']['result'] != None and "T1" in entry:
 				
 				volume = cache[entry][pipeline_name]['Result']['result']
 				
