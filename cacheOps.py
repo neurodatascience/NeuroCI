@@ -36,7 +36,9 @@ def download_cache(cache_file, CCI_token, latest_artifacts_url):
 	else:
 		json_cache = json.loads(response.text)
 
-	with open(cache_file, 'w') as outfile: #create cache file for CI
+	with open('./artifacts/' + cache_file, 'w') as outfile: #Immediately places the cache file in the artifacts directory, so that if computations have an error, it is still backed up as an artifact.
+		json.dump(json_cache, outfile)
+	with open(cache_file, 'w') as outfile: #Create cache file for CI to operate one. Will overwrite previous copy when CI computations are finished.
 		json.dump(json_cache, outfile)
 	print('written cache to temp file')
 
