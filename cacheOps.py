@@ -328,3 +328,90 @@ def retrieve_FreeSurfer_volume(asegstats_string, structName):
 		if structName in row:
 			index = row.index(structName)
 			return row[index-2] #Returns the word which is two before the name of the structure.
+
+
+'''Compares whether a local task parameter file is identical to a CBRAIN task params sectiob '''
+def are_params_identical(local_params, cbrain_params):
+#local params refer to the json file parameters for a task pointed to by the experiment definition, crain_params are the params section obtained from a CBRAIN task
+	field_count = 0
+	identical_params = True
+	for field in local_params:
+		if field_count > 1: #skip first two fields of params, as they are inputs.
+			try:
+				if local_params[field] != cbrain_params[field] and str(local_params[field])!=str(cbrain_params[field]): #compare contents for every field
+					identical_params = False
+			except KeyError:
+				identical_params = False
+		field_count = field_count + 1
+	return identical_params
+
+
+''' Given a list of cbrain tasks (dictionary for each task), find the completed task with a certain input file, tool, and parameters'''
+def find_task(task_list, input_file_ID, tool_config_ID, parameters):
+	
+	input_file_ID = str(input_file_ID)
+	tool_config_ID = str(tool_config_ID)
+	
+	for task in task_list:
+			
+		if 'input_file' in task['params']:
+			cbrain_task_input = task['params']['input_file']
+		elif 'interface_userfile_ids' in task['params']:
+			cbrain_task_input = task['params']['interface_userfile_ids'][0]		
+		
+		cbrain_task_tool = str(task['tool_config_id'])
+					
+		cbrain_task_params = task['params']
+		
+		if cbrain_task_input==input_file_ID and cbrain_task_tool==tool_config_ID and are_params_identical(parameters, cbrain_task_params) and task["status"] == "Completed":
+			return task
+
+
+'''Query CBRAIN to reconstruct an empty cache given the user's cbrain task list, an experiment definition file, and configs
+This is meant to be backup mechanism for the CircleCI API downloading the cache file. If this fails, then the empty cache file can be repopulated without having to recompute everything.'''
+def reconstruct_cache(cache_filename, task_list, experiment_definition, cbrain_ids):
+
+	with open(cache_filename, "r+") as cache_file:
+		data = json.load(cache_file)
+		file_count = 0
+		for (file, pipeline) in data.items(): #Parse the json
+			file_count+=1
+			if file_count % 100 ==0:
+				print("file: " + str(file_count) + "/" + str(len(data.items())))
+			for (pipeline_name, task_name) in pipeline.items():
+				previous_string = None #will store the previous tasks pipeline component name
+				component_number = 0
+				for (task_name_str, params) in task_name.items():
+					
+					if component_number > 0 and task_name_str != 'Result': #if it's a middle task, it's input file is the last tasks output file.
+						data[file][pipeline_name][task_name_str]['inputID'] = str(data[file][pipeline_name][previous_string]['outputID'])
+
+					if task_name_str != 'Result': #for all tasks but not the result
+						with open(experiment_definition['Pipelines'][pipeline_name]['Components'][task_name_str]['Parameter_dictionary'], "r") as param_file:
+							local_params = json.load(param_file)
+							
+						matching_task = find_task(task_list, data[file][pipeline_name][task_name_str]['inputID'], cbrain_ids['Tool_Config_IDs'][task_name_str], local_params)
+						
+						if matching_task is not None: #if a matching task is found, populate the cache
+							data[file][pipeline_name][task_name_str]['toolConfigID'] = matching_task['tool_config_id']
+							data[file][pipeline_name][task_name_str]['taskID'] = matching_task["id"]
+							data[file][pipeline_name][task_name_str]['status'] = matching_task["status"]
+							data[file][pipeline_name][task_name_str]['isUsed'] = True
+
+							#Different tasks can have different output field names
+							if '_cbrain_output_outputs' in matching_task['params']:
+								data[file][pipeline_name][task_name_str]["outputID"] = matching_task['params']['_cbrain_output_outputs'][0]
+							if '_cbrain_output_output' in matching_task['params']:
+								data[file][pipeline_name][task_name_str]["outputID"] = matching_task['params']['_cbrain_output_output'][0]
+							if '_cbrain_output_outfile' in matching_task['params']:
+								data[file][pipeline_name][task_name_str]["outputID"] = matching_task['params']['_cbrain_output_outfile'][0]
+							if 'outfile_id' in matching_task['params']:
+								data[file][pipeline_name][task_name_str]["outputID"] = matching_task['params']['outfile_id']
+						else: #if task not found, then no point checking rest of pipeline
+							break
+					previous_string = task_name_str
+					component_number = component_number + 1
+						
+		cache_file.seek(0)
+		json.dump(data, cache_file, indent=2)
+		cache_file.truncate()

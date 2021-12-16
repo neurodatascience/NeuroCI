@@ -23,6 +23,12 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		task_list = cbrain_get_all_tasks(cbrain_token) #Gets the complete list of tasks for the user on CBRAIN
 		print('Fetched the list of tasks for the CBRAIN user')
 		
+		if os.path.getsize(dataset  + '.json') < 10: #less than 10 bits, so corrupted
+			print("Cache file was corrupted or empty, attempting to rebuild it from CBRAIN task list")
+			for pipeline in experiment_definition['Pipelines']: #cache structure/template
+				populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
+			reconstruct_cache(dataset  + '.json', task_list, experiment_definition, cbrain_ids)	#fill in the template	
+		
 		start = time.time()
 		update_statuses(dataset  + '.json', task_list)	#Updates the contents of a cache to reflect CBRAIN task statuses
 		end = time.time()
@@ -34,6 +40,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 			populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
 			end = time.time()
 			print('Populated cache filenames for: ' + dataset  + '.json' + ', ' +  pipeline + " in" + str(datetime.timedelta(seconds=(end - start))))
+				
 			
 			pipeline_manager(cbrain_token, experiment_definition, cbrain_ids, pipeline, dataset)
 			print('Posted tasks for: ' + dataset  + '.json' + ', ' +  pipeline)
