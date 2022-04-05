@@ -25,7 +25,7 @@ def boxplot(volume_list, pipeline_name, dataset_name):
     #plt.show()
     
 '''Scatter plot and line of best fit'''
-def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
+def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name, title, x_label, y_label):
 	
     new_hl_list = []
     new_vol_list = []
@@ -41,10 +41,10 @@ def corrplot(volume_list, hearing_loss_list, pipeline_name, dataset_name):
     b, m = polyfit(x, y, 1)
     plt.plot(x, y, '.')
     plt.plot(x, b + m * x, '-')
-    plt.ylim(ymin=0)
-    plt.title('Left Hippocampal Volumes vs Worse_ear_dsi' + '\n' + dataset_name + ' with ' + pipeline_name)
-    plt.xlabel('Worse_ear_dsi')
-    plt.ylabel('Hippocampal Volume (mm3)')
+    plt.ylim(0, 6000)
+    plt.title(title + '\n' + dataset_name + ' with ' + pipeline_name)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
     plt.savefig('./artifacts/' + dataset_name + '_' + pipeline_name + '_corr' + '.png') # Saves in artifact directory
     plt.close() #so we have separate figures and not overlaid.
     #plt.show()
@@ -58,12 +58,12 @@ def preventAD_get_labels_from_filename(filename):
 	return (subject, visit)
 
 
-def preventAD_get_measure_from_csv(subject, visit, data_file):
+def preventAD_get_measure_from_csv(subject, visit, data_file, row_index):
 	with open(data_file, 'r') as read_obj:
 		csv_reader = reader(read_obj)
 		for row in csv_reader:
 			if row[1] == subject and row[2]==visit:
-				return row[19] #change this to get a different column in CSV
+				return row[row_index] #change this to get a different column in CSV
 
 
 #Process the cache results for a single pipeline
@@ -84,7 +84,7 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 					subject, visit = preventAD_get_labels_from_filename(entry)
 					
 					try:
-						hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file)
+						hearing_loss = preventAD_get_measure_from_csv(subject, visit, data_file, 5) #19 = hearing loss row, 5 = age
 					except Exception as e:
 						print("Error getting CSV file measures for Prevent-AD.")
 						return #skips the plotting
@@ -94,7 +94,8 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 						volume_list.append(volume)
 
 	if len(volume_list) >= 1 and len(hearing_loss_list)>=1: #If there is at least one data point.
-		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD')
+		#corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD', 'Left Hippocampal Volumes vs Age', 'Worse_ear_dsi', 'Hippocampal Volume (mm3)')
+		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD', 'Left Hippocampal Volumes vs Age', 'Age (months)', 'Hippocampal Volume (mm3)')
 		#boxplot(volume_list, pipeline_name, 'Prevent-AD')
 		print('Generated plots for ' + cache_file + '/' + pipeline_name)
 
