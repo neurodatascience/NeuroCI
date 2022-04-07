@@ -415,3 +415,14 @@ def reconstruct_cache(cache_filename, task_list, experiment_definition, cbrain_i
 		cache_file.seek(0)
 		json.dump(data, cache_file, indent=2)
 		cache_file.truncate()
+
+'''Remove entries from a cache file. Removes all filenames that are in the Experiment Definition blocklist.'''
+def clean_cache(cache_file, blocklist):
+    with open(cache_file, "r+") as file:
+        data = json.load(file)
+        for filename in blocklist:
+            if filename in data:
+                del data[filename]
+        file.seek(0) # rewind
+        json.dump(data, file, indent=2)
+        file.truncate()

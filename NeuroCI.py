@@ -25,7 +25,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		
 		if os.path.getsize(dataset  + '.json') < 10: #less than 10 bits, so corrupted
 			print("Cache file was corrupted or empty, attempting to rebuild it from CBRAIN task list")
-			for pipeline in experiment_definition['Pipelines']: #cache structure/template
+			for pipeline in experiment_definition['Pipelines']: #cache structure/template setup
 				populate_cache_filenames(dataset  + '.json', cbrain_token, experiment_definition['Datasets'][dataset]['Blocklist'], pipeline, cbrain_ids['Data_Provider_IDs'][dataset], experiment_definition)	#Populates a cache with any new files found
 			reconstruct_cache(dataset  + '.json', task_list, experiment_definition, cbrain_ids)	#fill in the template	
 		
@@ -47,6 +47,9 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		
 		populate_results(dataset  + '.json', cbrain_token)
 		print('Populated results for ' + dataset + '.json')
+		
+		clean_cache(dataset  + '.json', experiment_definition['Datasets'][dataset]['Blocklist'])
+		print('Cleaned cache for ' + dataset + '.json')
 		#extract_results()
 		#analysis(expdef[script])
 		
