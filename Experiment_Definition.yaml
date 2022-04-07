@@ -6,46 +6,7 @@ Datasets:
     Blocklist:
     - blocklistedfile.nii.gz
     - Auditory_processing_Registered_PREVENTAD.csv
-    - sub-1263509_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-1527281_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-1711090_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-2843957_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-3452929_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-3463254_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-4200389_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-4280226_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-4329125_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-4604101_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-4604101_ses-PREBL00_run-002_T2w.nii.gz
-    - sub-4814589_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5219094_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5219094_ses-PREFU12_run-001_T2w.nii.gz
-    - sub-5456920_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5558904_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5562282_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5707288_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-5836679_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6265998_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6395760_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6704921_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6781586_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6788676_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-6909468_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-7055352_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-7055352_ses-PREFU12_run-001_T2w.nii.gz
-    - sub-7568597_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-7606018_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-7819541_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-7863306_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-8351740_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-8445201_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-8741617_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9006164_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9042627_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9053120_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9584420_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9843864_ses-PREBL00_run-001_T2w.nii.gz
-    - sub-9870694_ses-PREBL00_run-001_T2w.nii.gz
+
 ##########################################################################################
 
 Pipelines:
