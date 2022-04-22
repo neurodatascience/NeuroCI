@@ -31,6 +31,8 @@ Pipelines:
 
 ##########################################################################################
 
+Experiment_name: Hippocampal volume
+
 Unit_of_measurement: mm3
 
 Resubmit_tasks:
