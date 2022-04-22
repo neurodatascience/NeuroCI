@@ -1,6 +1,6 @@
 # NeuroCI
 
-[![jacobsanz97](https://circleci.com/gh/jneurodatascience/NeuroCI.svg?style=svg)](https://app.circleci.com/pipelines/github/neurodatascience/NeuroCI)
+[![jacobsanz97](https://circleci.com/gh/neurodatascience/NeuroCI.svg?style=svg)](https://app.circleci.com/pipelines/github/neurodatascience/NeuroCI)
 
 ### Use Python version 3.7 or later
 
