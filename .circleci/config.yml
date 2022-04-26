@@ -14,6 +14,9 @@ jobs: # A basic unit of work in a run
             sudo pip install PyGithub
             sudo pip install numpy
             sudo pip install matplotlib
+      - add_ssh_keys:
+          fingerprints:
+            - "7b:28:08:5b:cd:f6:9b:a0:ae:43:15:75:66:91:88:f4" #corresponds to the SSH key used to connect to the server running NeRV itneractive visualization            
       - run:
           no_output_timeout: 10m #change this to set the limit for how long it can run...useful for when Beluga crashes.
           command: |
@@ -27,14 +30,12 @@ jobs: # A basic unit of work in a run
             cp Config_Files/CBRAIN_IDs.yaml artifacts/summary_info
             echo $CIRCLE_BUILD_NUM > CCI_Build_Number.txt
             cp CCI_Build_Number.txt artifacts/summary_info
+            python nervIntegration.py
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: /home/circleci/work_dir/artifacts
           destination: artifact-file
-      - add_ssh_keys:
-          fingerprints:
-            - "7b:28:08:5b:cd:f6:9b:a0:ae:43:15:75:66:91:88:f4" #corresponds to the SSH key used to connect to the server running NeRV itneractive visualization
 
 workflows:
   version: 2.1
