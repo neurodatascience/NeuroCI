@@ -24,4 +24,4 @@ with open('Experiment_Definition.yaml') as file: #Load experiment definition
     subprocess.call(cp_command, shell=True)
     
 	#copy files to NeRV server
-    subprocess.call(["scp", "-r", hashed, "ubuntu@206.167.181.134:~/nerv-prototype/nerv/data/"])
+    subprocess.call(["scp", "-o", "StrictHostKeyChecking=no", "-r", hashed, "ubuntu@206.167.181.134:~/nerv-prototype/nerv/data/"])
