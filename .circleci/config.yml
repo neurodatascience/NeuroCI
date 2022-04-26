@@ -32,6 +32,9 @@ jobs: # A basic unit of work in a run
       - store_artifacts:
           path: /home/circleci/work_dir/artifacts
           destination: artifact-file
+      - add_ssh_keys:
+          fingerprints:
+            - "7b:28:08:5b:cd:f6:9b:a0:ae:43:15:75:66:91:88:f4" #corresponds to the SSH key used to connect to the server running NeRV itneractive visualization
 
 workflows:
   version: 2.1
