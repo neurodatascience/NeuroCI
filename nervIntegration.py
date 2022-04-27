@@ -16,12 +16,17 @@ with open('Experiment_Definition.yaml') as file: #Load experiment definition
     m = hashlib.md5()
     m.update(name_string.encode("utf-8"))
     hashed = str(m.hexdigest())[0:12]
-    print(hashed)
+    print("Using the experiment identifier: " + hashed)
     
     #Make a unique directory for this experiment, using the hash, copy cache files to it
     subprocess.call(["mkdir", hashed])
     cp_command = "cp *.json " + hashed
     subprocess.call(cp_command, shell=True)
     
-    #copy files to NeRV server
+    #Copy files to NeRV server
+    print("Copying newest cache files to the NerV visualization server...")
     subprocess.call(["scp", "-o", "StrictHostKeyChecking=no", "-r", hashed, "ubuntu@206.167.181.134:~/nerv-prototype/nerv/data/"])
+
+    #Instruct the user how to access the visualization
+    print("An interactive visualization for the results of this NeuroCI run has been created using the NeRV tool.")
+    print("To access this visualization please locally run the command 'ssh -L 80:localhost:80 -i <path_to_your_ssh_key> ubuntu@206.167.181.134' to access the server, and then visit http://localhost/" + hashed + " in your browser.")
