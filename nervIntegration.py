@@ -29,4 +29,4 @@ with open('Experiment_Definition.yaml') as file: #Load experiment definition
 
     #Instruct the user how to access the visualization
     print("An interactive visualization for the results of this NeuroCI run has been created using the NeRV tool.")
-    print("To access this visualization please locally run the command 'ssh -L 80:localhost:80 -i <path_to_your_ssh_key> ubuntu@206.167.181.134' to access the server, and then visit http://localhost/" + hashed + " in your browser.")
+    print("To access this visualization please visit http://206.167.181.134/" + hashed + " in your browser.")
