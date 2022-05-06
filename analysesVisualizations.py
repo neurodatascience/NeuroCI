@@ -94,7 +94,7 @@ def preventAD_process(data_file, cache_file, pipeline_name):
 						volume_list.append(volume)
 
 	if len(volume_list) >= 1 and len(hearing_loss_list)>=1: #If there is at least one data point.
-		#corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD', 'Left Hippocampal Volumes vs Age', 'Worse_ear_dsi', 'Hippocampal Volume (mm3)')
+		#corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD', 'Left Hippocampal Volumes vs Age', 'Worse_ear_dsi', 'Hippocampal Volume ($mm^3$)')
 		corrplot(volume_list, hearing_loss_list, pipeline_name, 'Prevent-AD', 'Left Hippocampal Volumes vs Age', 'Age (months)', 'Hippocampal Volume (mm3)')
 		#boxplot(volume_list, pipeline_name, 'Prevent-AD')
 		print('Generated plots for ' + cache_file + '/' + pipeline_name)
