@@ -22,8 +22,9 @@ def login(hostname, username, password, port=22):
 
         return client
 
-def logout():
-    pass
+def logout(client):
+    client.close()
+    print('Connection to', host, 'was closed.')
 
 def list_data_provider():
     pass
