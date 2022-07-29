@@ -3,12 +3,13 @@ import paramiko
 ##################################################################################
 
 def login(hostname, username, password, port=22):
+
     global host
     host = hostname
     client = paramiko.SSHClient()
     client.load_system_host_keys()
-    # Vulnerability to possible MITM attack
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())    # Vulnerability to possible MITM attack
+
     try:
         client.connect(hostname, port, username, password)
     except paramiko.BadHostKeyException:
@@ -23,6 +24,7 @@ def login(hostname, username, password, port=22):
         return client
 
 def logout(client):
+
     client.close()
     print('Connection to', host, 'was closed.')
 
@@ -38,13 +40,13 @@ def list_data_provider(client, path):
     
     return out.split('\n')
 
-def upload():
-    pass
-
 def post_task():
     pass
 
 def get_all_tasks():
+    pass
+
+def upload():
     pass
 
 def download():
