@@ -82,3 +82,15 @@ def download(client, remote_path, local_path, recursive=False):
     scp = SCPClient(client.get_transport())
     scp.get(remote_path, local_path, recursive)
     scp.close()
+
+
+def execute_command(client, cmd):
+
+    stdin, stdout, stderr = client.exec_command(cmd)
+    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+    
+    if err:
+        print(err)
+    else:
+        print(out)
+
