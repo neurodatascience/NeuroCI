@@ -24,10 +24,12 @@ def login(hostname, username, password, port=22):
 
         return client
 
+
 def logout(client):
 
     client.close()
     print('Connection to', host, 'was closed.')
+
 
 def list_data_provider(client, path):
 
@@ -41,6 +43,7 @@ def list_data_provider(client, path):
     
     return out.split('\n')
 
+
 def post_task(client, remote_path):
 
     cd_path = '/'.join(remote_path.split('/')[:-1])
@@ -52,6 +55,7 @@ def post_task(client, remote_path):
         print(err)
     else:
         print(out)
+
 
 def get_all_tasks(client):
 
@@ -65,12 +69,16 @@ def get_all_tasks(client):
         out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
         return dict(zip([i[0] for i in out[1:-1]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:-1]))))
 
+
 def upload(client, local_path, remote_path, recursive=False):
+
     scp = SCPClient(client.get_transport())
     scp.put(local_path, remote_path, recursive)
     scp.close()
 
+
 def download(client, remote_path, local_path, recursive=False):
+
     scp = SCPClient(client.get_transport())
     scp.get(remote_path, local_path, recursive)
     scp.close()
