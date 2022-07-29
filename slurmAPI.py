@@ -41,7 +41,7 @@ def list_data_provider(client, path):
     return out.split('\n')
 
 def post_task(client, remote_path):
-    
+
     cd_path = '/'.join(remote_path.split('/')[:-1])
     shell_name = remote_path.split('/')[-1]
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_name)
@@ -52,8 +52,17 @@ def post_task(client, remote_path):
     else:
         print(out)
 
-def get_all_tasks():
-    pass
+def get_all_tasks(client):
+
+    stdin, stdout, stderr = client.exec_command('squeue')
+    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+
+    if err:
+        print(err)
+        return None
+    else:
+        out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
+        return dict(zip([i[0] for i in out[1:-1]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:-1]))))
 
 def upload():
     pass
