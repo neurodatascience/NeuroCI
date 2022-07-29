@@ -40,8 +40,17 @@ def list_data_provider(client, path):
     
     return out.split('\n')
 
-def post_task():
-    pass
+def post_task(client, remote_path):
+    
+    cd_path = '/'.join(remote_path.split('/')[:-1])
+    shell_name = remote_path.split('/')[-1]
+    stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_name)
+    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+
+    if err:
+        print(err)
+    else:
+        print(out)
 
 def get_all_tasks():
     pass
