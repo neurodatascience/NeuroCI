@@ -26,8 +26,17 @@ def logout(client):
     client.close()
     print('Connection to', host, 'was closed.')
 
-def list_data_provider():
-    pass
+def list_data_provider(client, path):
+
+    stdin, stdout, stderr = client.exec_command('ls -r ' + path)
+    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+
+    if err:
+        print(err)
+    else:
+        print(out)
+    
+    return out.split('\n')
 
 def upload():
     pass
