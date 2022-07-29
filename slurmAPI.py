@@ -66,10 +66,11 @@ def get_all_tasks(client):
         return dict(zip([i[0] for i in out[1:-1]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:-1]))))
 
 def upload(client, local_path, remote_path, recursive=False):
-    
     scp = SCPClient(client.get_transport())
     scp.put(local_path, remote_path, recursive)
     scp.close()
 
-def download():
-    pass
+def download(client, remote_path, local_path, recursive=False):
+    scp = SCPClient(client.get_transport())
+    scp.get(remote_path, local_path, recursive)
+    scp.close()
