@@ -4,25 +4,16 @@ from scp import SCPClient
 ##################################################################################
 
 def login(hostname, username, password, port=22):
-
+    
     global host
     host = hostname
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())    # Vulnerability to possible MITM attack
+    client.connect(hostname, port, username, password)
+    print('Connection to', host, 'established.')
 
-    try:
-        client.connect(hostname, port, username, password)
-    except paramiko.BadHostKeyException:
-        print('Server’s host key could not be verified.')
-    except paramiko.AuthenticationException:
-        print('Authentication failed.')
-    except paramiko.SSHException:
-        print('An error occured while connecting\n An SSH session could not be established.')
-    else:
-        print('Connection to', host, 'established.')
-
-        return client
+    return client
 
 
 def logout(client):
