@@ -44,11 +44,11 @@ def list_data_provider(client, path):
     return out.split('\n')
 
 
-def post_task(client, remote_path):
+def post_task(client, path):
 
     cd_path = '/'.join(remote_path.split('/')[:-1])
-    shell_name = remote_path.split('/')[-1]
-    stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_name)
+    shell_file = remote_path.split('/')[-1]
+    stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_file)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
     if err:
@@ -88,7 +88,7 @@ def execute_command(client, cmd):
 
     stdin, stdout, stderr = client.exec_command(cmd)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
-    
+
     if err:
         print(err)
     else:
