@@ -108,8 +108,13 @@ def post_task(client, path, exit_status=True):
             print(err, '\nExit code for \"sbatch\" command in post_task:', str(stderr.channel.recv_exit_status()))
         else:
             print(out, '\nExit code for \"sbatch\" command in post_task:', str(stdout.channel.recv_exit_status()))
+            return out.split()[-1]
     else:
-        print(err) if err else print(out)
+        if err:
+            print(err)  
+        else:
+            print(out)
+            return out.split()[-1]
 
 
 def get_all_tasks(client, exit_status=True):
