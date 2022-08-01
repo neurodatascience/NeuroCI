@@ -46,7 +46,7 @@ def logout(client):
     print('Connection to', host, 'was closed.')
 
 
-def list_data_provider(client, path):
+def list_data_provider(client, path, exit_status=True):
     """Lists existing files in the given path.
 
     Generates a list of the available files in the input path using SSH connection
@@ -66,10 +66,17 @@ def list_data_provider(client, path):
     stdin, stdout, stderr = client.exec_command('ls -r ' + path)
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
-    if err:
-        print(err)
+    if exit_status:
+        if err:
+            print(err, '\nExit code for \"ls -r\" command in list_data_provider:', str(stderr.channel.recv_exit_status()))
+        else:
+            print('Exit code for \"ls -r\" command in list_data_provider:', str(stdout.channel.recv_exit_status()))
+            return out.split('\n')
     else:
-        return out.split('\n')
+        if err:
+            print(err) 
+        else:
+            return out.split('\n')
 
 
 def post_task(client, path):
