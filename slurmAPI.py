@@ -67,9 +67,9 @@ def list_data_provider(client, path):
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
     if err:
-        print(err)
+        print(err[:-1])
     else:
-        print(out)
+        print(out[:-1])
         return out.split('\n')
 
 
@@ -105,7 +105,7 @@ def get_all_tasks(client):
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
     if err:
-        print(err)
+        print(err[:-1])
     else:
         out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
         return dict(zip([i[0] for i in out[1:-1]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:-1]))))
