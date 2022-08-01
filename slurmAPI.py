@@ -19,8 +19,7 @@ def login(hostname, username, password, port=22):
     Returns:
         A paramiko.client.SSHClient object representing the client object with SSH connection.
     """
-    global host
-    host = hostname
+
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -43,7 +42,7 @@ def logout(client):
     """
 
     client.close()
-    print('Connection to', host, 'was closed.')
+    print('Connection was closed.')
 
 
 def list_data_provider(client, path, exit_status=True):
