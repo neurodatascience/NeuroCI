@@ -31,6 +31,16 @@ def login(hostname, username, password, port=22):
 
 
 def logout(client):
+    """Tears down the SSH connection.
+
+    Closes the paramiko.client.SSHClient object and it's underlying '.Transport'.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to be closed.
+
+    Returns:
+        None.
+    """
 
     client.close()
     print('Connection to', host, 'was closed.')
