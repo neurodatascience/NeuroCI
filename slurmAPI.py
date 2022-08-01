@@ -154,7 +154,7 @@ def upload(client, local_path, remote_path, recursive=False):
         local_path: A string representing a single path, or a list of strings representing paths on local machine to be transferred.
                     recursive must be True to transfer directories.
         remote_path: A string representing the path on the remote machine where the files will be transferred to.
-        recursive: A boolean to allow the transfer of files and directories recursively.
+        recursive: A boolean to allow the transfer of files and directories recursively (default False).
     
     Returns:
         None.
@@ -175,7 +175,7 @@ def download(client, remote_path, local_path, recursive=False):
         remote_path: A string representing a single path on remote machine to be transferred.
                      recursive must be True to transfer directories.
         local_path: A string representing the path on the local machine where the files will be transferred to.
-        recursive: A boolean to allow the transfer of files and directories recursively.
+        recursive: A boolean to allow the transfer of files and directories recursively (default False).
 
     Returns:
         None.
