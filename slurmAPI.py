@@ -91,8 +91,8 @@ def post_task(client, path):
         None.
     """
 
-    cd_path = '/'.join(remote_path.split('/')[:-1])
-    task_file = remote_path.split('/')[-1]
+    cd_path = '/'.join(path.split('/')[:-1])
+    task_file = path.split('/')[-1]
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + task_file)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
