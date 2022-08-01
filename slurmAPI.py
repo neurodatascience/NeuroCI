@@ -150,8 +150,6 @@ def get_all_tasks(client, exit_status=True):
                     }
 
         }
-
-        Returned keys and values are all strings.
     """
 
     stdin, stdout, stderr = client.exec_command('squeue')
