@@ -114,15 +114,16 @@ def post_task(client, path, exit_status=True):
 
 
 def get_all_tasks(client, exit_status=True):
-    """Gets all tasks in queue.
+    """Retrieves all tasks in queue.
 
-    Retrieves all tasks by executing a 'squeue' command using the SSH connection
-    provided by client object. If the command executes with no error it parses
-    the stdout, structures it into a dictionary and returns it otherwise, it prints
-    the stderr.
+    Gets all tasks by executing an 'squeue' command using the SSH connection
+    provided by client object. If the command executes with no error (prints the exit status and)
+    it parses the stdout, structures it into a dictionary and returns it otherwise, it prints
+    the stderr (and the exit status).
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
+        exit_status: A boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
 
     Returns:
         A dictionary mapping each job_id to a dictionary that maps task information headers to their
