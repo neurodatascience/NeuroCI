@@ -209,7 +209,7 @@ def download(client, remote_path, local_path, recursive=False):
     scp.close()
 
 
-def execute_command(client, cmd):
+def execute_command(client, cmd, exit_status=True):
     """Executes a given shell command.
 
     Executes a given shell command using the SSH connection provided by client object
@@ -226,4 +226,11 @@ def execute_command(client, cmd):
     stdin, stdout, stderr = client.exec_command(cmd)
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
-    print(err) if err else print(out)
+    
+    if exit_status:
+        if err:
+            print(err, '\nExit code for ' + "\"" + cmd + "\"" + ' command in execute_command:', str(stderr.channel.recv_exit_status()))
+        else:
+            print(out, '\nExit code for ' + "\"" + cmd + "\"" + ' command in execute_command:', str(stdout.channel.recv_exit_status()))
+    else:
+        print(err) if err else print(out)
