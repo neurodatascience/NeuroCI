@@ -55,7 +55,7 @@ def list_data_provider(client, path):
     stderr is printed and None is returned.
 
     Args:
-        client: A paramiko.client.SSHClient object with SSH connection to execute command.
+        client: A paramiko.client.SSHClient object with SSH connection to execute shell command.
         path: A string representing the path of the designated location.
 
     Returns:
@@ -74,10 +74,24 @@ def list_data_provider(client, path):
 
 
 def post_task(client, path):
+    """Posts a task located in the given path to Slurm.
+
+    Submits a task located in the input path to Slurm using the SSH connection 
+    provided by client object to execute 'cd' command to first change the 
+    current working directory to where the task file is located (cd path) 
+    and then submit the task (task_file) by executing 'sbatch' command.  
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to execute shell commands.
+        path: A string representing the path to the task file's location.
+    
+    Returns:
+        None.
+    """
 
     cd_path = '/'.join(remote_path.split('/')[:-1])
-    shell_file = remote_path.split('/')[-1]
-    stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_file)
+    task_file = remote_path.split('/')[-1]
+    stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + task_file)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
     print(err[:-1]) if err else print(out[:-1])
