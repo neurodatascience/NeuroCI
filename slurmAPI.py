@@ -85,9 +85,10 @@ def post_task(client, path, exit_status=True):
     Submits a task located in the input path to Slurm using the SSH connection 
     provided by client object to execute 'cd' command to first change the 
     current working directory to where the task file is located (cd path),
-    then submit the task (task_file) by executing 'sbatch' command, and 
-    prints the stdout (and the exit status) if the command executes with 
-    no error otherwise prints the error (and the exit status).
+    then submit the task (task_file) by executing 'sbatch' command, 
+    prints the stdout (and the exit status), and returns the job id of
+    the posted task if the command executes with no error otherwise 
+    prints the error (and the exit status).
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute shell commands.
@@ -95,7 +96,7 @@ def post_task(client, path, exit_status=True):
         exit_status: A boolean allows the exit status of the executed shell command to be printed (default True).
     
     Returns:
-        None.
+        A string representing the job id of the posted task if the command executes with no error otherwise None.
     """
 
     cd_path = '/'.join(path.split('/')[:-1])
