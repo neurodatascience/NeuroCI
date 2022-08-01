@@ -78,8 +78,10 @@ def post_task(client, path):
 
     Submits a task located in the input path to Slurm using the SSH connection 
     provided by client object to execute 'cd' command to first change the 
-    current working directory to where the task file is located (cd path) 
-    and then submit the task (task_file) by executing 'sbatch' command.  
+    current working directory to where the task file is located (cd path),
+    then submit the task (task_file) by executing 'sbatch' command, and 
+    prints the stdout if the command executes with no error otherwise
+    prints the error.
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute shell commands.
