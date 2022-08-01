@@ -24,7 +24,7 @@ def login(hostname, username, password, port=22):
     client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname, port, username, password)
-    print('Connection to', host, 'established.')
+    print('Connection to', hostname, 'established.')
 
     return client
 
