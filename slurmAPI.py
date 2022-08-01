@@ -113,7 +113,7 @@ def post_task(client, path, exit_status=True):
         print(err) if err else print(out)
 
 
-def get_all_tasks(client):
+def get_all_tasks(client, exit_status=True):
     """Gets all tasks in queue.
 
     Retrieves all tasks by executing a 'squeue' command using the SSH connection
@@ -151,11 +151,19 @@ def get_all_tasks(client):
     stdin, stdout, stderr = client.exec_command('squeue')
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
-    if err:
-        print(err)
+    if exit_status:
+        if err:
+            print(err, '\nExit code for \"squeue\" command in get_all_tasks:', str(stderr.channel.recv_exit_status()))
+        else:
+            print('Exit code for \"squeue\" command in get_all_tasks:', str(stdout.channel.recv_exit_status()))
+            out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
+            return dict(zip([i[0] for i in out[1:]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:]))))
     else:
-        out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
-        return dict(zip([i[0] for i in out[1:]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:]))))
+        if err:
+            print(err)
+        else:
+            out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
+            return dict(zip([i[0] for i in out[1:]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:]))))
 
 
 def upload(client, local_path, remote_path, recursive=False):
