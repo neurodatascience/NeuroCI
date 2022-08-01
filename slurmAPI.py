@@ -23,7 +23,7 @@ def login(hostname, username, password, port=22):
     host = hostname
     client = paramiko.SSHClient()
     client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())    # Vulnerability to possible MITM attack
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(hostname, port, username, password)
     print('Connection to', host, 'established.')
 
@@ -64,12 +64,11 @@ def list_data_provider(client, path):
     """
 
     stdin, stdout, stderr = client.exec_command('ls -r ' + path)
-    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+    out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
     if err:
-        print(err[:-1])
+        print(err)
     else:
-        print(out[:-1])
         return out.split('\n')
 
 
@@ -94,9 +93,9 @@ def post_task(client, path):
     cd_path = '/'.join(path.split('/')[:-1])
     task_file = path.split('/')[-1]
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + task_file)
-    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+    out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
-    print(err[:-1]) if err else print(out[:-1])
+    print(err) if err else print(out)
 
 
 def get_all_tasks(client):
@@ -135,13 +134,13 @@ def get_all_tasks(client):
     """
 
     stdin, stdout, stderr = client.exec_command('squeue')
-    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+    out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
     if err:
-        print(err[:-1])
+        print(err)
     else:
         out = [i.split()[:10] + [' '.join(i.split()[10:])] for i in out.split('\n')]
-        return dict(zip([i[0] for i in out[1:-1]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:-1]))))
+        return dict(zip([i[0] for i in out[1:]], (map(lambda x: dict(zip(out[0][1:], x[1:])), out[1:]))))
 
 
 def upload(client, local_path, remote_path, recursive=False):
@@ -201,8 +200,8 @@ def execute_command(client, cmd):
     """
 
     stdin, stdout, stderr = client.exec_command(cmd)
-    out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
+    out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
-    print(err[:-1]) if err else print(out[:-1])
+    print(err) if err else print(out)
         
 
