@@ -70,8 +70,7 @@ def list_data_provider(client, path):
         print(err)
     else:
         print(out)
-    
-    return out.split('\n')
+        return out.split('\n')
 
 
 def post_task(client, path):
