@@ -47,6 +47,21 @@ def logout(client):
 
 
 def list_data_provider(client, path):
+    """Lists existing files in the given path.
+
+    Generates a list of the available files in the input path using SSH connection
+    provided by client object to execute 'ls -r' command. If the command executes
+    with no error, the stdout is printed and the list is returned otherwise the 
+    stderr is printed and None is returned.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to execute command.
+        path: A string representing the path of the designated location.
+
+    Returns:
+        A list of strings where each string represents the available files in the given path
+        if the command executes with no error otherwise None.
+    """
 
     stdin, stdout, stderr = client.exec_command('ls -r ' + path)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
