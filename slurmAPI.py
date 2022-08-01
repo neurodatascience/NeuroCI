@@ -111,7 +111,7 @@ def get_all_tasks(client):
         client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
 
     Returns:
-        A dict mapping each job_id to a dictionary that maps task information headers to their
+        A dictionary mapping each job_id to a dictionary that maps task information headers to their
         respective values if the command executes with no error otherwise None. Example of 
         returned dictionary:
 
@@ -145,6 +145,20 @@ def get_all_tasks(client):
 
 
 def upload(client, local_path, remote_path, recursive=False):
+    """Transfers files and directoreis from local machine to remote machine.
+
+    Uploads files and directories using scp module and client object with SSH connection.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to get the transport from and initialize the SCPClient object.
+        local_path: A string representing a single path, or a list of strings representing paths to be transferred.
+                    recursive must be True to transfer directories.
+        remote_path: A string representing the path on the remote machine where the files will be transferred to.
+        recursive: A boolean to allow the transfer of files and directories recursively.
+    
+    Returns:
+        None.
+    """
 
     scp = SCPClient(client.get_transport())
     scp.put(local_path, remote_path, recursive)
