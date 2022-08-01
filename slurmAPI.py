@@ -80,10 +80,7 @@ def post_task(client, path):
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + shell_file)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
-    if err:
-        print(err)
-    else:
-        print(out)
+    print(err[:-1]) if err else print(out[:-1])
 
 
 def get_all_tasks(client):
