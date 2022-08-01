@@ -147,11 +147,11 @@ def get_all_tasks(client):
 def upload(client, local_path, remote_path, recursive=False):
     """Transfers files and directoreis from local machine to remote machine.
 
-    Uploads files and directories using scp module and client object with SSH connection.
+    Uploads files and directories using scp module and client object.
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to get the transport from and initialize the SCPClient object.
-        local_path: A string representing a single path, or a list of strings representing paths to be transferred.
+        local_path: A string representing a single path, or a list of strings representing paths on local machine to be transferred.
                     recursive must be True to transfer directories.
         remote_path: A string representing the path on the remote machine where the files will be transferred to.
         recursive: A boolean to allow the transfer of files and directories recursively.
@@ -166,6 +166,20 @@ def upload(client, local_path, remote_path, recursive=False):
 
 
 def download(client, remote_path, local_path, recursive=False):
+    """Transfers files and directories from remote machine to local machine.
+
+    Downloads files and directories using scp module and client object.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to get the transport from and initialize the SCPClient object.
+        remote_path: A string representing a single path on remote machine to be transferred.
+                     recursive must be True to transfer directories.
+        local_path: A string representing the path on the local machine where the files will be transferred to.
+        recursive: A boolean to allow the transfer of files and directories recursively.
+
+    Returns:
+        None.
+    """
 
     scp = SCPClient(client.get_transport())
     scp.get(remote_path, local_path, recursive)
