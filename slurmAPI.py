@@ -80,7 +80,7 @@ def list_data_provider(client, path, exit_status=True):
             return out.split('\n')
 
 
-def post_task(client, path):
+def post_task(client, path, exit_status=True):
     """Posts a task located in the given path to Slurm.
 
     Submits a task located in the input path to Slurm using the SSH connection 
@@ -102,8 +102,14 @@ def post_task(client, path):
     task_file = path.split('/')[-1]
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + task_file)
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
-
-    print(err) if err else print(out)
+    
+    if exit_status:
+        if err:
+            print(err, '\nExit code for \"sbatch\" command in post_task:', str(stderr.channel.recv_exit_status()))
+        else:
+            print(out, '\nExit code for \"sbatch\" command in post_task:', str(stdout.channel.recv_exit_status()))
+    else:
+        print(err) if err else print(out)
 
 
 def get_all_tasks(client):
@@ -211,5 +217,3 @@ def execute_command(client, cmd):
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
     print(err) if err else print(out)
-        
-
