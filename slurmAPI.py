@@ -187,6 +187,18 @@ def download(client, remote_path, local_path, recursive=False):
 
 
 def execute_command(client, cmd):
+    """Executes a given shell command.
+
+    Executes a given shell command using the SSH connection provided by client object
+    and prints the stdout if the command executes with no error otherwise prints stderr.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to execute the given shell command.
+        cmd: A string representing the shell command to be executed.
+
+    Returns:
+        None.
+    """
 
     stdin, stdout, stderr = client.exec_command(cmd)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
