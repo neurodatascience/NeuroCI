@@ -56,7 +56,7 @@ def list_data_provider(client, path, exit_status=True):
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
         path: A string representing the path of the designated location.
-        exit_status: boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
+        exit_status: A boolean allows the exit status of the executed shell command to be printed (default True).
 
     Returns:
         A list of strings where each string represents the available files in the given path
@@ -92,7 +92,7 @@ def post_task(client, path, exit_status=True):
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute shell commands.
         path: A string representing the path to the task file's location.
-        exit_status: boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
+        exit_status: A boolean allows the exit status of the executed shell command to be printed (default True).
     
     Returns:
         None.
@@ -122,7 +122,7 @@ def get_all_tasks(client, exit_status=True):
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
-        exit_status: A boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
+        exit_status: A boolean allows the exit status of the executed shell command to be printed (default True).
 
     Returns:
         A dictionary mapping each job_id to a dictionary that maps task information headers to their
@@ -217,7 +217,7 @@ def execute_command(client, cmd, exit_status=True):
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the given shell command.
         cmd: A string representing the shell command to be executed.
-        exit_status: A boolean allows the function to print the exit status of the executed shell command (default True).
+        exit_status: A boolean allows the exit status of the executed shell command to be printed (default True).
 
     Returns:
         None.
