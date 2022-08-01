@@ -130,8 +130,6 @@ def execute_command(client, cmd):
     stdin, stdout, stderr = client.exec_command(cmd)
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
 
-    if err:
-        print(err)
-    else:
-        print(out)
+    print(err[:-1]) if err else print(out[:-1])
+        
 
