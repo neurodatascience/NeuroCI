@@ -87,12 +87,13 @@ def post_task(client, path, exit_status=True):
     provided by client object to execute 'cd' command to first change the 
     current working directory to where the task file is located (cd path),
     then submit the task (task_file) by executing 'sbatch' command, and 
-    prints the stdout if the command executes with no error otherwise
-    prints the error.
+    prints the stdout (and the exit status) if the command executes with 
+    no error otherwise prints the error (and the exit status).
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute shell commands.
         path: A string representing the path to the task file's location.
+        exit_status: boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
     
     Returns:
         None.
