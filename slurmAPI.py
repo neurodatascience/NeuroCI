@@ -11,13 +11,13 @@ def login(hostname, username, password, port=22):
     hostname is not found, It is automatically added (set_missing_host_key_policy()).
 
     Args:
-        hostname: A string representing the server to connect to
-        username: A string representing the username to authenticate as
-        password: A string password to authenticate 
-        port: An integer representing the server port to connect to (default 22)
+        hostname: A string representing the server to connect to.
+        username: A string representing the username to authenticate as.
+        password: A string representing password to authenticate.
+        port: An integer representing the server port to connect to (default 22).
 
     Returns:
-        A paramiko.client.SSHClient object representing the client object with SSH connection
+        A paramiko.client.SSHClient object representing the client object with SSH connection.
     """
     global host
     host = hostname
