@@ -55,7 +55,7 @@ def list_data_provider(client, path):
     stderr is printed and None is returned.
 
     Args:
-        client: A paramiko.client.SSHClient object with SSH connection to execute shell command.
+        client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
         path: A string representing the path of the designated location.
 
     Returns:
@@ -100,6 +100,39 @@ def post_task(client, path):
 
 
 def get_all_tasks(client):
+    """Gets all tasks in queue.
+
+    Retrieves all tasks by executing a 'squeue' command using the SSH connection
+    provided by client object. If the command executes with no error it parses
+    the stdout, structures it into a dictionary and returns it otherwise, it prints
+    the stderr.
+
+    Args:
+        client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
+
+    Returns:
+        A dict mapping each job_id to a dictionary that maps task information headers to their
+        respective values if the command executes with no error otherwise None. Example of 
+        returned dictionary:
+
+        {'40749727': 
+                    {
+                        'USER': 'johndoe',
+                        'ACCOUNT': 'def-joh_C',
+                        'NAME': '4carm0.1.24',
+                        'ST': 'R',
+                        'TIME_LEFT': '1:26',
+                        'NODES': '3',
+                        'CPUS': '4',
+                        'TRES_PER_N': 'N/A',
+                        'MIN_MEM': '16',
+                        'NODELIST (REASON)': 'cdr[1705-1706,1712] (None)'
+                    }
+
+        }
+
+        Returned keys and values are all strings.
+    """
 
     stdin, stdout, stderr = client.exec_command('squeue')
     out, err = ''.join(stdout.readlines()), ''.join(stderr.readlines())
