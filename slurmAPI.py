@@ -51,12 +51,13 @@ def list_data_provider(client, path, exit_status=True):
 
     Generates a list of the available files in the input path using SSH connection
     provided by client object to execute 'ls -r' command. If the command executes
-    with no error, the stdout is printed and the list is returned otherwise the 
-    stderr is printed and None is returned.
+    with no error,(exit status is printed and) the list is returned otherwise the 
+    stderr (and exit status) is printed and None is returned.
 
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the shell command.
         path: A string representing the path of the designated location.
+        exit_status: boolean representing a flag when true the function prints the exit status of the executed shell command (default True).
 
     Returns:
         A list of strings where each string represents the available files in the given path
