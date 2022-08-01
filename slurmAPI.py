@@ -218,6 +218,7 @@ def execute_command(client, cmd, exit_status=True):
     Args:
         client: A paramiko.client.SSHClient object with SSH connection to execute the given shell command.
         cmd: A string representing the shell command to be executed.
+        exit_status: A boolean allows the function to print the exit status of the executed shell command (default True).
 
     Returns:
         None.
