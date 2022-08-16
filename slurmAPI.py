@@ -1,4 +1,5 @@
 import paramiko
+from shlex import quote
 from scp import SCPClient
 
 ##################################################################################
@@ -63,7 +64,7 @@ def list_data_provider(client, path, exit_status=True):
         if the command executes with no error otherwise None.
     """
 
-    stdin, stdout, stderr = client.exec_command('ls -r ' + path)
+    stdin, stdout, stderr = client.exec_command('ls -r ' + quote(path))
     out, err = ''.join(stdout.readlines())[:-1], ''.join(stderr.readlines())[:-1]
 
     if exit_status:
@@ -99,6 +100,7 @@ def post_task(client, path, exit_status=True):
         A string representing the job id of the posted task if the command executes with no error otherwise None.
     """
 
+    path = quote(path)
     cd_path = '/'.join(path.split('/')[:-1])
     task_file = path.split('/')[-1]
     stdin, stdout, stderr = client.exec_command('cd ' + cd_path + ';sbatch ' + task_file)
