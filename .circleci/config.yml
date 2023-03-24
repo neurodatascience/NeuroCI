@@ -37,11 +37,11 @@ jobs: # A basic unit of work in a run
           path: /home/circleci/work_dir/artifacts
           destination: artifact-file
 
-workflows:
-  version: 2.1
-  build-workflow:
-    jobs:
-      - build
+#workflows:
+#  version: 2.1
+#  build-workflow:
+#    jobs:
+#      - build
 #  schedule-workflow:
 #    triggers:
 #      - schedule:
@@ -50,5 +50,5 @@ workflows:
 #            branches:
 #              only:
 #                - master
-    jobs:
-      - build
+#    jobs:
+#      - build
