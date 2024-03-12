@@ -99,7 +99,7 @@ While I may indeed someday make an entire written document for each individual f
 
 ## Quick tips, fixes and other notes.
 
-* Note that the first time the circleCI run of this softwrae attempts to populate the results into a json, it will likely say there is an error populating it in the terminal output, giving something along the lines of:
+* Note that the first time the circleCI run of this software attempts to populate the results into a json, it will likely say there is an error populating it in the terminal output, giving something along the lines of:
 *Streaming text for fileID: 3700641
 Synchronized userfiles 3700641
 Download failure
