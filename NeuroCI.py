@@ -53,7 +53,7 @@ def main(cbrain_token, CCI_token, experiment_definition, cbrain_ids, latest_arti
 		#extract_results()
 		#analysis(expdef[script])
 		
-		#start = time.time()
+		#start = time.time() # This is a good way to know you are not losing your mind if you think the cache is slowing things down
 		#update_statuses(dataset  + '.json', cbrain_token)
 		#end = time.time()
 		#print('Updated statuses in cache for: ' + dataset  + '.json in' + str(datetime.timedelta(seconds=(end - start))))
