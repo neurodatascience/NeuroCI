@@ -14,6 +14,10 @@ from cacheOps import *
 ###########################################################################################################################
 #General functions
 
+### Note that this Python file is the 'designated' place for the user to provide their own code for visualization and artifact production purposes.
+### It makes to have a space for 'custom processing' as datasets can vary. The next version may be BIDS only.
+### I have provided some basic static image file artifact examples that were used in the NeuroCI eScience paper. The interactive visualization is via Nerv.
+
 '''Generates a simple boxplot, not used for now.'''
 def boxplot(volume_list, pipeline_name, dataset_name):
     data = np.array(volume_list).astype(np.float)
@@ -211,20 +215,16 @@ preventAD_data_file = 'Auditory_processing_Registered_PREVENTAD.csv'
 preventAD_cache_file = 'Prevent-AD.json'
 
 #########################################################################################################
-#Compass-ND
 
-#########################################################################################################
-#UK-BioBank
-
-#########################################################################################################
 # Main section of Analyses
 
 cbrain_user = sys.argv[1]
 cbrain_password = sys.argv[2]
 cbrain_token = cbrain_login(cbrain_user, cbrain_password)
 
-#cbrain_download_DP_file('Auditory_processing_Registered_PREVENTAD.csv', 318, cbrain_token) #use this if you know the file name but not the ID. Takes a long time though.
-cbrain_download_file(3497558, preventAD_data_file, cbrain_token) #use this (quicker) if you know the CBRAIN userfileID
+# Downloading phenotipic data from CBRAIN
+#cbrain_download_DP_file('Auditory_processing_Registered_PREVENTAD.csv', 318, cbrain_token) #use this line if you know the file name but not the ID. Takes a long time though.
+cbrain_download_file(3497558, preventAD_data_file, cbrain_token) #use this line (quicker) if you know the CBRAIN userfileID
 
 with open('Experiment_Definition.yaml') as file: #Load experiment definition
 	try:
