@@ -2,6 +2,9 @@
 
 [![jacobsanz97](https://circleci.com/gh/neurodatascience/NeuroCI.svg?style=svg)](https://app.circleci.com/pipelines/github/neurodatascience/NeuroCI)
 
+Note that the architecture is still evolving. Please use the tag v1.0 for the functional CBRAIN version of NeuroCI.
+Upcoming versions are disconnected from CBRAIN and directly use SLURM job management, and uses Nipoppy for data management, GitHub Actions for CI, permanent artifact backup, etc...
+
 ### Use Python version 3.7 or later
 
 ## Overview
@@ -16,7 +19,7 @@ It is work in progress :)
 * Pipelines will point to the Boutiques tool descriptor, which allows them to be containerized and run on CBRAIN/NeuroHub.
 * The initial pipelines and datasets that are being integrated can be seen in the diagram below. They have been chosen as they are pertinent to my research question on the associations of hearing loss and brain structure.
 
-![](./Related_Files/Other/Diagram.jpg)
+![](./Related_Files/Other/diagramCBRAIN_era.png)
 
 ## Required Accounts:
 
