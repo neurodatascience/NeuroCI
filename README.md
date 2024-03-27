@@ -110,4 +110,6 @@ Download failure
 If this is the case, don't worry! The file synchronization doesn't occur instantaneously, so it doesn't find the file on CBRAIN to download until a minute or two have passed. It should download with no issues the next time the CI runs a few hours later.
 
 ## Acknlowledgements
-* CONP (Canadian Open Neuroscience Platform): https://conp.ca/jacob-sanz-robinson/
+* CONP (Canadian Open Neuroscience Platform)
+* UNIQUE (Unifying Neuroscience and Artificial Intelligence in Quebec)
+* FRQ-NT (Fonds de recherche du Québec – Nature et technologie)
