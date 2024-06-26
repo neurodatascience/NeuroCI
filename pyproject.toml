@@ -1,0 +1,42 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling", "hatch-vcs"]
+
+[project]
+authors = [{name = "Jacob Sanz-Robinson", email = "jacob.sanz-robinson@mail.mcgill.ca"}]
+dependencies = []
+description = "TODO"
+dynamic = ["version"]
+name = "neuro_ci"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+# For running unit and docstring tests
+test = [
+    "pytest>=6.0.0",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.codespell]
+skip = "./.git,.mypy_cache,env,venv"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/neuro_ci/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neuro_ci"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.pytest.ini_options]
+addopts = "-ra -vv"
+
+[tool.isort]
+combine_as_imports = true
+line_length = 79
+profile = "black"
+skip_gitignore = true
