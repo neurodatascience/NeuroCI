@@ -4,7 +4,12 @@ requires = ["hatchling", "hatch-vcs"]
 
 [project]
 authors = [{name = "Jacob Sanz-Robinson", email = "jacob.sanz-robinson@mail.mcgill.ca"}]
-dependencies = [] # TODO
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "PyYAML",
+    "requests",
+] # TODO
 description = "" # TODO
 dynamic = ["version"]
 name = "neuro_ci"
@@ -16,6 +21,7 @@ requires-python = ">=3.8"
 test = [
     "pytest>=6.0.0"
 ]
+doc = []
 
 [tool.black]
 line-length = 100
