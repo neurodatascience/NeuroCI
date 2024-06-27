@@ -14,8 +14,8 @@ It is work in progress :)
 
 ## Description and Diagram
 * An ‘experiment definition’ yaml file allows the user to specify the pipelines, parameters, and datasets needed to describe and run their computational experiment. It will perform a multiverse-style analysis, where all of the specified pipelines and configurations are run on all the specified datasets. We can therefore determine if the results obtained are robust across pipelines and replicable across datasets.
-* Each time the experiment definition is changed, a run in the CircleCI CI platform will be triggered, dynamically launching the required data processing, collecting the results, and transparently committing them along with statistical summaries and visualizations to the experiment CI workflow. 
-* It makes use of existing open-source tools: the Datalad framework will reference datasets indexed in the CONP (Canadian Open Neuroscience Platform) repositories, which are transferred to Compute Canada. Here, the data can be accessed by CBRAIN, a neuroimaging distributed cloud computing platform able to handle computationally intensive research and that features an API, allowing computations to be executed from within CircleCI. 
+* Each time the experiment definition is changed, a run in the CircleCI CI platform will be triggered, dynamically launching the required data processing, collecting the results, and transparently committing them along with statistical summaries and visualizations to the experiment CI workflow.
+* It makes use of existing open-source tools: the Datalad framework will reference datasets indexed in the CONP (Canadian Open Neuroscience Platform) repositories, which are transferred to Compute Canada. Here, the data can be accessed by CBRAIN, a neuroimaging distributed cloud computing platform able to handle computationally intensive research and that features an API, allowing computations to be executed from within CircleCI.
 * Pipelines will point to the Boutiques tool descriptor, which allows them to be containerized and run on CBRAIN/NeuroHub.
 * The initial pipelines and datasets that are being integrated can be seen in the diagram below. They have been chosen as they are pertinent to my research question on the associations of hearing loss and brain structure.
 
@@ -35,16 +35,16 @@ It is work in progress :)
 * (2) Fork this repository.
 
 * (3) Edit the Experiment Definition yaml file to add the pipelines and datasets, make sure the pipeline components are specified in the correct order.
- 
+
 * (4) Add the relevant CBRAIN IDs for tools and data providers in the  *Config_Files/CBRAIN_IDs.yaml* file.
 
 * (5) Create and add, or modify the pipeline parameter json files to the *Task_Parameters* directory. These are the parameters which the tool will run on in CBRAIN.  Currently I find that the easiest way to create a new parameter json file is to run a single task with the pipeline through CBRAIN, then querying the task through the *cbrain_get_task_info* function in *cbrainAPI.py*, and then copying and pasting the 'params' field with desired modifications into a json file.
 
 * (6) Provide the path to the parameters for each component in the Experiment Definition. Note that the names by which you refer to the pipelines and datasets have to be written identically in the config file and the Experiment Definition.
 
-* (7) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit. 
+* (7) Edit the analysesVisualizations.py module to process your results from the cache files and produce the plots as you see fit.
 
-* (8) Depending on the output format of the pipeline you will likely have to add some code to the *populate_results* function in the *cacheOps.py* module to ensure the results are extracted and placed in the cache in the specific way. 
+* (8) Depending on the output format of the pipeline you will likely have to add some code to the *populate_results* function in the *cacheOps.py* module to ensure the results are extracted and placed in the cache in the specific way.
 
 * (9) Similarly to the previous step, the code for the *update_statuses* function in *cacheOps.py* may need to be updated depending on the specific pipeline's CBRAIN ID output key, which in turn depends on the Boutiques descriptor for the pipeline.
 
@@ -52,7 +52,7 @@ It is work in progress :)
 
 * (11) Go to the CircleCI project settings. Modify the environment variables in CircleCI. Add your CBRAIN credentials in environment variables called 'cbrain_user' and 'cbrain_password'
 
-* (12) In the CircleCI project settings, generate a CircleCI token and add it as 'CCI_token' to the CircleCI environment variables (to be able to download the latest cache file from the artifacts using their API). 
+* (12) In the CircleCI project settings, generate a CircleCI token and add it as 'CCI_token' to the CircleCI environment variables (to be able to download the latest cache file from the artifacts using their API).
 
 * (13) Note that this step is probably already automatically done by CircleCI (but worth checking): In the forked GitHub repo settings, go to the ‘Deploy keys’ tab in the project’s settings, generate a key, and paste this into the CircleCI Project Settings ‘SSH Keys’ tab.
 
@@ -72,10 +72,10 @@ The main directories in the repository are:
 
 Some important files to start with are:
 
-* **Experiment_Definition.yaml:** The user specifies the names of the datasets, pipeline. They specify pipeline components in the order they will execute in, as well as the paths for the parameters of each component. Note that the names provided in this file must match the names in Config_Files. 
+* **Experiment_Definition.yaml:** The user specifies the names of the datasets, pipeline. They specify pipeline components in the order they will execute in, as well as the paths for the parameters of each component. Note that the names provided in this file must match the names in Config_Files.
 This is the main file the user is meant to modify to define the computational experiments being run.
 
-* **.circleci/config.yml**: Downloads and installs the necessary packages for Python. Launches the NeuroCI.py script using CircleCI environment variables to pass it arguments. It creates an artifacts directory which will contain all of the CircleCI artifacts available (our desired output). It copies the json cache files to this directory. 
+* **.circleci/config.yml**: Downloads and installs the necessary packages for Python. Launches the NeuroCI.py script using CircleCI environment variables to pass it arguments. It creates an artifacts directory which will contain all of the CircleCI artifacts available (our desired output). It copies the json cache files to this directory.
 It also has a section to specify a cron-job to routinely update your caches and computations.
 
 * **Config_Files/CBRAIN_IDs.yaml:** Allows the user to specify the CBRAIN data provider ID for the datasets (points CBRAIN to your dataset on Compute Canada) and the pipeline component IDs ("Tool_config_IDs" on CBRAIN). These are the IDs the script will use to access the data and pipelines in CBRAIN. Note that the names provided in this file must match the names in the Experiment Definition.
@@ -85,7 +85,7 @@ It also has a section to specify a cron-job to routinely update your caches and 
 The main Python modules are:
 
 * **NeuroCI.py:** The "main" central module which orchestrates the workflow. It logs the user on to CBRAIN, obtains the circleCI token, and the url to download the newest artifacts from the last run (all stored in the CircleCI environment variables, and passed to the script in the CircleCI config file). It then reads the Experiment Definition and the config file, and passes all relevant info to the "main" function.
-The main function is a simple nested loop. The outer loop iterates over the datasets in the experiment definition, downloads the latest cache file  (json file which keeps track of intermediate computations and completed computation results from CBRAIN for a single dataset) from the previous circleCI run, and queries CBRAIN in order to update all of the task statuses. 
+The main function is a simple nested loop. The outer loop iterates over the datasets in the experiment definition, downloads the latest cache file  (json file which keeps track of intermediate computations and completed computation results from CBRAIN for a single dataset) from the previous circleCI run, and queries CBRAIN in order to update all of the task statuses.
 The inner loop iterates over the pipelines in the experiment definition file. It adds any new files available in the data provider to the cache, and calls the pipeline manager to deal with the posting of tasks for each component of the current pipeline and dataset.
 
 * **cacheOps.py:** Contains functions that perform operations on the dataset cache files. These range from downloading the latest cache file, to generating a new cache file from scratch, generating new subjects, to updating task and result statuses in a cache file, etc.
@@ -102,7 +102,7 @@ While I may indeed someday make an entire written document for each individual f
 
 ## Quick tips, fixes and other notes.
 
-* Note that the first time the circleCI run of this softwrae attempts to populate the results into a json, it will likely say there is an error populating it in the terminal output, giving something along the lines of:
+* Note that the first time the circleCI run of this software attempts to populate the results into a json, it will likely say there is an error populating it in the terminal output, giving something along the lines of:
 *Streaming text for fileID: 3700641
 Synchronized userfiles 3700641
 Download failure
