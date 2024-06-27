@@ -1,0 +1,42 @@
+[flake8]
+; exclude =
+
+
+docstring-convention = numpy
+max-line-length = 100
+
+# ----------------------- errors to include / exclude -----------------------
+
+# See https://flake8.pycqa.org/en/latest/user/violations.html#selecting-violations-with-flake8
+
+# For PEP8 error codes see:
+# http://pep8.readthedocs.org/en/latest/intro.html#error-codes
+#
+# The ruff website also has a very didactic explanations on the reasons
+# why those rules exist:
+# https://docs.astral.sh/ruff/rules/
+
+#   Non-exhaustive listing:
+#
+#   B: flake8 bugbear errors
+#   CFQ: flake8 functions errors
+#   D: pydocstyle
+# 		D100-D104: missing docstring
+# 		D105: missing docstring in magic method
+# 		D107: missing docstring in __init__
+# 		D205: 1 blank line required between summary line and description
+# 		D400: first line should end with a period
+#   E: errors
+#		E203 whitespace before ':'
+#			is for compatibility with black
+# 			https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#flake8
+# 		E402: module level import not at top of file
+# 	F401: module imported but unused
+#   W: warnings
+# 		W503: line break before binary operator
+# 		W504: line break after binary operator
+
+--select = B,D,E,F,W,C90,CFQ
+
+per-file-ignores =
+extend-ignore = W191, W291
