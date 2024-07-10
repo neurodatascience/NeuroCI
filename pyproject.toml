@@ -1,0 +1,53 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling", "hatch-vcs"]
+
+[project]
+authors = [{name = "Jacob Sanz-Robinson", email = "jacob.sanz-robinson@mail.mcgill.ca"}]
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "PyYAML",
+    "requests",
+] # TODO
+description = "" # TODO
+dynamic = ["version"]
+name = "neuro_ci"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+# For running unit and docstring tests
+test = [
+    "pytest>=6.0.0"
+]
+doc = []
+
+[tool.black]
+line-length = 100
+
+[tool.codespell]
+skip = "./.git,env,venv"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/neuro_ci/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neuro_ci"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.isort]
+combine_as_imports = true
+line_length = 79
+profile = "black"
+skip_gitignore = true
+
+[tool.pytest.ini_options]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+filterwarnings = ["error"]
+log_cli_level = "INFO"
+minversion = "7"
+testpaths = ["tests"]
+xfail_strict = true
