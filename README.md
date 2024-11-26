@@ -2,8 +2,10 @@
 
 [![jacobsanz97](https://circleci.com/gh/neurodatascience/NeuroCI.svg?style=svg)](https://app.circleci.com/pipelines/github/neurodatascience/NeuroCI)
 
-Note that the architecture is still evolving. Please use the tag v1.0 for the functional CBRAIN version of NeuroCI.
-Upcoming versions are disconnected from CBRAIN and directly use SLURM job management, and uses Nipoppy for data management, GitHub Actions for CI, permanent artifact backup, etc...
+Note that this branch contains the **old** version of NeuroCI. The new version is being developed on a different branch.
+This v1.0 tag marks the functional CBRAIN version of NeuroCI, as described in the publication [(Sanz-Robinson, 2022)](https://ieeexplore.ieee.org/document/9973641) .
+
+The upcoming v2.0 (see master branch) is disconnected from CBRAIN and directly uses SLURM/SGE job scheduling on an HPC. It It also relies on Nipoppy for data management, GitHub Actions for CI, permanent artifact backup, etc...
 
 ### Use Python version 3.7 or later
 
