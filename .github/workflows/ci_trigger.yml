@@ -16,5 +16,5 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: ./neuroci_code/main.py
-      run: echo "The experiment_definition.yaml file has been modified!"
+    - name: NeuroCI Run
+      run: python ./neuroci_code/main.py
