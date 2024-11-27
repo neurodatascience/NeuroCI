@@ -1,0 +1,20 @@
+name: Trigger on File Modification
+
+on:
+  push:
+    paths:
+      - 'experiment_definition.yaml'
+  pull_request:
+    paths:
+      - 'experiment_definition.yaml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: ./neuroci_code/main.py
+      run: echo "The experiment_definition.yaml file has been modified!"
