@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 # Load experiment definition
 try:
-    with open('../experiment_definition.yaml') as file:
+    with open('../../experiment_definition.yaml') as file:
         experiment_definition = yaml.safe_load(file)
 except yaml.YAMLError as exception:
     logger.error('The Experiment Definition file is not valid')
