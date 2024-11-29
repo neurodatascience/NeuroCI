@@ -1,2 +1,14 @@
-test: "field"
-try: "1,2"
+datasets: 
+  name1: "path1"
+  name2: "path2"
+  name3: "path3"
+
+pipelines: #Make sure to use the exact same names as specified in Nipoppy.
+  name1: "version1"
+  name2: "version2"
+  name3: "version3"
+
+container_store: "container_path"
+state_backup: "directory_backup_path"
+
+
