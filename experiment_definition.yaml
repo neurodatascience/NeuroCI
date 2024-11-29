@@ -10,5 +10,3 @@ pipelines: #Make sure to use the exact same names as specified in Nipoppy.
 
 container_store: "container_path"
 state_backup: "directory_backup_path"
-
-
