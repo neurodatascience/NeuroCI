@@ -1,5 +1,5 @@
 {
     "interface_userfile_ids": ["fileID"], 
-    "input_file": "fileID", 
+    "infile": "fileID", 
     "fractional_intensity": 0.5     
 }
