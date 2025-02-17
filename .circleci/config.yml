@@ -23,14 +23,14 @@ jobs: # A basic unit of work in a run
             mkdir artifacts
             python NeuroCI.py $cbrain_user $cbrain_password $CCI_token https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/latest/artifacts
             cp *.json artifacts
-            python analysesVisualizations.py $cbrain_user $cbrain_password
-            mkdir -p artifacts/summary_info/
+            #python analysesVisualizations.py $cbrain_user $cbrain_password
+            #mkdir -p artifacts/summary_info/
             cp -r Task_Parameters artifacts/summary_info/
-            cp Experiment_Definition.yaml artifacts/summary_info
+            #cp Experiment_Definition.yaml artifacts/summary_info
             cp Config_Files/CBRAIN_IDs.yaml artifacts/summary_info
-            echo $CIRCLE_BUILD_NUM > CCI_Build_Number.txt
-            cp CCI_Build_Number.txt artifacts/summary_info
-            python nervIntegration.py
+            #echo $CIRCLE_BUILD_NUM > CCI_Build_Number.txt
+            #cp CCI_Build_Number.txt artifacts/summary_info
+            #python nervIntegration.py
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
