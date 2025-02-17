@@ -25,7 +25,7 @@ Pipelines:
 
 Experiment_name: Review Paper Test
 
-Unit_of_measurement: mm3
+Unit_of_measurement: mm
 
 Resubmit_tasks:
   taskIDs:
