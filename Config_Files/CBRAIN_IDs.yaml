@@ -1,10 +1,11 @@
 Data_Provider_IDs:
-  Prevent-AD: 318
+  BIC: 1042
 
 Tool_Config_IDs:
   FSL_First: 721
   Subfolder_File_Extractor_FSL: 2094
   FSL_Stats: 1698
-  FreeSurfer_Recon_all: 583
+  FreeSurfer_Recon_all: 6983
   Subfolder_File_Extractor_FreeSurfer_1: 2094
   Subfolder_File_Extractor_FreeSurfer_2: 2094
+  FSL_BET: 717
