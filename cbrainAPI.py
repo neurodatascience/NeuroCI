@@ -93,13 +93,14 @@ def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictio
 			'tool_config_id': tool_config_id,
 			'params': parameter_dictionary, 
 			'run_number': None, 
-			'results_data_provider_id': 179, #Using Beluga
+			'results_data_provider_id': 1042, #Using BIC, for Mainstore use 27
 			'cluster_workdir_size': None, 
 			'workdir_archived': True,  
 			'description': ''}
 	}
 
-	y = json.dumps(data)	#convert data field to JSON:
+	print(data)
+	y = json.dumps(data)	#convert data field to JSON
 	response = requests.post('https://portal.cbrain.mcgill.ca/tasks', headers=headers, params=params, data=y)
 
 	if response.status_code == 200:
