@@ -102,7 +102,7 @@ def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictio
 			'description': ''}
 	}
 
-	print(data)
+	#print(data)
 	y = json.dumps(data)	#convert data field to JSON
 	response = requests.post('https://portal.cbrain.mcgill.ca/tasks', headers=headers, params=params, data=y)
 
