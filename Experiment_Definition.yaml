@@ -17,10 +17,10 @@ Pipelines:
       FSL_BET:
         Parameter_dictionary: ./Task_Parameters/FSL_BET.json
 
-  FreeSurfer:
-    Components:
-      FreeSurfer_Recon_all:
-        Parameter_dictionary: ./Task_Parameters/FreeSurfer_recon_all.json
+#  FreeSurfer:
+#    Components:
+#      FreeSurfer_Recon_all:
+#        Parameter_dictionary: ./Task_Parameters/FreeSurfer_recon_all.json
 
 ##########################################################################################
 
