@@ -2,14 +2,10 @@
 
 Datasets:
 
-  mainstore:
+  BIC:
     Blocklist:
     - blocklistedfile.nii.gz
     - license.txt
-    - sub-01_run-2_T1w-2807912
-    - sub-01_run-2_T1w.mnc
-    - sub-01_run-2_T1w_bet-2807909-1.nii.gz
-    - sub-01_run-2_T1w_bet-2812546-1.nii.gz ✓
     - Auditory_processing_Registered_PREVENTAD.csv
 
 ##########################################################################################
