@@ -79,7 +79,10 @@ def cbrain_post_task(cbrain_token, userfile_id, tool_config_id, parameter_dictio
 	
 	#Parse the parameter dictionary json, and insert the userfile IDs.
 	parameter_dictionary['interface_userfile_ids'] = [userfile_id]
-	parameter_dictionary['input_file'] = userfile_id
+	if 'input_file' in parameter_dictionary:
+		parameter_dictionary['input_file'] = userfile_id
+	elif 'infile' in parameter_dictionary:
+		parameter_dictionary['infile'] = userfile_id
 
 	headers = {
 		'Content-Type': 'application/json',
