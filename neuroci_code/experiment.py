@@ -15,11 +15,6 @@ class Experiment:
         # Implement dataset compliance logic here
         pass
 
-    def harmonize_datasets(self):
-        logging.info('Harmonizing datasets...')
-        # Implement dataset harmonization logic here
-        pass
-
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Updating tracker info for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
         # Implement tracker info update logic here
