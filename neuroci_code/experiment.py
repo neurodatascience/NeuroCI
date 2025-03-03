@@ -3,7 +3,6 @@ import os
 import shutil
 from fabric import Connection
 
-
 class Experiment:
     def __init__(self, experiment_definition):
         # Validate required fields
@@ -41,6 +40,16 @@ class Experiment:
             logging.error(f"Failed to establish SSH connection: {e}")
             self.conn = None
             raise ConnectionError("Could not establish SSH connection.")
+
+
+    def HPC_logout(self):
+        """Closes the SSH connection if it is active."""
+        if self.conn and self.conn.is_connected:
+            self.conn.close()
+            logging.info("SSH connection closed successfully.")
+        else:
+            logging.warning("SSH connection was already closed or never established.")
+            
 '''
     def check_dataset_compliance(self):
         logging.info('Checking dataset compliance...')
@@ -91,11 +100,3 @@ class Experiment:
         # Implement user-defined processing logic
         pass
 '''
-
-    def HPC_logout(self):
-        """Closes the SSH connection if it is active."""
-        if self.conn and self.conn.is_connected:
-            self.conn.close()
-            logging.info("SSH connection closed successfully.")
-        else:
-            logging.warning("SSH connection was already closed or never established.")
