@@ -9,4 +9,4 @@ pipelines: # Make sure to use the exact same names as specified in Nipoppy.
   name3: "version3"
 
 state_backup: "directory_backup_path_"
-prefix_cmd: "source hpc_venv_path_/bin/activate" # Prefix command, such as activating the virtual environment with Nipoppy in it
+prefix_cmd: "source hpc_venv_path_/bin/activate" # Prefix command (including activating the virtual environment with Nipoppy installed in it)
