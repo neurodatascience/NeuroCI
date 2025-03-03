@@ -9,3 +9,4 @@ pipelines: #Make sure to use the exact same names as specified in Nipoppy.
   name3: "version3"
 
 state_backup: "directory_backup_path_"
+venv_path: "venv_path_" #Virtual Environment with Nipoppy installed
