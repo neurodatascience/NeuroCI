@@ -11,6 +11,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
 
     steps:
     - name: Checkout code
@@ -18,7 +22,3 @@ jobs:
 
     - name: NeuroCI Run
       run: python ./neuroci_code/main.py
-      env:
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
