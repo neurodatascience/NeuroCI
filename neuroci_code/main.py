@@ -19,6 +19,7 @@ def main(experiment_definition):
             this_experiment.run_pipelines_on_datasets(dataset, dataset_path, pipeline, pipeline_version)
             this_experiment.extract_from_derivatives(dataset, dataset_path, pipeline, pipeline_version)
     this_experiment.run_user_processing()
+    this_experiment.HPC_logout()
 
 # Configure logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

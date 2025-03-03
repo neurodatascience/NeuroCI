@@ -1,14 +1,46 @@
 import logging
 import os
 import shutil
+from fabric import Connection
+
 
 class Experiment:
     def __init__(self, experiment_definition):
-        self.datasets = experiment_definition.get('datasets', {})
-        self.pipelines = experiment_definition.get('pipelines', {})
-        self.container_store = experiment_definition.get('container_store', '')
+        # Validate required fields
+        if 'datasets' not in experiment_definition or not experiment_definition['datasets']:
+            logging.error('No datasets found in experiment definition.')
+            raise ValueError("Experiment definition must include datasets.")
 
-        logging.info(f'Experiment object initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
+        if 'pipelines' not in experiment_definition or not experiment_definition['pipelines']:
+            logging.error('No pipelines found in experiment definition.')
+            raise ValueError("Experiment definition must include pipelines.")
+
+        self.datasets = experiment_definition['datasets']
+        self.pipelines = experiment_definition['pipelines']
+        self.prefix_cmd = experiment_definition.get('prefix_cmd', '')  # Defaults to empty string
+        self.state_backup = experiment_definition.get('state_backup', None)  # Defaults to None
+
+        logging.info(f'Experiment initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
+        logging.info(f'Prefix command: {self.prefix_cmd}')
+        logging.info(f'State backup: {self.state_backup}')
+
+        # Fetch credentials from environment variables
+        self.host = os.getenv("SSH_HOST")
+        self.username = os.getenv("SSH_USER")
+        ssh_password = os.getenv("SSH_PASSWORD")  # Fetch but do not store
+
+        if not self.host or not self.username or not ssh_password:
+            logging.error("Missing SSH credentials in environment variables.")
+            raise EnvironmentError("SSH credentials are required.")
+
+        # Establish SSH Connection
+        try:
+            self.conn = Connection(host=self.host, user=self.username, connect_kwargs={"password": ssh_password})
+            logging.info("SSH connection to HPC established successfully.")
+        except Exception as e:
+            logging.error(f"Failed to establish SSH connection: {e}")
+            self.conn = None
+            raise ConnectionError("Could not establish SSH connection.")
 '''
     def check_dataset_compliance(self):
         logging.info('Checking dataset compliance...')
@@ -59,3 +91,11 @@ class Experiment:
         # Implement user-defined processing logic
         pass
 '''
+
+    def HPC_logout(self):
+        """Closes the SSH connection if it is active."""
+        if self.conn and self.conn.is_connected:
+            self.conn.close()
+            logging.info("SSH connection closed successfully.")
+        else:
+            logging.warning("SSH connection was already closed or never established.")
