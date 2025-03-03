@@ -8,7 +8,7 @@ class Experiment:
         self.pipelines = experiment_definition.get('pipelines', {})
         self.container_store = experiment_definition.get('container_store', '')
 
-        logging.info('Experiment initialized with datasets and pipelines.')
+        logging.info(f'Experiment object initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
 '''
     def check_dataset_compliance(self):
         logging.info('Checking dataset compliance...')
