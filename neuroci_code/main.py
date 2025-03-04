@@ -10,8 +10,8 @@ def main(experiment_definition):
 
     #this_experiment.check_dataset_compliance()
 
-    for dataset, dataset_path in this_experiment.datasets.items():
-        for pipeline, pipeline_version in this_experiment.pipelines.items():
+    #for dataset, dataset_path in this_experiment.datasets.items():
+    #    for pipeline, pipeline_version in this_experiment.pipelines.items():
     #        this_experiment.update_tracker_info(dataset, dataset_path, pipeline, pipeline_version)
     #        this.experiment.backup_state_on_hpc(dataset, dataset_path, pipeline, pipeline_version) #stores the state of the pipeline on the HPC in folder from experiment_definition
     #        this_experiment.fetch_state_from_HPC(dataset, dataset_path, pipeline, pipeline_version) #copies the state of the pipeline from the HPC to the GH Actions workspace
