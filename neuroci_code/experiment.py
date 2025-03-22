@@ -49,6 +49,16 @@ class Experiment:
             self.conn = None
             raise ConnectionError("Could not establish SSH connection.")
 
+        # Test SSH connection with a simple command
+        logging.info("Running SSH connection test...")
+        result = self.conn.run("whoami", hide=True)
+        if result.ok:
+            logging.info(f"SSH connection test passed: Logged in as {result.stdout.strip()}")
+        else:
+            logging.error("SSH connection test failed. Check credentials and host configuration.")
+            raise ConnectionError("SSH connection test failed.")
+
+
     def _setup_ssh_config(self, hostname, private_key, config_path):
         """Parses the SSH config file, extracts IdentityFile, and writes the private key there."""
         config_file = os.path.expanduser(config_path)
