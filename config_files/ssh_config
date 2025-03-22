@@ -1,0 +1,11 @@
+Host bic
+    HostName login.bic.mni.mcgill.ca
+    User jacobsr
+    IdentityFile ~/.ssh/id_rsa
+
+Host ducky
+    HostName ducky.bic-node.mni.mcgill.ca
+    User jacobsr
+    ProxyCommand ssh -W %h:%p bic
+    IdentityFile ~/.ssh/id_rsa
+    ForwardAgent yes
