@@ -3,7 +3,7 @@ datasets:
   name2: "path2"
   name3: "path3"
 
-pipelines: # Make sure to use the exact same pipeline name and versions specified in the Nipoppy datasets above.
+pipelines: # Make sure to use the exact same pipeline names and versions specified in the Nipoppy datasets above.
   name1: "version1"
   name2: "version2"
   name3: "version3"
