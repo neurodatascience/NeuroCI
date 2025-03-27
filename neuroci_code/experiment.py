@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import json
 from fabric import Connection
 from paramiko.config import SSHConfig
 
@@ -173,12 +174,76 @@ class Experiment:
             logging.info("SSH connection closed successfully.")
         else:
             logging.warning("SSH connection was already closed or never established.")
-            
-'''
+
+
     def check_dataset_compliance(self):
-        logging.info('Checking dataset compliance...')
-        # Implement dataset compliance logic here
-        pass
+        """Checks if all datasets comply with the experiment definition."""
+        logging.info("Starting dataset compliance check...")
+
+        expected_pipelines = self.pipelines  # {pipeline_name: version}
+        dataset_paths = self.datasets  # {dataset_name: path}
+
+        # Storage for validation
+        seen_containers = {}
+        seen_invocations = {}
+
+        for dataset_name, dataset_path in dataset_paths.items():
+            logging.info(f"Checking dataset: {dataset_name} at {dataset_path}")
+
+            # Remote path to global_config.json
+            global_config_path = os.path.join(dataset_path, "global_config.json")
+
+            # Read global_config.json from remote server
+            try:
+                result = self.conn.run(f"cat {global_config_path}", hide=True)
+                global_config = json.loads(result.stdout)
+            except Exception as e:
+                logging.error(f"Failed to read global_config.json from {dataset_name}: {e}")
+                raise
+
+            # Validate pipeline versions
+            proc_pipelines = {p["NAME"]: p["VERSION"] for p in global_config.get("PROC_PIPELINES", [])}
+            for pipeline, version in expected_pipelines.items():
+                if pipeline not in proc_pipelines or proc_pipelines[pipeline] != version:
+                    logging.error(
+                        f"Dataset {dataset_name} does not use the expected pipeline version: "
+                        f"Expected {pipeline}-{version}, Found {proc_pipelines.get(pipeline, 'MISSING')}"
+                    )
+                    raise ValueError("Dataset compliance check failed due to pipeline version mismatch.")
+
+            # Check container consistency
+            container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
+            container_path = os.path.join(container_store, f"{pipeline}_{version}.sif")
+
+            try:
+                container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
+                if pipeline not in seen_containers:
+                    seen_containers[pipeline] = container_info
+                elif seen_containers[pipeline] != container_info:
+                    logging.error(f"Inconsistent container detected for pipeline {pipeline}.")
+                    raise ValueError("Dataset compliance check failed due to container inconsistency.")
+            except Exception as e:
+                logging.error(f"Failed to inspect container {container_path}: {e}")
+                raise
+
+            # Check Boutiques invocation consistency
+            pipeline_dir = os.path.join(dataset_path, "pipelines", f"{pipeline}-{version}")
+            invocation_path = os.path.join(pipeline_dir, "invocation.json")
+
+            try:
+                invocation_content = self.conn.run(f"cat {invocation_path}", hide=True).stdout
+                if pipeline not in seen_invocations:
+                    seen_invocations[pipeline] = invocation_content
+                elif seen_invocations[pipeline] != invocation_content:
+                    logging.error(f"Inconsistent Boutiques invocation detected for pipeline {pipeline}.")
+                    raise ValueError("Dataset compliance check failed due to invocation inconsistency.")
+            except Exception as e:
+                logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
+                raise
+
+        logging.info("All datasets comply with the experiment definition.")            
+'''
+
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Updating tracker info for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')

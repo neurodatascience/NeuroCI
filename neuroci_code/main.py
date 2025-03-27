@@ -8,7 +8,7 @@ def main(experiment_definition):
 
     this_experiment = Experiment(experiment_definition)  # Initialize experiment
 
-    #this_experiment.check_dataset_compliance()
+    this_experiment.check_dataset_compliance()
 
     #for dataset, dataset_path in this_experiment.datasets.items():
     #    for pipeline, pipeline_version in this_experiment.pipelines.items():
