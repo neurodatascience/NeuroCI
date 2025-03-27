@@ -23,7 +23,6 @@ class Experiment:
 
         logging.info(f'Experiment initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
         logging.info(f'Prefix command: {self.prefix_cmd}')
-        logging.info(f'State backup: {self.state_backup}')
 
         # Fetch SSH credentials from environment variables
         self.target_host = os.getenv("SSH_TARGET_HOST")
