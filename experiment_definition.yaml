@@ -1,12 +1,9 @@
 datasets: 
-  name1: "path1"
-  name2: "path2"
-  name3: "path3"
+  name1: "/data/origami/jacob/neuroci_test/nipoppy_datasets/dataset1"
+  name2: "/data/origami/jacob/neuroci_test/nipoppy_datasets/dataset2"
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above.
-  name1: "version1"
-  name2: "version2"
-  name3: "version3"
+  mriqc: "23.1.0"
+  freesurfer: "7.3.2"
 
-state_backup: "directory_backup_path_"
-prefix_cmd: "source hpc_venv_path_/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it).
+prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_neuroci/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it).

@@ -19,8 +19,7 @@ class Experiment:
 
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
-        self.prefix_cmd = experiment_definition.get('prefix_cmd', '')  
-        self.state_backup = experiment_definition.get('state_backup', None)  
+        self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
 
         logging.info(f'Experiment initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
         logging.info(f'Prefix command: {self.prefix_cmd}')
@@ -242,31 +241,12 @@ class Experiment:
                 raise
 
         logging.info("All datasets comply with the experiment definition.")            
-'''
 
+'''
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Updating tracker info for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
         # Implement tracker info update logic here
-        pass
-
-    def backup_state_on_hpc(self, dataset, dataset_path, pipeline, pipeline_version):
-        logging.info(f'Backing up state on HPC for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        # Logic to back up state to HPC
-        # Example: Save to a specific folder defined in the experiment definition
-        hpc_backup_path = os.path.join(self.container_store, dataset, pipeline)
-        os.makedirs(hpc_backup_path, exist_ok=True)
-        # Mock example of copying a state file to backup
-        state_file = os.path.join(dataset_path, f"{pipeline}_state.txt")
-        backup_file = os.path.join(hpc_backup_path, f"{pipeline}_state_backup.txt")
-        if os.path.exists(state_file):
-            shutil.copy(state_file, backup_file)
-        else:
-            logging.warning(f'State file for {dataset}/{pipeline} not found for backup.')
-
-    def fetch_state_from_HPC(self, dataset, dataset_path, pipeline, pipeline_version):
-        logging.info(f'Fetching state from HPC for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        # Logic to fetch state from HPC to workspace
         pass
 
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
