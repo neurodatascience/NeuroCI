@@ -239,15 +239,31 @@ class Experiment:
                 logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
                 raise
 
-        logging.info("All datasets comply with the experiment definition.")            
-
-'''
+        logging.info("All datasets comply with the experiment definition.")
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
+        """
+        Runs the Nipoppy 'track' command on the HPC to update the computation status
+        for the given dataset and pipeline.
+        """
         logging.info(f'Updating tracker info for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        # Implement tracker info update logic here
-        pass
+        
+        # Construct the command with the virtual environment activation
+        track_command = f"{self.prefix_cmd} && nipoppy track --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
+        
+        try:
+            # Execute the command remotely via SSH using Fabric
+            result = self.conn.run(track_command, hide=True)
+            
+            if result.ok:
+                logging.info(f"Successfully updated tracker info for {dataset} - {pipeline} ({pipeline_version})")
+            else:
+                logging.error(f"Failed to update tracker info for {dataset} - {pipeline} ({pipeline_version})")
+                logging.error(result.stderr)
+        except Exception as e:
+            logging.error(f"Error while running tracker update for {dataset} - {pipeline}: {e}")   
 
+'''
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Pushing state to repo for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
         # Logic to push state to repository

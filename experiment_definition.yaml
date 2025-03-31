@@ -7,3 +7,4 @@ pipelines: # Use the *exact* same pipeline names and versions specified in the N
   freesurfer: "7.3.2"
 
 prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_neuroci/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it).
+scheduler: "sge" # Scheduler to use (e.g. slurm, sge).
