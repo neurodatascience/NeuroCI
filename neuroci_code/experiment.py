@@ -20,9 +20,11 @@ class Experiment:
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
+        self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
 
         logging.info(f'Experiment initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
         logging.info(f'Prefix command: {self.prefix_cmd}')
+        logging.info(f'Scheduler: {self.scheduler}')
 
         # Fetch SSH credentials from environment variables
         self.target_host = os.getenv("SSH_TARGET_HOST")
@@ -81,6 +83,7 @@ class Experiment:
 
         logging.info(f"Private key written to {key_path}")
         return key_path
+
 
     def _ensure_known_hosts(self, hostname, config_path):
         """Scans and adds target and proxy hosts to known_hosts to avoid interactive prompts."""
@@ -241,6 +244,7 @@ class Experiment:
 
         logging.info("All datasets comply with the experiment definition.")
 
+
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
         """
         Runs the Nipoppy 'track' command on the HPC to update the computation status
@@ -261,17 +265,35 @@ class Experiment:
                 logging.error(f"Failed to update tracker info for {dataset} - {pipeline} ({pipeline_version})")
                 logging.error(result.stderr)
         except Exception as e:
-            logging.error(f"Error while running tracker update for {dataset} - {pipeline}: {e}")   
+            logging.error(f"Error while running tracker update for {dataset} - {pipeline}: {e}")
+
+
+    def run_pipeline(self, dataset, dataset_path, pipeline, pipeline_version):
+        """
+        Runs the Nipoppy 'run' command on the HPC to process the dataset with the given pipeline.
+        """
+        logging.info(f'Running pipeline for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
+        
+        # Construct the command with the virtual environment activation
+        run_command = f"{self.prefix_cmd} && nipoppy run --dataset {dataset_path} --pipeline {pipeline} -- --pipeline-version {pipeline_version} --hpc {self.scheduler}"
+        
+        try:
+            # Execute the command remotely via SSH using Fabric
+            result = self.conn.run(run_command, hide=True)
+            
+            if result.ok:
+                logging.info(f"Successfully started pipeline for {dataset} - {pipeline} ({pipeline_version})")
+            else:
+                logging.error(f"Failed to start pipeline for {dataset} - {pipeline} ({pipeline_version})")
+                logging.error(result.stderr)
+        except Exception as e:
+            logging.error(f"Error while running pipeline for {dataset} - {pipeline}: {e}")
+    
 
 '''
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Pushing state to repo for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
         # Logic to push state to repository
-        pass
-
-    def run_pipelines_on_datasets(self, dataset, dataset_path, pipeline, pipeline_version):
-        logging.info(f'Running pipeline: {pipeline} ({pipeline_version}) on dataset: {dataset} at {dataset_path}')
-        # Implement logic to run pipelines
         pass
 
     def extract_from_derivatives(self, dataset, dataset_path, pipeline, pipeline_version):
