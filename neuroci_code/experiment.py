@@ -275,7 +275,7 @@ class Experiment:
         logging.info(f'Running pipeline for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
         
         # Construct the command with the virtual environment activation
-        run_command = f"bash -l -c '{self.prefix_cmd} && nipoppy run --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version} --hpc {self.scheduler}'"
+        run_command = f"BASH_ENV=/etc/profile bash -l -c '{self.prefix_cmd} && nipoppy run --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version} --hpc {self.scheduler}'"
         
         try:
             # Execute the command remotely via SSH using Fabric
