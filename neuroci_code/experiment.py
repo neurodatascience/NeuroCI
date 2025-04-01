@@ -288,7 +288,7 @@ class Experiment:
                 logging.error(result.stderr)
         except Exception as e:
             logging.error(f"Error while running pipeline for {dataset} - {pipeline}: {e}")
-    
+        self.conn.run("bash -l -c 'env'", hide=False)   
 
 '''
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
