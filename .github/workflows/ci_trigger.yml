@@ -14,7 +14,6 @@ jobs:
     env:
       SSH_CONFIG_PATH: ${{ secrets.SSH_CONFIG_PATH }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      SSH_TARGET_HOST: ${{ secrets.SSH_TARGET_HOST }}
 
     steps:
     - name: Checkout code
