@@ -289,14 +289,12 @@ class Experiment:
                 logging.error(result.stderr)
         except Exception as e:
             logging.error(f"Error while running pipeline for {dataset} - {pipeline}: {e}")
-        self.conn.run("bash -l -c 'env'", hide=False)
-
 
     def run_extractor(self, dataset, dataset_path, pipeline, pipeline_version):
         """
        Runs the Nipoppy 'extract' command on the HPC to extract data from the given dataset with the specified pipeline.
         """
-        logging.info(f'Running extractor for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
+        logging.info(f'Running extractor for dataset: {dataset} at {dataset_path}, extractor: {pipeline} ({pipeline_version})')
 
         # Construct the command with the virtual environment activation
         extract_command = f"bash -l -c '{self.prefix_cmd} && nipoppy extract --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version} --hpc {self.scheduler} --keep-workdir'"
