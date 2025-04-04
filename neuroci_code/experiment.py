@@ -267,7 +267,7 @@ class Experiment:
 
         # Include virtual environment activation
         full_command = f"{self.prefix_cmd} && {base_command}"
-       if use_bash:
+        if use_bash:
             full_command = f"bash -l -c '{full_command}'"
 
         try:
