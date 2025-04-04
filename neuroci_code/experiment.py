@@ -20,20 +20,21 @@ class Experiment:
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
         self.extractors = experiment_definition['extractors']
+        self.target_host = experiment_definition.get('target_host')
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
         self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
 
         logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}, and extractors: {self.extractors}')
+        logging.info(f'Target host: {self.target_host}')
         logging.info(f'Prefix command: {self.prefix_cmd}')
         logging.info(f'Scheduler: {self.scheduler}')
 
         # Fetch SSH credentials from environment variables
-        self.target_host = os.getenv("SSH_TARGET_HOST")
         private_key = os.getenv("SSH_PRIVATE_KEY")
         ssh_config_path = os.getenv("SSH_CONFIG_PATH", "~/.ssh/config")
 
         if not self.target_host or not private_key:
-            logging.error("Missing SSH target host or private key in environment variables.")
+            logging.error("Missing SSH target host or private key.")
             raise EnvironmentError("SSH target host and private key are required.")
 
         # Parse SSH config and write private key to the correct location
