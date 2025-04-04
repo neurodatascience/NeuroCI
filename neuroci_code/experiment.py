@@ -19,10 +19,11 @@ class Experiment:
 
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
+        self.extractors = experiment_definition.get['extractors']
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
         self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
 
-        logging.info(f'Experiment initialized with datasets: {self.datasets} and pipelines: {self.pipelines}.')
+        logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}, and extractors: {self.extractors}')
         logging.info(f'Prefix command: {self.prefix_cmd}')
         logging.info(f'Scheduler: {self.scheduler}')
 
@@ -290,6 +291,7 @@ class Experiment:
             logging.error(f"Error while running pipeline for {dataset} - {pipeline}: {e}")
         self.conn.run("bash -l -c 'env'", hide=False)
 
+
     def run_extractor(self, dataset, dataset_path, pipeline, pipeline_version):
         """
        Runs the Nipoppy 'extract' command on the HPC to extract data from the given dataset with the specified pipeline.
@@ -318,10 +320,6 @@ class Experiment:
         # Logic to push state to repository
         pass
 
-    def extract_from_derivatives(self, dataset, dataset_path, pipeline, pipeline_version):
-        logging.info(f'Extracting derivatives for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        # Implement logic to extract derivatives
-        pass
 
     def run_user_processing(self):
         logging.info('Running user-defined processing steps...')
