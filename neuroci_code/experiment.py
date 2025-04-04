@@ -19,7 +19,7 @@ class Experiment:
 
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
-        self.extractors = experiment_definition.get['extractors']
+        self.extractors = experiment_definition['extractors']
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
         self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
 
