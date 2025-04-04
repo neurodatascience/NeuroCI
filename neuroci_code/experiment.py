@@ -247,71 +247,61 @@ class Experiment:
         logging.info("All datasets comply with the experiment definition.")
 
 
-    def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
+    def _run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
         """
-        Runs the Nipoppy 'track' command on the HPC to update the computation status
-        for the given dataset and pipeline.
+        General method to construct and execute a Nipoppy command remotely via SSH.
         """
-        logging.info(f'Updating tracker info for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        
-        # Construct the command with the virtual environment activation
-        track_command = f"{self.prefix_cmd} && nipoppy track --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
-        
+        log_action = {
+            "track": "tracker info",
+            "run": "pipeline",
+            "extract": "extractor"
+        }.get(action, action)
+
+        logging.info(f'Running {log_action} for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
+
+        # Build the base command
+        base_command = f"nipoppy {action} --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
+    
+        if action in ['run', 'extract']:
+            base_command += f" --hpc {self.scheduler} --keep-workdir"
+
+        # Include virtual environment activation
+        full_command = f"{self.prefix_cmd} && {base_command}"
+       if use_bash:
+            full_command = f"bash -l -c '{full_command}'"
+
         try:
-            # Execute the command remotely via SSH using Fabric
-            result = self.conn.run(track_command, hide=True)
-            
+            result = self.conn.run(full_command, hide=True)
             if result.ok:
-                logging.info(f"Successfully updated tracker info for {dataset} - {pipeline} ({pipeline_version})")
+                logging.info(f"Successfully started {log_action} for {dataset} - {pipeline} ({pipeline_version})")
             else:
-                logging.error(f"Failed to update tracker info for {dataset} - {pipeline} ({pipeline_version})")
+                logging.error(f"Failed to start {log_action} for {dataset} - {pipeline} ({pipeline_version})")
                 logging.error(result.stderr)
         except Exception as e:
-            logging.error(f"Error while running tracker update for {dataset} - {pipeline}: {e}")
+            logging.error(f"Error while running {log_action} for {dataset} - {pipeline}: {e}")
+
+
+    def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
+        """
+        Runs the Nipoppy 'track' command to update the computation status for the dataset.
+        """
+        self._run_nipoppy_command("track", dataset, dataset_path, pipeline, pipeline_version, use_bash=False)
 
 
     def run_pipeline(self, dataset, dataset_path, pipeline, pipeline_version):
         """
-        Runs the Nipoppy 'run' command on the HPC to process the dataset with the given pipeline.
+        Runs the Nipoppy 'run' command to process the dataset using the specified pipeline.
         """
-        logging.info(f'Running pipeline for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        
-        # Construct the command with the virtual environment activation
-        run_command = f"bash -l -c '{self.prefix_cmd} && nipoppy run --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version} --hpc {self.scheduler} --keep-workdir'"
-        
-        try:
-            # Execute the command remotely via SSH using Fabric
-            result = self.conn.run(run_command, hide=True)
-            
-            if result.ok:
-                logging.info(f"Successfully started pipeline for {dataset} - {pipeline} ({pipeline_version})")
-            else:
-                logging.error(f"Failed to start pipeline for {dataset} - {pipeline} ({pipeline_version})")
-                logging.error(result.stderr)
-        except Exception as e:
-            logging.error(f"Error while running pipeline for {dataset} - {pipeline}: {e}")
+        self._run_nipoppy_command("run", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
+
 
     def run_extractor(self, dataset, dataset_path, pipeline, pipeline_version):
         """
-       Runs the Nipoppy 'extract' command on the HPC to extract data from the given dataset with the specified pipeline.
+        Runs the Nipoppy 'extract' command to extract results from the dataset with the given pipeline.
         """
-        logging.info(f'Running extractor for dataset: {dataset} at {dataset_path}, extractor: {pipeline} ({pipeline_version})')
+        self._run_nipoppy_command("extract", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
 
-        # Construct the command with the virtual environment activation
-        extract_command = f"bash -l -c '{self.prefix_cmd} && nipoppy extract --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version} --hpc {self.scheduler} --keep-workdir'"
 
-        try:
-            # Execute the command remotely via SSH using Fabric
-            result = self.conn.run(extract_command, hide=True)
-
-            if result.ok:
-                logging.info(f"Successfully started extractor for {dataset} - {pipeline} ({pipeline_version})")
-            else:
-                logging.error(f"Failed to start extractor for {dataset} - {pipeline} ({pipeline_version})")
-                logging.error(result.stderr)
-        except Exception as e:
-            logging.error(f"Error while running extractor for {dataset} - {pipeline}: {e}")
-    
 
 '''
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
