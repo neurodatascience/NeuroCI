@@ -9,6 +9,6 @@ pipelines: # Use the *exact* same pipeline names and versions specified in the N
 extractors: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   filecount: "1.0.0"
 
-target_host: "ducky" # The target HPC host. Must be the name of a host specified in the SSH config file.
+target_host: "ducky" # The target HPC host. Must be the name of a host that is specified in the SSH config file.
 prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_hpc/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it).
 scheduler: "sge" # Scheduler to use (slurm and sge are currently functional)
