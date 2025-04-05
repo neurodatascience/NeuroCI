@@ -184,21 +184,26 @@ class Experiment:
         logging.info("Starting dataset compliance check...")
 
         dataset_paths = self.datasets  # {dataset_name: path}
-        
-        # Combine pipelines and extractors under a single structure
+
+        # Expected tools by type
         expected_tools = {
             "pipeline": self.pipelines,    # e.g., {"fmriprep": "23.1.3"}
             "extractor": self.extractors   # e.g., {"filecount": "1.0.0"}
         }
 
-        # Storage for validation consistency
+        # Where to look for each tool type in global_config
+        config_sections = {
+            "pipeline": "PROC_PIPELINES",
+            "extractor": "EXTRACTION_PIPELINES"
+        }
+
+        # Storage for consistency checks
         seen_containers = {}
         seen_invocations = {}
 
         for dataset_name, dataset_path in dataset_paths.items():
             logging.info(f"Checking dataset: {dataset_name} at {dataset_path}")
 
-            # Remote path to global_config.json
             global_config_path = os.path.join(dataset_path, "global_config.json")
 
             try:
@@ -208,14 +213,17 @@ class Experiment:
                 logging.error(f"Failed to read global_config.json from {dataset_name}: {e}")
                 raise
 
-            proc_pipelines = {p["NAME"]: p["VERSION"] for p in global_config.get("PROC_PIPELINES", [])}
             container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
 
             for tool_type, tools in expected_tools.items():
-                for tool_name, expected_version in tools.items():
-                    actual_version = proc_pipelines.get(tool_name)
+                config_key = config_sections[tool_type]
+                tool_list = global_config.get(config_key, [])
+                found_versions = {tool["NAME"]: tool["VERSION"] for tool in tool_list}
 
-                    # Validate tool version
+                for tool_name, expected_version in tools.items():
+                    actual_version = found_versions.get(tool_name)
+
+                    # Validate version match
                     if actual_version != expected_version:
                         logging.error(
                             f"Dataset {dataset_name} does not use the expected {tool_type} version: "
@@ -252,6 +260,7 @@ class Experiment:
                         raise
 
         logging.info("All datasets comply with the experiment definition.")
+
 
 
     def _run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
