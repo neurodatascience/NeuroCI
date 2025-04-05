@@ -231,19 +231,32 @@ class Experiment:
                         )
                         raise ValueError("Dataset compliance check failed due to version mismatch.")
 
-                    # Validate container consistency
+                    key = f"{tool_type}:{tool_name}"
                     container_path = os.path.join(container_store, f"{tool_name}_{expected_version}.sif")
-                    try:
-                        container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
-                        key = f"{tool_type}:{tool_name}"
-                        if key not in seen_containers:
-                            seen_containers[key] = container_info
-                        elif seen_containers[key] != container_info:
-                            logging.error(f"Inconsistent container detected for {tool_type} {tool_name}.")
-                            raise ValueError("Dataset compliance check failed due to container inconsistency.")
-                    except Exception as e:
-                        logging.error(f"Failed to inspect container {container_path}: {e}")
-                        raise
+
+                    # Check container only if it's a pipeline or the file exists
+                    if tool_type == "pipeline":
+                        check_container = True
+                    else:
+                        # For extractors: check if container exists before inspecting
+                        check_container = False
+                        try:
+                            self.conn.run(f"test -f {container_path}", hide=True)
+                            check_container = True
+                        except Exception:
+                            logging.info(f"No container found for extractor {tool_name}, skipping container check.")
+
+                    if check_container:
+                        try:
+                            container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
+                            if key not in seen_containers:
+                                seen_containers[key] = container_info
+                            elif seen_containers[key] != container_info:
+                                logging.error(f"Inconsistent container detected for {tool_type} {tool_name}.")
+                                raise ValueError("Dataset compliance check failed due to container inconsistency.")
+                        except Exception as e:
+                            logging.error(f"Failed to inspect container {container_path}: {e}")
+                            raise
 
                     # Validate invocation consistency
                     tool_dir = os.path.join(dataset_path, "pipelines", f"{tool_name}-{expected_version}")
@@ -260,7 +273,6 @@ class Experiment:
                         raise
 
         logging.info("All datasets comply with the experiment definition.")
-
 
 
     def _run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
