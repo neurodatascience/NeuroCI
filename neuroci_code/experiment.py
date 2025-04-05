@@ -180,13 +180,18 @@ class Experiment:
 
 
     def check_dataset_compliance(self):
-        """Checks if all datasets comply with the experiment definition."""
+        """Checks if all datasets comply with the experiment definition, including both pipelines and extractors."""
         logging.info("Starting dataset compliance check...")
 
-        expected_pipelines = self.pipelines  # {pipeline_name: version}
         dataset_paths = self.datasets  # {dataset_name: path}
+        
+        # Combine pipelines and extractors under a single structure
+        expected_tools = {
+            "pipeline": self.pipelines,    # e.g., {"fmriprep": "23.1.3"}
+            "extractor": self.extractors   # e.g., {"filecount": "1.0.0"}
+        }
 
-        # Storage for validation
+        # Storage for validation consistency
         seen_containers = {}
         seen_invocations = {}
 
@@ -196,7 +201,6 @@ class Experiment:
             # Remote path to global_config.json
             global_config_path = os.path.join(dataset_path, "global_config.json")
 
-            # Read global_config.json from remote server
             try:
                 result = self.conn.run(f"cat {global_config_path}", hide=True)
                 global_config = json.loads(result.stdout)
@@ -204,45 +208,48 @@ class Experiment:
                 logging.error(f"Failed to read global_config.json from {dataset_name}: {e}")
                 raise
 
-            # Validate pipeline versions
             proc_pipelines = {p["NAME"]: p["VERSION"] for p in global_config.get("PROC_PIPELINES", [])}
-            for pipeline, version in expected_pipelines.items():
-                if pipeline not in proc_pipelines or proc_pipelines[pipeline] != version:
-                    logging.error(
-                        f"Dataset {dataset_name} does not use the expected pipeline version: "
-                        f"Expected {pipeline}-{version}, Found {proc_pipelines.get(pipeline, 'MISSING')}"
-                    )
-                    raise ValueError("Dataset compliance check failed due to pipeline version mismatch.")
-
-            # Check container consistency
             container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
-            container_path = os.path.join(container_store, f"{pipeline}_{version}.sif")
 
-            try:
-                container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
-                if pipeline not in seen_containers:
-                    seen_containers[pipeline] = container_info
-                elif seen_containers[pipeline] != container_info:
-                    logging.error(f"Inconsistent container detected for pipeline {pipeline}.")
-                    raise ValueError("Dataset compliance check failed due to container inconsistency.")
-            except Exception as e:
-                logging.error(f"Failed to inspect container {container_path}: {e}")
-                raise
+            for tool_type, tools in expected_tools.items():
+                for tool_name, expected_version in tools.items():
+                    actual_version = proc_pipelines.get(tool_name)
 
-            # Check Boutiques invocation consistency
-            pipeline_dir = os.path.join(dataset_path, "pipelines", f"{pipeline}-{version}")
-            invocation_path = os.path.join(pipeline_dir, "invocation.json")
+                    # Validate tool version
+                    if actual_version != expected_version:
+                        logging.error(
+                            f"Dataset {dataset_name} does not use the expected {tool_type} version: "
+                            f"Expected {tool_name}-{expected_version}, Found {actual_version or 'MISSING'}"
+                        )
+                        raise ValueError("Dataset compliance check failed due to version mismatch.")
 
-            try:
-                invocation_content = self.conn.run(f"cat {invocation_path}", hide=True).stdout
-                if pipeline not in seen_invocations:
-                    seen_invocations[pipeline] = invocation_content
-                elif seen_invocations[pipeline] != invocation_content:
-                    logging.error(f"Inconsistent Boutiques invocation detected for pipeline {pipeline}.")
-                    raise ValueError("Dataset compliance check failed due to invocation inconsistency.")
-            except Exception as e:
-                logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
-                raise
+                    # Validate container consistency
+                    container_path = os.path.join(container_store, f"{tool_name}_{expected_version}.sif")
+                    try:
+                        container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
+                        key = f"{tool_type}:{tool_name}"
+                        if key not in seen_containers:
+                            seen_containers[key] = container_info
+                        elif seen_containers[key] != container_info:
+                            logging.error(f"Inconsistent container detected for {tool_type} {tool_name}.")
+                            raise ValueError("Dataset compliance check failed due to container inconsistency.")
+                    except Exception as e:
+                        logging.error(f"Failed to inspect container {container_path}: {e}")
+                        raise
+
+                    # Validate invocation consistency
+                    tool_dir = os.path.join(dataset_path, "pipelines", f"{tool_name}-{expected_version}")
+                    invocation_path = os.path.join(tool_dir, "invocation.json")
+                    try:
+                        invocation_content = self.conn.run(f"cat {invocation_path}", hide=True).stdout
+                        if key not in seen_invocations:
+                            seen_invocations[key] = invocation_content
+                        elif seen_invocations[key] != invocation_content:
+                            logging.error(f"Inconsistent Boutiques invocation detected for {tool_type} {tool_name}.")
+                            raise ValueError("Dataset compliance check failed due to invocation inconsistency.")
+                    except Exception as e:
+                        logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
+                        raise
 
         logging.info("All datasets comply with the experiment definition.")
 
