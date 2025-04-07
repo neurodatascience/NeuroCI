@@ -336,12 +336,18 @@ class Experiment:
     def push_state_to_repo(self):
         repo_root = Path(__file__).resolve().parents[1]
         target_dir = repo_root / "experiment_state"
+        logging.info(f"Syncing experiment state to local repo at: {target_dir}")
 
         for dataset_name, dataset_path in self.datasets.items():
+            logging.info(f"Processing dataset: {dataset_name} from remote path: {dataset_path}")
             dest_base = target_dir / dataset_name
+
             if dest_base.exists():
+                logging.warning(f"Destination directory already exists. Removing: {dest_base}")
                 shutil.rmtree(dest_base)
+
             dest_base.mkdir(parents=True, exist_ok=True)
+            logging.info(f"Created clean destination directory: {dest_base}")
 
             # Files to copy from HPC
             files_to_fetch = [
@@ -354,52 +360,75 @@ class Experiment:
                 remote_path = f"{dataset_path}/{file}"
                 local_path = dest_base / file
                 local_path.parent.mkdir(parents=True, exist_ok=True)
-                self.conn.get(remote_path, str(local_path))  # No recursive here
 
-            # Manually iterate through pipeline-specific directories
+                logging.info(f"Downloading file: {remote_path} -> {local_path}")
+                try:
+                    self.conn.get(remote_path, str(local_path))
+                    logging.info(f"Successfully downloaded: {remote_path}")
+                except Exception as e:
+                    logging.warning(f"Failed to download file: {remote_path} — {e}")
+
             for pipeline, version in self.pipelines.items():
                 pipeline_dir = f"pipelines/{pipeline}-{version}"
                 remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
                 local_pipeline_dir = dest_base / pipeline_dir
-                local_pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-                # Manually iterate through the pipeline directory and fetch files
+                local_pipeline_dir.mkdir(parents=True, exist_ok=True)
+                logging.info(f"Fetching pipeline dir: {remote_pipeline_dir}")
                 self._download_directory(remote_pipeline_dir, local_pipeline_dir)
 
-                # IDP directory (similar handling)
                 idp_dir = f"derivatives/{pipeline}/{version}/"
                 remote_idp_path = f"{dataset_path}/{idp_dir}"
                 local_idp_path = dest_base / idp_dir
-                local_idp_path.mkdir(parents=True, exist_ok=True)
 
-                # Manually iterate through the IDP directory and fetch files
+                local_idp_path.mkdir(parents=True, exist_ok=True)
+                logging.info(f"Fetching IDP dir: {remote_idp_path}")
                 self._download_directory(remote_idp_path, local_idp_path)
 
         # Git operations
+        logging.info("Running git commit and push...")
         subprocess.run(["git", "config", "user.name", "github_username"])
         subprocess.run(["git", "config", "user.email", "github_email@example.com"])
-
         subprocess.run(["git", "add", "experiment_state"], check=True)
         subprocess.run(["git", "commit", "-m", "Update experiment state"], check=True)
         subprocess.run(["git", "push"], check=True)
+        logging.info("Experiment state pushed to repository successfully.")
 
     def _download_directory(self, remote_dir, local_dir):
         """Manually iterate through a remote directory and download each file."""
-        # Get a list of files in the remote directory
-        remote_files = self.conn.run(f"ls {remote_dir}", hide=True).stdout.splitlines()
+        logging.info(f"Listing contents of remote directory: {remote_dir}")
+        try:
+            remote_files = self.conn.run(f"ls {remote_dir}", hide=True).stdout.splitlines()
+        except Exception as e:
+            logging.warning(f"Failed to list directory {remote_dir}: {e}")
+            return
 
         for remote_file in remote_files:
             remote_path = f"{remote_dir}/{remote_file}"
             local_path = local_dir / remote_file
-            
-            # If it's a directory, recursively download it
-            if remote_file.endswith('/'):  # Check if it's a directory (ends with '/')
+
+            is_dir = self._is_directory(remote_path)
+            if is_dir:
+                logging.info(f"Found directory: {remote_path}, descending into it...")
                 local_path.mkdir(parents=True, exist_ok=True)
-                self._download_directory(remote_path, local_path)  # Recursive call
+                self._download_directory(remote_path, local_path)
             else:
-                # If it's a file, just download it
-                local_path.parent.mkdir(parents=True, exist_ok=True)
-                self.conn.get(remote_path, str(local_path))
+                logging.info(f"Downloading file: {remote_path} -> {local_path}")
+                try:
+                    local_path.parent.mkdir(parents=True, exist_ok=True)
+                    self.conn.get(remote_path, str(local_path))
+                    logging.info(f"Successfully downloaded: {remote_path}")
+                except Exception as e:
+                    logging.warning(f"Failed to download file: {remote_path} — {e}")
+
+    def _is_directory(self, remote_path):
+        """Check if the given remote path is a directory."""
+        try:
+            result = self.conn.run(f"test -d {remote_path} && echo 'dir' || echo 'file'", hide=True)
+            return result.stdout.strip() == 'dir'
+        except Exception as e:
+            logging.warning(f"Error checking if remote path is a directory: {remote_path} — {e}")
+            return False
 
 '''
 
