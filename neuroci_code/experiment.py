@@ -334,7 +334,6 @@ class Experiment:
         self._run_nipoppy_command("extract", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
 
 
-
     def push_state_to_repo(self):
         repo_root = Path(__file__).resolve().parents[1]
         target_dir = repo_root / "experiment_state"
@@ -358,15 +357,15 @@ class Experiment:
                 local_path.parent.mkdir(parents=True, exist_ok=True)
                 self.conn.get(remote_path, str(local_path))  # No recursive here
 
-            # Copy pipeline-specific files (directories)
+            # Manually iterate through pipeline-specific directories
             for pipeline, version in self.pipelines.items():
                 pipeline_dir = f"pipelines/{pipeline}-{version}"
                 remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
                 local_pipeline_dir = dest_base / pipeline_dir
                 local_pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-                # Using Fabric's get to download the entire directory recursively
-                download(remote_pipeline_dir, str(local_pipeline_dir))  # Will download recursively
+                # Manually iterate through the pipeline directory and fetch files
+                self._download_directory(remote_pipeline_dir, local_pipeline_dir)
 
                 # IDP directory (similar handling)
                 idp_dir = f"derivatives/{pipeline}/{version}/"
@@ -374,8 +373,8 @@ class Experiment:
                 local_idp_path = dest_base / idp_dir
                 local_idp_path.mkdir(parents=True, exist_ok=True)
 
-                # Download IDP files recursively
-                download(remote_idp_path, str(local_idp_path))  # Will download recursively
+                # Manually iterate through the IDP directory and fetch files
+                self._download_directory(remote_idp_path, local_idp_path)
 
         # Git operations
         subprocess.run(["git", "config", "user.name", "github_username"])
@@ -384,6 +383,24 @@ class Experiment:
         subprocess.run(["git", "add", "experiment_state"], check=True)
         subprocess.run(["git", "commit", "-m", "Update experiment state"], check=True)
         subprocess.run(["git", "push"], check=True)
+
+    def _download_directory(self, remote_dir, local_dir):
+        """Manually iterate through a remote directory and download each file."""
+        # Get a list of files in the remote directory
+        remote_files = self.conn.run(f"ls {remote_dir}", hide=True).stdout.splitlines()
+
+        for remote_file in remote_files:
+            remote_path = f"{remote_dir}/{remote_file}"
+            local_path = local_dir / remote_file
+            
+            # If it's a directory, recursively download it
+            if remote_file.endswith('/'):  # Check if it's a directory (ends with '/')
+                local_path.mkdir(parents=True, exist_ok=True)
+                self._download_directory(remote_path, local_path)  # Recursive call
+            else:
+                # If it's a file, just download it
+                local_path.parent.mkdir(parents=True, exist_ok=True)
+                self.conn.get(remote_path, str(local_path))
 
 '''
 
