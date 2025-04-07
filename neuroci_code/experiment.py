@@ -330,7 +330,50 @@ class Experiment:
         self._run_nipoppy_command("extract", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
 
 
+    def push_state_to_repo(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        target_dir = repo_root / "experiment_state"
 
+        for dataset_name, dataset_path in self.datasets.items():
+            dest_base = target_dir / dataset_name
+            if dest_base.exists():
+                shutil.rmtree(dest_base)
+            dest_base.mkdir(parents=True, exist_ok=True)
+
+            # Files to copy from HPC
+            files_to_fetch = [
+                "manifest.tsv",
+                "global_config.json",
+                "derivatives/imaging_bagel.tsv"
+            ]
+
+            for file in files_to_fetch:
+                remote_path = f"{dataset_path}/{file}"
+                local_path = dest_base / file
+                local_path.parent.mkdir(parents=True, exist_ok=True)
+                self.connection.get(remote_path, str(local_path))
+
+            # Copy pipeline-specific files
+            for pipeline, version in self.pipelines.items():
+                pipeline_dir = f"pipelines/{pipeline}-{version}"
+                remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
+                local_pipeline_dir = dest_base / pipeline_dir
+                local_pipeline_dir.parent.mkdir(parents=True, exist_ok=True)
+                self.connection.get(remote_pipeline_dir, str(local_pipeline_dir), recursive=True)
+
+                idp_dir = f"derivatives/{pipeline}/{version}/idp"
+                remote_idp_path = f"{dataset_path}/{idp_dir}"
+                local_idp_path = dest_base / idp_dir
+                local_idp_path.parent.mkdir(parents=True, exist_ok=True)
+                self.connection.get(remote_idp_path, str(local_idp_path), recursive=True)
+
+        # Git operations
+        subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
+        subprocess.run(["git", "config", "user.email", "github-actions@github.com"], check=True)
+
+        subprocess.run(["git", "add", "experiment_state"], check=True)
+        subprocess.run(["git", "commit", "-m", "Update experiment state from CI run"], check=True)
+        subprocess.run(["git", "push"], check=True)
 '''
     def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
         logging.info(f'Pushing state to repo for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
