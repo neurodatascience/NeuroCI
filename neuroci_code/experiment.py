@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 from fabric import Connection
+from fabric.operations import get as download
 from paramiko.config import SSHConfig
 
 
@@ -333,6 +334,7 @@ class Experiment:
         self._run_nipoppy_command("extract", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
 
 
+
     def push_state_to_repo(self):
         repo_root = Path(__file__).resolve().parents[1]
         target_dir = repo_root / "experiment_state"
@@ -354,34 +356,36 @@ class Experiment:
                 remote_path = f"{dataset_path}/{file}"
                 local_path = dest_base / file
                 local_path.parent.mkdir(parents=True, exist_ok=True)
-                self.conn.get(remote_path, str(local_path))
+                self.conn.get(remote_path, str(local_path))  # No recursive here
 
-            # Copy pipeline-specific files
+            # Copy pipeline-specific files (directories)
             for pipeline, version in self.pipelines.items():
                 pipeline_dir = f"pipelines/{pipeline}-{version}"
                 remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
                 local_pipeline_dir = dest_base / pipeline_dir
-                local_pipeline_dir.parent.mkdir(parents=True, exist_ok=True)
-                self.conn.get(remote_pipeline_dir, str(local_pipeline_dir), recursive=True)
+                local_pipeline_dir.mkdir(parents=True, exist_ok=True)
 
-                idp_dir = f"derivatives/{pipeline}/{version}/idp"
+                # Using Fabric's get to download the entire directory recursively
+                download(remote_pipeline_dir, str(local_pipeline_dir))  # Will download recursively
+
+                # IDP directory (similar handling)
+                idp_dir = f"derivatives/{pipeline}/{version}/"
                 remote_idp_path = f"{dataset_path}/{idp_dir}"
                 local_idp_path = dest_base / idp_dir
-                local_idp_path.parent.mkdir(parents=True, exist_ok=True)
-                self.conn.get(remote_idp_path, str(local_idp_path), recursive=True)
+                local_idp_path.mkdir(parents=True, exist_ok=True)
+
+                # Download IDP files recursively
+                download(remote_idp_path, str(local_idp_path))  # Will download recursively
 
         # Git operations
-        subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
-        subprocess.run(["git", "config", "user.email", "github-actions@github.com"], check=True)
+        subprocess.run(["git", "config", "user.name", "github_username"])
+        subprocess.run(["git", "config", "user.email", "github_email@example.com"])
 
         subprocess.run(["git", "add", "experiment_state"], check=True)
-        subprocess.run(["git", "commit", "-m", "Update experiment state from CI run"], check=True)
+        subprocess.run(["git", "commit", "-m", "Update experiment state"], check=True)
         subprocess.run(["git", "push"], check=True)
+
 '''
-    def push_state_to_repo(self, dataset, dataset_path, pipeline, pipeline_version):
-        logging.info(f'Pushing state to repo for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-        # Logic to push state to repository
-        pass
 
 
     def run_user_processing(self):
