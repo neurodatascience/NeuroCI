@@ -360,10 +360,17 @@ class Experiment:
                 except Exception as e:
                     logging.warning(f"✗ Failed to download {file}: {e}")
 
-            # --- Copy pipelines ---
-            for tool in set(self.extractors + list(self.pipelines.keys())):
-                version = self.pipelines.get(tool)
+            # --- Download pipelines for extractors ---
+            for tool, version in self.extractors.items():
+                pipeline_dir = f"pipelines/{tool}-{version}"
+                remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
+                local_pipeline_dir = dest_base / pipeline_dir
 
+                logging.info(f"Downloading extractor pipeline: {remote_pipeline_dir}")
+                self._download_directory(remote_pipeline_dir, local_pipeline_dir)
+
+            # --- Download pipelines for pipelines ---
+            for tool, version in self.pipelines.items():
                 pipeline_dir = f"pipelines/{tool}-{version}"
                 remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
                 local_pipeline_dir = dest_base / pipeline_dir
@@ -371,13 +378,14 @@ class Experiment:
                 logging.info(f"Downloading pipeline: {remote_pipeline_dir}")
                 self._download_directory(remote_pipeline_dir, local_pipeline_dir)
 
-            # --- Copy IDP dirs (do not upload to repo) ---
-            for pipeline, version in self.pipelines.items():
-                idp_dir = f"derivatives/{pipeline}/{version}/idp"
+                # --- IDP dir (not committed to git) ---
+                idp_dir = f"derivatives/{tool}/{version}/idp"
                 remote_idp_path = f"{dataset_path}/{idp_dir}"
-                local_idp_path = (Path("/tmp") / "neuroci_idp_state" / dataset_name / idp_dir)
+                local_idp_path = Path("/tmp") / "neuroci_idp_state" / dataset_name / idp_dir
 
-                logging.info(f"Downloading IDP dir (not tracked in git): {remote_idp_path}")
+                logging.info(f"Preparing to download IDP data for pipeline '{tool}' (version {version})")
+                logging.info(f"Remote path: {remote_idp_path}")
+                logging.info(f"Local temp path (excluded from git): {local_idp_path}")
                 self._download_directory(remote_idp_path, local_idp_path)
 
         # --- Git operations ---
