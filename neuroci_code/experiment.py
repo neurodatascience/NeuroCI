@@ -354,7 +354,7 @@ class Experiment:
                 remote_path = f"{dataset_path}/{file}"
                 local_path = dest_base / file
                 local_path.parent.mkdir(parents=True, exist_ok=True)
-                self.connection.get(remote_path, str(local_path))
+                self.conn.get(remote_path, str(local_path))
 
             # Copy pipeline-specific files
             for pipeline, version in self.pipelines.items():
@@ -362,13 +362,13 @@ class Experiment:
                 remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
                 local_pipeline_dir = dest_base / pipeline_dir
                 local_pipeline_dir.parent.mkdir(parents=True, exist_ok=True)
-                self.connection.get(remote_pipeline_dir, str(local_pipeline_dir), recursive=True)
+                self.conn.get(remote_pipeline_dir, str(local_pipeline_dir), recursive=True)
 
                 idp_dir = f"derivatives/{pipeline}/{version}/idp"
                 remote_idp_path = f"{dataset_path}/{idp_dir}"
                 local_idp_path = dest_base / idp_dir
                 local_idp_path.parent.mkdir(parents=True, exist_ok=True)
-                self.connection.get(remote_idp_path, str(local_idp_path), recursive=True)
+                self.conn.get(remote_idp_path, str(local_idp_path), recursive=True)
 
         # Git operations
         subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
