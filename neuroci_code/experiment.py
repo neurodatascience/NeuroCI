@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 
 from fabric import Connection
-from fabric.operations import get as download
 from paramiko.config import SSHConfig
 
 
