@@ -388,14 +388,8 @@ class Experiment:
                 logging.info(f"Local temp path (excluded from git): {local_idp_path}")
                 self._download_directory(remote_idp_path, local_idp_path)
 
-        # --- Git operations ---
-        logging.info("Committing changes to git...")
-        subprocess.run(["git", "config", "user.name", "github_username"])
-        subprocess.run(["git", "config", "user.email", "github_email@example.com"])
-        subprocess.run(["git", "add", "experiment_state"], check=True)
-        subprocess.run(["git", "commit", "-m", "Update experiment state"], check=True)
-        subprocess.run(["git", "push"], check=True)
-        logging.info("✓ Pushed updated experiment state to remote repo.")
+        # --- Git commit and push ---
+        self._commit_and_push("Update experiment state")
 
     def _download_directory(self, remote_dir, local_dir):
         """Recursively download a remote directory, only copying files."""
@@ -405,6 +399,7 @@ class Experiment:
         except Exception as e:
             logging.warning(f"Failed to list {remote_dir}: {e}")
             return
+
 
         for item in result.stdout.strip().splitlines():
             remote_path = f"{remote_dir}/{item}"
@@ -422,6 +417,7 @@ class Experiment:
                 except Exception as e:
                     logging.warning(f"Failed to download {remote_path}: {e}")
 
+
     def _is_directory(self, remote_path):
         try:
             result = self.conn.run(f"test -d {remote_path} && echo 1 || echo 0", hide=True)
@@ -430,11 +426,35 @@ class Experiment:
             logging.warning(f"Could not determine if directory: {remote_path} — {e}")
             return False
 
-'''
-
+    def _commit_and_push(self, message: str):
+        logging.info("Committing experiment state to Git...")
+        subprocess.run(["git", "config", "user.name", "github_username"])
+        subprocess.run(["git", "config", "user.email", "github_email@example.com"])
+        subprocess.run(["git", "add", "experiment_state"], check=True)
+        subprocess.run(["git", "commit", "-m", message], check=True)
+        subprocess.run(["git", "push"], check=True)
+        logging.info("✓ Git push complete.")
 
     def run_user_processing(self):
-        logging.info('Running user-defined processing steps...')
-        # Implement user-defined processing logic
-        pass
-'''
+        repo_root = Path(__file__).resolve().parents[1]
+        script_dir = repo_root / "user_scripts"
+        logging.info("Starting user-defined processing scripts...")
+
+        for key, script_name in self.userscripts.items():
+            script_path = script_dir / script_name
+            logging.info(f"Executing user script [{key}]: {script_path}")
+
+            if not script_path.exists():
+                logging.error(f"User script not found: {script_path}")
+                continue
+
+            try:
+                subprocess.run(["python", str(script_path)], check=True)
+                logging.info(f"✓ Successfully executed: {script_name}")
+            except subprocess.CalledProcessError as e:
+                logging.error(f"✗ Error executing {script_name}: {e}")
+                raise RuntimeError(f"User script failed: {script_name}") from e
+
+        # After all scripts run, commit any changes
+        logging.info("Committing results of user scripts to repo...")
+        self._commit_and_push("Update experiment state from user scripts")
