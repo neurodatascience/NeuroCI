@@ -21,7 +21,7 @@ def main(experiment_definition):
             print('I AM AN EXTRACTOR PLACEHOLDER - REMEMBER TO UNCOMMENT THE EXTRACTOR')
     
     this_experiment.push_state_to_repo()
-    #this_experiment.run_user_processing()
+    this_experiment.run_user_processing()
     this_experiment.HPC_logout()
 
 # Configure logger
