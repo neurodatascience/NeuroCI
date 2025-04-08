@@ -1,17 +1,31 @@
+# experiment.py
 import logging
-import os
-import subprocess
-import json
-import shutil
 from pathlib import Path
-
-from fabric import Connection
-from paramiko.config import SSHConfig
-
+from ssh_utils import SSHConnectionManager
+from file_utils import FileOperations
 
 class Experiment:
     def __init__(self, experiment_definition):
-        # Validate required fields
+        self._validate_experiment_definition(experiment_definition)
+        
+        self.datasets = experiment_definition['datasets']
+        self.pipelines = experiment_definition['pipelines']
+        self.extractors = experiment_definition['extractors']
+        self.userscripts = experiment_definition['userscripts']
+        self.target_host = experiment_definition.get('target_host')
+        self.prefix_cmd = experiment_definition.get('prefix_cmd', '')
+        self.scheduler = experiment_definition.get('scheduler', 'slurm')
+        
+        self._log_experiment_config()
+        
+        self.ssh_manager = SSHConnectionManager(
+            target_host=self.target_host,
+            prefix_cmd=self.prefix_cmd,
+            scheduler=self.scheduler
+        )
+        self.file_ops = FileOperations()
+
+    def _validate_experiment_definition(self, experiment_definition):
         if 'datasets' not in experiment_definition or not experiment_definition['datasets']:
             logging.error('No datasets found in experiment definition.')
             raise ValueError("Experiment definition must include datasets.")
@@ -20,453 +34,60 @@ class Experiment:
             logging.error('No pipelines found in experiment definition.')
             raise ValueError("Experiment definition must include pipelines.")
 
-        self.datasets = experiment_definition['datasets']
-        self.pipelines = experiment_definition['pipelines']
-        self.extractors = experiment_definition['extractors']
-        self.userscripts = experiment_definition['userscripts']
-        self.target_host = experiment_definition.get('target_host')
-        self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
-        self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
-
-        logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}, and extractors: {self.extractors}')
+    def _log_experiment_config(self):
+        logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}')
+        logging.info(f'Extractors: {self.extractors}')
         logging.info(f'User scripts: {self.userscripts}')
         logging.info(f'Target host: {self.target_host}')
         logging.info(f'Prefix command: {self.prefix_cmd}')
         logging.info(f'Scheduler: {self.scheduler}')
 
-        # Fetch SSH credentials from environment variables
-        private_key = os.getenv("SSH_PRIVATE_KEY")
-        ssh_config_path = os.getenv("SSH_CONFIG_PATH", "~/.ssh/config")
-
-        if not self.target_host or not private_key:
-            logging.error("Missing SSH target host or private key.")
-            raise EnvironmentError("SSH target host and private key are required.")
-
-        # Parse SSH config and write private key to the correct location
-        self.ssh_key_path = self._setup_ssh_config(self.target_host, private_key, ssh_config_path)
-
-        # Ensure known_hosts is populated for all involved hosts
-        self._ensure_known_hosts(self.target_host, ssh_config_path)
-
-        # Establish SSH Connection
-        try:
-            self.conn, _ = self._create_connection(self.target_host, ssh_config_path)
-            logging.info("SSH connection to HPC established successfully.")
-        except Exception as e:
-            logging.error(f"Failed to establish SSH connection: {e}")
-            self.conn = None
-            raise ConnectionError("Could not establish SSH connection.")
-
-        # Test SSH connection with a simple command
-        logging.info("Running SSH connection test...")
-        result = self.conn.run("whoami", hide=True)
-        if result.ok:
-            logging.info(f"SSH connection test passed: Logged in as {result.stdout.strip()}")
-        else:
-            logging.error("SSH connection test failed. Check credentials and host configuration.")
-            raise ConnectionError("SSH connection test failed.")
-
-
-    def _setup_ssh_config(self, hostname, private_key, config_path):
-        """Parses the SSH config file, extracts IdentityFile, and writes the private key there."""
-        config_file = os.path.expanduser(config_path)
-        ssh_config = SSHConfig()
-
-        if not os.path.exists(config_file):
-            logging.warning(f"SSH config file not found at {config_file}, proceeding without it.")
-            return None
-
-        with open(config_file) as f:
-            ssh_config.parse(f)
-
-        host_info = ssh_config.lookup(hostname)
-        key_path = os.path.expanduser(host_info.get("identityfile", ["~/.ssh/id_rsa"])[0])
-
-        # Write the private key to the file
-        os.makedirs(os.path.dirname(key_path), exist_ok=True)
-        with open(key_path, "w") as key_file:
-            key_file.write(private_key)
-            os.chmod(key_path, 0o600)  # Set correct permissions
-
-        logging.info(f"Private key written to {key_path}")
-        return key_path
-
-
-    def _ensure_known_hosts(self, hostname, config_path):
-        """Scans and adds target and proxy hosts to known_hosts to avoid interactive prompts."""
-        known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
-        config_file = os.path.expanduser(config_path)
-        ssh_config = SSHConfig()
-
-        # Parse SSH config file
-        if not os.path.exists(config_file):
-            raise FileNotFoundError(f"SSH config file not found at {config_file}")
-
-        with open(config_file) as f:
-            ssh_config.parse(f)
-
-        # Collect all unique hosts (target + any proxies)
-        host_info = ssh_config.lookup(hostname)
-        all_hosts = {host_info.get("hostname", hostname)}
-
-        # Include ProxyJump and ProxyCommand hosts
-        proxy_hosts = (
-            host_info.get("proxyjump", "").split(",") if "proxyjump" in host_info
-            else [host_info["proxycommand"].split()[-1]] if "proxycommand" in host_info
-            else []
-        )
-        for proxy in proxy_hosts:
-            proxy_info = ssh_config.lookup(proxy.strip())
-            all_hosts.add(proxy_info.get("hostname", proxy.strip()))
-
-        # Scan and add each host to known_hosts if missing
-        for host in all_hosts:
-            try:
-                logging.info(f"Ensuring {host} is in known_hosts...")
-                subprocess.run(
-                    ["ssh-keyscan", "-H", host],
-                    stdout=open(known_hosts_path, "a"),
-                    stderr=subprocess.DEVNULL,
-                    check=True,
-                )
-            except subprocess.CalledProcessError as e:
-                logging.error(f"Failed to add {host} to known_hosts: {e}")
-
-    def _create_connection(self, hostname, ssh_config_path):
-        """Creates a Fabric SSH connection, handling proxies from the config."""
-        config_file = os.path.expanduser(ssh_config_path)
-        ssh_config = SSHConfig()
-
-        if not os.path.exists(config_file):
-            raise FileNotFoundError(f"SSH config file not found at {config_file}")
-
-        with open(config_file) as f:
-            ssh_config.parse(f)
-
-        host_info = ssh_config.lookup(hostname)
-
-        conn_kwargs = {
-            "host": host_info.get("hostname", hostname),
-            "user": host_info.get("user"),
-            "port": host_info.get("port", 22),
-            "connect_kwargs": {"key_filename": self.ssh_key_path, "allow_agent": True},
-        }
-
-        proxy_chain = []
-        proxy_hosts = (
-            host_info.get("proxyjump", "").split(",") if "proxyjump" in host_info
-            else [host_info["proxycommand"].split()[-1]] if "proxycommand" in host_info
-            else []
-        )
-
-        for proxy_host in proxy_hosts:
-            proxy_info = ssh_config.lookup(proxy_host.strip())
-            proxy_chain.append(
-                Connection(
-                    host=proxy_info.get("hostname", proxy_host),
-                    user=proxy_info.get("user"),
-                    port=proxy_info.get("port", 22),
-                    connect_kwargs={"key_filename": self.ssh_key_path},
-                )
-            )
-
-        if proxy_chain:
-            conn_kwargs["gateway"] = proxy_chain[-1]
-
-        return Connection(**conn_kwargs), proxy_chain
-
-    def HPC_logout(self):
-        """Closes the SSH connection if it is active."""
-        if self.conn and self.conn.is_connected:
-            self.conn.close()
-            logging.info("SSH connection closed successfully.")
-        else:
-            logging.warning("SSH connection was already closed or never established.")
-
-
     def check_dataset_compliance(self):
-        """Checks if all datasets comply with the experiment definition, including both pipelines and extractors."""
-        logging.info("Starting dataset compliance check...")
-
-        dataset_paths = self.datasets  # {dataset_name: path}
-
-        # Expected tools by type
-        expected_tools = {
-            "pipeline": self.pipelines,    # e.g., {"fmriprep": "23.1.3"}
-            "extractor": self.extractors   # e.g., {"filecount": "1.0.0"}
-        }
-
-        # Where to look for each tool type in global_config
-        config_sections = {
-            "pipeline": "PROC_PIPELINES",
-            "extractor": "EXTRACTION_PIPELINES"
-        }
-
-        # Storage for consistency checks
-        seen_containers = {}
-        seen_invocations = {}
-
-        for dataset_name, dataset_path in dataset_paths.items():
-            logging.info(f"Checking dataset: {dataset_name} at {dataset_path}")
-
-            global_config_path = os.path.join(dataset_path, "global_config.json")
-
-            try:
-                result = self.conn.run(f"cat {global_config_path}", hide=True)
-                global_config = json.loads(result.stdout)
-            except Exception as e:
-                logging.error(f"Failed to read global_config.json from {dataset_name}: {e}")
-                raise
-
-            container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
-
-            for tool_type, tools in expected_tools.items():
-                config_key = config_sections[tool_type]
-                tool_list = global_config.get(config_key, [])
-                found_versions = {tool["NAME"]: tool["VERSION"] for tool in tool_list}
-
-                for tool_name, expected_version in tools.items():
-                    actual_version = found_versions.get(tool_name)
-
-                    # Validate version match
-                    if actual_version != expected_version:
-                        logging.error(
-                            f"Dataset {dataset_name} does not use the expected {tool_type} version: "
-                            f"Expected {tool_name}-{expected_version}, Found {actual_version or 'MISSING'}"
-                        )
-                        raise ValueError("Dataset compliance check failed due to version mismatch.")
-
-                    key = f"{tool_type}:{tool_name}"
-                    container_path = os.path.join(container_store, f"{tool_name}_{expected_version}.sif")
-
-                    # Check container only if it's a pipeline or the file exists
-                    if tool_type == "pipeline":
-                        check_container = True
-                    else:
-                        # For extractors: check if container exists before inspecting
-                        check_container = False
-                        try:
-                            self.conn.run(f"test -f {container_path}", hide=True)
-                            check_container = True
-                        except Exception:
-                            logging.info(f"No container found for extractor {tool_name}, skipping container check.")
-
-                    if check_container:
-                        try:
-                            container_info = self.conn.run(f"singularity inspect --json {container_path}", hide=True).stdout
-                            if key not in seen_containers:
-                                seen_containers[key] = container_info
-                            elif seen_containers[key] != container_info:
-                                logging.error(f"Inconsistent container detected for {tool_type} {tool_name}.")
-                                raise ValueError("Dataset compliance check failed due to container inconsistency.")
-                        except Exception as e:
-                            logging.error(f"Failed to inspect container {container_path}: {e}")
-                            raise
-
-                    # Validate invocation consistency
-                    tool_dir = os.path.join(dataset_path, "pipelines", f"{tool_name}-{expected_version}")
-                    invocation_path = os.path.join(tool_dir, "invocation.json")
-                    try:
-                        invocation_content = self.conn.run(f"cat {invocation_path}", hide=True).stdout
-                        if key not in seen_invocations:
-                            seen_invocations[key] = invocation_content
-                        elif seen_invocations[key] != invocation_content:
-                            logging.error(f"Inconsistent Boutiques invocation detected for {tool_type} {tool_name}.")
-                            raise ValueError("Dataset compliance check failed due to invocation inconsistency.")
-                    except Exception as e:
-                        logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
-                        raise
-
-        logging.info("All datasets comply with the experiment definition.")
-
-
-    def _run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
-        """
-        General method to construct and execute a Nipoppy command remotely via SSH.
-        """
-        log_action = {
-            "track": "tracker info",
-            "run": "pipeline",
-            "extract": "extractor"
-        }.get(action, action)
-
-        logging.info(f'Running {log_action} for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
-
-        # Build the base command
-        base_command = f"nipoppy {action} --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
-    
-        if action in ['run', 'extract']:
-            base_command += f" --hpc {self.scheduler} --keep-workdir"
-
-        # Include virtual environment activation
-        full_command = f"{self.prefix_cmd} && {base_command}"
-        if use_bash:
-            full_command = f"bash -l -c '{full_command}'"
-
-        try:
-            result = self.conn.run(full_command, hide=True)
-            if result.ok:
-                logging.info(f"Successfully started {log_action} for {dataset} - {pipeline} ({pipeline_version})")
-            else:
-                logging.error(f"Failed to start {log_action} for {dataset} - {pipeline} ({pipeline_version})")
-                logging.error(result.stderr)
-        except Exception as e:
-            logging.error(f"Error while running {log_action} for {dataset} - {pipeline}: {e}")
-
+        self.ssh_manager.check_dataset_compliance(
+            datasets=self.datasets,
+            pipelines=self.pipelines,
+            extractors=self.extractors
+        )
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
-        """
-        Runs the Nipoppy 'track' command to update the computation status for the dataset.
-        """
-        self._run_nipoppy_command("track", dataset, dataset_path, pipeline, pipeline_version, use_bash=False)
-
+        self.ssh_manager.run_nipoppy_command(
+            action="track",
+            dataset=dataset,
+            dataset_path=dataset_path,
+            pipeline=pipeline,
+            pipeline_version=pipeline_version
+        )
 
     def run_pipeline(self, dataset, dataset_path, pipeline, pipeline_version):
-        """
-        Runs the Nipoppy 'run' command to process the dataset using the specified pipeline.
-        """
-        self._run_nipoppy_command("run", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
-
+        self.ssh_manager.run_nipoppy_command(
+            action="run",
+            dataset=dataset,
+            dataset_path=dataset_path,
+            pipeline=pipeline,
+            pipeline_version=pipeline_version,
+            use_bash=True
+        )
 
     def run_extractor(self, dataset, dataset_path, pipeline, pipeline_version):
-        """
-        Runs the Nipoppy 'extract' command to extract results from the dataset with the given pipeline.
-        """
-        self._run_nipoppy_command("extract", dataset, dataset_path, pipeline, pipeline_version, use_bash=True)
-
+        self.ssh_manager.run_nipoppy_command(
+            action="extract",
+            dataset=dataset,
+            dataset_path=dataset_path,
+            pipeline=pipeline,
+            pipeline_version=pipeline_version,
+            use_bash=True
+        )
 
     def push_state_to_repo(self):
-        repo_root = Path(__file__).resolve().parents[1]
-        target_dir = repo_root / "experiment_state"
-        logging.info(f"Syncing experiment state to local repo at: {target_dir}")
-
-        for dataset_name, dataset_path in self.datasets.items():
-            logging.info(f"Processing dataset: {dataset_name} from {dataset_path}")
-            dest_base = target_dir / dataset_name
-
-            if dest_base.exists():
-                logging.warning(f"Cleaning up old state in: {dest_base}")
-                shutil.rmtree(dest_base)
-            dest_base.mkdir(parents=True, exist_ok=True)
-
-            # --- Copy base files ---
-            for file in ["manifest.tsv", "global_config.json", "derivatives/imaging_bagel.tsv"]:
-                remote_path = f"{dataset_path}/{file}"
-                local_path = dest_base / file
-                local_path.parent.mkdir(parents=True, exist_ok=True)
-
-                logging.info(f"Downloading file: {remote_path} -> {local_path}")
-                try:
-                    self.conn.get(remote_path, str(local_path))
-                    logging.info(f"✓ Downloaded {file}")
-                except Exception as e:
-                    logging.warning(f"✗ Failed to download {file}: {e}")
-
-            # --- Download pipelines for extractors ---
-            for tool, version in self.extractors.items():
-                pipeline_dir = f"pipelines/{tool}-{version}"
-                remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
-                local_pipeline_dir = dest_base / pipeline_dir
-
-                logging.info(f"Downloading extractor pipeline: {remote_pipeline_dir}")
-                self._download_directory(remote_pipeline_dir, local_pipeline_dir)
-
-            # --- Download pipelines for pipelines ---
-            for tool, version in self.pipelines.items():
-                pipeline_dir = f"pipelines/{tool}-{version}"
-                remote_pipeline_dir = f"{dataset_path}/{pipeline_dir}"
-                local_pipeline_dir = dest_base / pipeline_dir
-
-                logging.info(f"Downloading pipeline: {remote_pipeline_dir}")
-                self._download_directory(remote_pipeline_dir, local_pipeline_dir)
-
-                # --- IDP dir (not committed to git) ---
-                idp_dir = f"derivatives/{tool}/{version}/idp"
-                remote_idp_path = f"{dataset_path}/{idp_dir}"
-                local_idp_path = Path("/tmp") / "neuroci_idp_state" / dataset_name / idp_dir
-
-                logging.info(f"Preparing to download IDP data for pipeline '{tool}' (version {version})")
-                logging.info(f"Remote path: {remote_idp_path}")
-                logging.info(f"Local temp path (excluded from git): {local_idp_path}")
-                self._download_directory(remote_idp_path, local_idp_path)
-
-        # --- Git commit and push ---
-        self._commit_and_push("Update experiment state")
-
-    def _download_directory(self, remote_dir, local_dir):
-        """Recursively download a remote directory, only copying files."""
-        logging.info(f"Listing directory: {remote_dir}")
-        try:
-            result = self.conn.run(f"ls -1A {remote_dir}", hide=True)
-        except Exception as e:
-            logging.warning(f"Failed to list {remote_dir}: {e}")
-            return
-
-
-        for item in result.stdout.strip().splitlines():
-            remote_path = f"{remote_dir}/{item}"
-            local_path = local_dir / item
-
-            if self._is_directory(remote_path):
-                local_path.mkdir(parents=True, exist_ok=True)
-                logging.info(f"[dir] {remote_path} — descending...")
-                self._download_directory(remote_path, local_path)
-            else:
-                try:
-                    local_path.parent.mkdir(parents=True, exist_ok=True)
-                    self.conn.get(remote_path, str(local_path))
-                    logging.info(f"[file] {remote_path} -> {local_path}")
-                except Exception as e:
-                    logging.warning(f"Failed to download {remote_path}: {e}")
-
-
-    def _is_directory(self, remote_path):
-        try:
-            result = self.conn.run(f"test -d {remote_path} && echo 1 || echo 0", hide=True)
-            return result.stdout.strip() == "1"
-        except Exception as e:
-            logging.warning(f"Could not determine if directory: {remote_path} — {e}")
-            return False
-
-    def _commit_and_push(self, message):
-        try:
-            subprocess.run(["git", "config", "user.name", "github_username"], check=True)
-            subprocess.run(["git", "config", "user.email", "github_email@example.com"], check=True)
-            subprocess.run(["git", "add", "experiment_state"], check=True)
-
-            result = subprocess.run(["git", "diff", "--cached", "--quiet"])
-            if result.returncode == 0:
-                logging.info("✓ No changes to commit.")
-                return
-
-            subprocess.run(["git", "commit", "-m", message], check=True)
-            subprocess.run(["git", "push"], check=True)
-            logging.info("✓ Pushed updated experiment state to remote repo.")
-        except subprocess.CalledProcessError as e:
-            logging.error(f"✗ Git operation failed: {e}")
-            raise
-
+        self.file_ops.push_state_to_repo(
+            conn=self.ssh_manager.conn,
+            datasets=self.datasets,
+            pipelines=self.pipelines,
+            extractors=self.extractors
+        )
 
     def run_user_processing(self):
-        repo_root = Path(__file__).resolve().parents[1]
-        script_dir = repo_root / "user_scripts"
-        logging.info("Starting user-defined processing scripts...")
+        self.file_ops.run_user_scripts(self.userscripts)
 
-        for key, script_name in self.userscripts.items():
-            script_path = script_dir / script_name
-            logging.info(f"Executing user script [{key}]: {script_path}")
-
-            if not script_path.exists():
-                logging.error(f"User script not found: {script_path}")
-                continue
-
-            try:
-                subprocess.run(["python", str(script_path)], check=True)
-                logging.info(f"✓ Successfully executed: {script_name}")
-            except subprocess.CalledProcessError as e:
-                logging.error(f"✗ Error executing {script_name}: {e}")
-                raise RuntimeError(f"User script failed: {script_name}") from e
-
-        # After all scripts run, commit any changes
-        logging.info("Committing results of user scripts to repo...")
-        self._commit_and_push("Update experiment state from user scripts")
+    def HPC_logout(self):
+        self.ssh_manager.close_connection()

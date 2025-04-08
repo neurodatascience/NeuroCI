@@ -1,12 +1,12 @@
+# main.py
 import yaml
 import logging
 from experiment import Experiment
 
 def main(experiment_definition):
-    # Logger info that prints to console and writes to file (GitHub actions output)
     logger.info('Starting experiment')
 
-    this_experiment = Experiment(experiment_definition)  # Initialize experiment
+    this_experiment = Experiment(experiment_definition)
 
     this_experiment.check_dataset_compliance()
 
@@ -36,4 +36,4 @@ except yaml.YAMLError as exception:
     logger.error('The Experiment Definition file is not valid')
     raise exception
 
-main(experiment_definition)  # Run the main function with the experiment definition
+main(experiment_definition)
