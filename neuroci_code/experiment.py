@@ -426,14 +426,24 @@ class Experiment:
             logging.warning(f"Could not determine if directory: {remote_path} — {e}")
             return False
 
-    def _commit_and_push(self, message: str):
-        logging.info("Committing experiment state to Git...")
-        subprocess.run(["git", "config", "user.name", "github_username"])
-        subprocess.run(["git", "config", "user.email", "github_email@example.com"])
-        subprocess.run(["git", "add", "experiment_state"], check=True)
-        subprocess.run(["git", "commit", "-m", message], check=True)
-        subprocess.run(["git", "push"], check=True)
-        logging.info("✓ Git push complete.")
+    def _commit_and_push(self, message):
+        try:
+            subprocess.run(["git", "config", "user.name", "github_username"], check=True)
+            subprocess.run(["git", "config", "user.email", "github_email@example.com"], check=True)
+            subprocess.run(["git", "add", "experiment_state"], check=True)
+
+            result = subprocess.run(["git", "diff", "--cached", "--quiet"])
+            if result.returncode == 0:
+                logging.info("✓ No changes to commit.")
+                return
+
+            subprocess.run(["git", "commit", "-m", message], check=True)
+            subprocess.run(["git", "push"], check=True)
+            logging.info("✓ Pushed updated experiment state to remote repo.")
+        except subprocess.CalledProcessError as e:
+            logging.error(f"✗ Git operation failed: {e}")
+            raise
+
 
     def run_user_processing(self):
         repo_root = Path(__file__).resolve().parents[1]
