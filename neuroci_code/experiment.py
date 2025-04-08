@@ -23,11 +23,13 @@ class Experiment:
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
         self.extractors = experiment_definition['extractors']
+        self.userscripts = experiment_definition['userscripts']
         self.target_host = experiment_definition.get('target_host')
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '') 
         self.scheduler = experiment_definition.get('scheduler', 'slurm')  # Default to slurm if not specified
 
         logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}, and extractors: {self.extractors}')
+        logging.info(f'User scripts: {self.userscripts}')
         logging.info(f'Target host: {self.target_host}')
         logging.info(f'Prefix command: {self.prefix_cmd}')
         logging.info(f'Scheduler: {self.scheduler}')
