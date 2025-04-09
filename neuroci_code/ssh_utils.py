@@ -164,7 +164,7 @@ class SSHConnectionManager:
         base_command = f"nipoppy {action} --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
     
         if action in ['run', 'extract']:
-            base_command += f" --hpc {self.scheduler} --keep-workdir"
+            base_command += f" --hpc {self.scheduler}"
 
         full_command = f"{self.prefix_cmd} && {base_command}"
         if use_bash:
