@@ -1,0 +1,5 @@
+{
+    "directory": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]",
+    "output": "[[NIPOPPY_DPATH_PIPELINE_IDP]]/file_count.txt"
+}
+
