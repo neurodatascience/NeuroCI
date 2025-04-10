@@ -34,7 +34,8 @@ v2.0 is marked by a number of changes from the original architecture, relying on
      - Pipeline/extractor names/versions
      - User script filenames (to be executed in the order provided).
      - Target host and scheduler (slurm/sge)
-7. **Scheduling (Optional)**:
+   - Modifying this file triggers the Github Actions CI run.
+8. **Scheduling (Optional)**:
    - Modify `.github/workflows/ci_trigger.yml` for periodic execution
 
 ## Code Overview
@@ -69,7 +70,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
   - Coordinates the complete workflow
 
 ## Known Limitations (Stuff to address)
-- Nipoppy extractors are not yet tracked, which will lead them to running over and over. I will fix this either here on in the Nipoppy codebase.
+- Nipoppy extractors are not yet tracked, which will lead them to running over and over. This will either be addressed here or in the Nipoppy codebase.
 - Nipoppy extractors don't seem to be working with the HPC scheduling. Might change them to run without the scheduling (for now...)
-- We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will liekly be addressed (eventually) by importing Nipoppy code.
 - I will create a user_template branch for users to fork without all of my personal configs cluttering it up.
+- We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will (eventually) be addressed by importing some Nipoppy code.
