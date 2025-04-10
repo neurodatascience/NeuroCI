@@ -13,12 +13,8 @@ def main(experiment_definition):
     for dataset, dataset_path in this_experiment.datasets.items():
         for pipeline, pipeline_version in this_experiment.pipelines.items():
             this_experiment.update_tracker_info(dataset, dataset_path, pipeline, pipeline_version)
-            this_experiment.run_pipeline(dataset, dataset_path, pipeline, pipeline_version)
-    
-    for dataset, dataset_path in this_experiment.datasets.items():
         for extractor, extractor_version in this_experiment.extractors.items():
             this_experiment.run_extractor(dataset, dataset_path, extractor, extractor_version)
-            #print('I AM AN EXTRACTOR PLACEHOLDER - REMEMBER TO UNCOMMENT THE EXTRACTOR')
     
     this_experiment.push_state_to_repo()
     this_experiment.run_user_processing()
