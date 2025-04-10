@@ -27,6 +27,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
      - Process IDP outputs from `/tmp/neuroci_idp_state/`
      - Save results to `experiment_root/`
      - Declare dependencies in `requirements.txt`
+     - Not crash catastrophically if the IDPs are not yet in the directory.
 6. **Experiment Configuration**:
    - Edit `experiment_definition.yaml` to specify:
      - Nipoppy Dataset paths
@@ -66,3 +67,8 @@ v2.0 is marked by a number of changes from the original architecture, relying on
   - Loads experiment definition
   - Initializes and executes the Experiment
   - Coordinates the complete workflow
+
+## Known Limitations (Stuff to address)
+- Nipoppy extractors are not yet tracked, which will lead them to running over and over. I will fix this either here on in the Nipoppy codebase.
+- Nipoppy extractors don't seem to be working with the HPC scheduling. Might change them to run without the scheduling (for now...)
+- We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will liekly be addressed (eventually) by importing Nipoppy code.
