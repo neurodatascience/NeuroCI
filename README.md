@@ -11,7 +11,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 0. **Dataset Setup**: Initialize your BIDS-format dataset(s) on the HPC with all required pipelines using [Nipoppy](https://nipoppy.readthedocs.io/en/latest/).
 
 ### Setup Steps
-1. **Repository Setup**: Fork the 'blank template' branch (for customization) or refer to 'master' for a working example.
+1. **Repository Setup**: Fork the 'blank template' branch (for customization) or refer to 'master' for a working example. **BLANK TEMPLATE BRANCH STILL DOESN'T EXIST, JUST MODIFY THE MASTER BRANCH**
 2. **SSH Configuration**:
    - Generate an SSH key pair (`ssh-keygen`)
    - Install the public key on your HPC
@@ -72,3 +72,4 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 - Nipoppy extractors are not yet tracked, which will lead them to running over and over. I will fix this either here on in the Nipoppy codebase.
 - Nipoppy extractors don't seem to be working with the HPC scheduling. Might change them to run without the scheduling (for now...)
 - We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will liekly be addressed (eventually) by importing Nipoppy code.
+- I will create a user_template branch for users to fork without all of my personal configs cluttering it up.
