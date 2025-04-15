@@ -34,6 +34,14 @@ class Experiment:
             logging.error('No pipelines found in experiment definition.')
             raise ValueError("Experiment definition must include pipelines.")
 
+        if 'target_host' not in experiment_definition or not experiment_definition['target_host']:
+            logging.error('No target_host found in experiment definition.')
+            raise ValueError("Experiment definition must include a valid target_host.")
+
+        if 'scheduler' not in experiment_definition or not experiment_definition['scheduler']:
+            logging.error('No scheduler found in experiment definition.')
+            raise ValueError("Experiment definition must include a valid scheduler.")
+
     def _log_experiment_config(self):
         logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}')
         logging.info(f'Extractors: {self.extractors}')
