@@ -1,4 +1,10 @@
-# ssh_utils.py
+"""
+ssh_utils.py
+
+Provides SSH connection management and remote command execution utilities
+for interacting with remote servers in a reproducible neuroimaging pipeline context.
+"""
+
 import logging
 import os
 import subprocess
@@ -8,7 +14,20 @@ from fabric import Connection
 from paramiko.config import SSHConfig
 
 class SSHConnectionManager:
+    """
+    Manages an SSH connection to a remote host, handles SSH config and key setup,
+    executes remote Nipoppy commands, and checks dataset compliance.
+    """
+
     def __init__(self, target_host, prefix_cmd, scheduler):
+        """
+        Initialize the SSHConnectionManager.
+
+        Args:
+            target_host (str): Hostname or alias defined in SSH config.
+            prefix_cmd (str): Command prefix for environment setup (e.g., source env).
+            scheduler (str): HPC scheduler name (e.g., SLURM).
+        """
         self.target_host = target_host
         self.prefix_cmd = prefix_cmd
         self.scheduler = scheduler
@@ -18,6 +37,7 @@ class SSHConnectionManager:
         self._setup_connection()
 
     def _setup_connection(self):
+        """Sets up the SSH connection using environment variables and SSH config."""
         private_key = os.getenv("SSH_PRIVATE_KEY")
         ssh_config_path = os.getenv("SSH_CONFIG_PATH", "~/.ssh/config")
 
@@ -31,7 +51,17 @@ class SSHConnectionManager:
         self._test_connection()
 
     def _setup_ssh_config(self, hostname, private_key, config_path):
-        """Parses the SSH config file, extracts IdentityFile, and writes the private key there."""
+        """
+        Writes the SSH private key to the path defined in the SSH config.
+
+        Args:
+            hostname (str): Target host name.
+            private_key (str): SSH private key content.
+            config_path (str): Path to SSH config file.
+
+        Returns:
+            str: Path to saved private key file.
+        """
         config_file = os.path.expanduser(config_path)
         ssh_config = SSHConfig()
 
@@ -54,7 +84,13 @@ class SSHConnectionManager:
         return key_path
 
     def _ensure_known_hosts(self, hostname, config_path):
-        """Scans and adds target and proxy hosts to known_hosts to avoid interactive prompts."""
+        """
+        Adds the target and any proxy hosts to known_hosts using ssh-keyscan.
+
+        Args:
+            hostname (str): Target host.
+            config_path (str): Path to SSH config file.
+        """
         known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
         config_file = os.path.expanduser(config_path)
         ssh_config = SSHConfig()
@@ -68,12 +104,13 @@ class SSHConnectionManager:
         host_info = ssh_config.lookup(hostname)
         all_hosts = {host_info.get("hostname", hostname)}
 
+        # Collect proxy hosts, if any
         proxy_hosts = (
             host_info.get("proxyjump", "").split(",") if "proxyjump" in host_info
             else [host_info["proxycommand"].split()[-1]] if "proxycommand" in host_info
             else []
         )
-        
+
         for proxy in proxy_hosts:
             proxy_info = ssh_config.lookup(proxy.strip())
             all_hosts.add(proxy_info.get("hostname", proxy.strip()))
@@ -91,7 +128,16 @@ class SSHConnectionManager:
                 logging.error(f"Failed to add {host} to known_hosts: {e}")
 
     def _create_connection(self, hostname, ssh_config_path):
-        """Creates a Fabric SSH connection, handling proxies from the config."""
+        """
+        Creates a Fabric SSH connection using the host and optional proxy chain.
+
+        Args:
+            hostname (str): SSH target host.
+            ssh_config_path (str): SSH config file path.
+
+        Returns:
+            Tuple[Connection, List[Connection]]: Fabric connection and proxy chain.
+        """
         config_file = os.path.expanduser(ssh_config_path)
         ssh_config = SSHConfig()
 
@@ -110,6 +156,7 @@ class SSHConnectionManager:
             "connect_kwargs": {"key_filename": self.ssh_key_path, "allow_agent": True},
         }
 
+        # Handle proxy chain if any
         proxy_chain = []
         proxy_hosts = (
             host_info.get("proxyjump", "").split(",") if "proxyjump" in host_info
@@ -134,7 +181,7 @@ class SSHConnectionManager:
         return Connection(**conn_kwargs), proxy_chain
 
     def _test_connection(self):
-        """Tests the SSH connection with a simple command."""
+        """Runs a basic command over SSH to verify connectivity."""
         logging.info("Running SSH connection test...")
         result = self.conn.run("whoami", hide=True)
         if result.ok:
@@ -144,7 +191,7 @@ class SSHConnectionManager:
             raise ConnectionError("SSH connection test failed.")
 
     def close_connection(self):
-        """Closes the SSH connection if it is active."""
+        """Gracefully closes the SSH connection, if active."""
         if self.conn and self.conn.is_connected:
             self.conn.close()
             logging.info("SSH connection closed successfully.")
@@ -152,7 +199,17 @@ class SSHConnectionManager:
             logging.warning("SSH connection was already closed or never established.")
 
     def run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
-        """General method to construct and execute a Nipoppy command remotely via SSH."""
+        """
+        Constructs and runs a nipoppy command on the remote host.
+
+        Args:
+            action (str): One of ['track', 'run', 'extract'].
+            dataset (str): Dataset name.
+            dataset_path (str): Path to dataset on remote host.
+            pipeline (str): Pipeline name.
+            pipeline_version (str): Pipeline version string.
+            use_bash (bool): Whether to wrap command in bash login shell.
+        """
         log_action = {
             "track": "tracker info",
             "run": "pipeline",
@@ -181,7 +238,15 @@ class SSHConnectionManager:
             logging.error(f"Error while running {log_action} for {dataset} - {pipeline}: {e}")
 
     def check_dataset_compliance(self, datasets, pipelines, extractors):
-        """Checks if all datasets comply with the experiment definition."""
+        """
+        Verifies that all datasets use the expected pipeline/extractor versions,
+        container images, and invocation definitions.
+
+        Args:
+            datasets (dict): Mapping of dataset names to remote paths.
+            pipelines (dict): Mapping of pipeline names to expected versions.
+            extractors (dict): Mapping of extractor names to expected versions.
+        """
         logging.info("Starting dataset compliance check...")
 
         seen_containers = {}
@@ -189,9 +254,9 @@ class SSHConnectionManager:
 
         for dataset_name, dataset_path in datasets.items():
             logging.info(f"Checking dataset: {dataset_name} at {dataset_path}")
-
             global_config_path = os.path.join(dataset_path, "global_config.json")
 
+            # Load global_config.json
             try:
                 result = self.conn.run(f"cat {global_config_path}", hide=True)
                 global_config = json.loads(result.stdout)
@@ -219,6 +284,7 @@ class SSHConnectionManager:
                     key = f"{tool_type}:{tool_name}"
                     container_path = os.path.join(container_store, f"{tool_name}_{expected_version}.sif")
 
+                    # Optionally inspect container (skip extractor if missing)
                     if tool_type == "pipeline":
                         check_container = True
                     else:
@@ -241,6 +307,7 @@ class SSHConnectionManager:
                             logging.error(f"Failed to inspect container {container_path}: {e}")
                             raise
 
+                    # Check invocation.json consistency
                     tool_dir = os.path.join(dataset_path, "pipelines", f"{tool_name}-{expected_version}")
                     invocation_path = os.path.join(tool_dir, "invocation.json")
                     try:
