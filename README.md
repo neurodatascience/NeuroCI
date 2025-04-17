@@ -7,11 +7,13 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 
 ## Usage Instructions
 
+**Note**: Prior to use, please be aware that this experiment repository shares multiple files from your Nipoppy dataset, including the manifest file containing subject IDs and the global configuration file with potential sensitive path information. Ensure you review and manage sensitive data accordingly.
+
 ### Prerequisites
 0. **Dataset Setup**: Initialize your BIDS-format dataset(s) on the HPC with all required pipelines using [Nipoppy](https://nipoppy.readthedocs.io/en/latest/).
 
 ### Setup Steps
-1. **Repository Setup**: Fork the 'blank template' branch (for customization) or refer to 'master' for a working example. **BLANK TEMPLATE BRANCH STILL DOESN'T EXIST, JUST MODIFY THE MASTER BRANCH**
+1. **Repository Setup**: Fork the 'blank template' branch (for customization) or refer to 'master' for a working example.
 2. **SSH Configuration**:
    - Generate an SSH key pair (`ssh-keygen`)
    - Install the public key on your HPC
