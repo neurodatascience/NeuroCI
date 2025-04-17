@@ -7,7 +7,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 
 ## Usage Instructions
 
-**Note**: Prior to use, please be aware that this experiment repository shares multiple files from your Nipoppy datasets, including the manifest and bagel files containing subject IDs, and the global configuration file with potential sensitive path information. Ensure you review and manage sensitive data accordingly.
+**Note**: Prior to use, please be aware that this experiment repository shares multiple files from your Nipoppy datasets (in the 'experiment_state' directory), including the manifest and bagel files containing subject IDs, and the global configuration file with potential sensitive path information. Ensure you review and manage sensitive data accordingly.
 
 ### Prerequisites
 0. **Dataset Setup**: Initialize your BIDS-format dataset(s) on the HPC with all required pipelines using [Nipoppy](https://nipoppy.readthedocs.io/en/latest/).
