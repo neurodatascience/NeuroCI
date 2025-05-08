@@ -203,7 +203,7 @@ def test_commit_and_push_git_failure(mock_error, mock_run):
 @mock.patch("logging.info")
 @mock.patch("logging.error")
 def test_run_user_scripts(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations()  # Replace with the actual class name
+    instance = FileOperations() 
     userscripts = {"script1": "script1.py"}
     mock_exists.return_value = True
     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
@@ -217,7 +217,7 @@ def test_run_user_scripts(mock_error, mock_info, mock_exists, mock_run):
 @mock.patch("logging.info")
 @mock.patch("logging.error")
 def test_run_user_scripts_not_found(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations()  # Replace with the actual class name
+    instance = FileOperations() 
     userscripts = {"script1": "script1.py"}
     mock_exists.return_value = False
 
@@ -231,7 +231,7 @@ def test_run_user_scripts_not_found(mock_error, mock_info, mock_exists, mock_run
 @mock.patch("logging.info")
 @mock.patch("logging.error")
 def test_run_user_scripts_failure(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations()  # Replace with the actual class name
+    instance = FileOperations() 
     userscripts = {"script1": "script1.py"}
     mock_exists.return_value = True
 
@@ -252,7 +252,7 @@ def test_run_user_scripts_failure(mock_error, mock_info, mock_exists, mock_run):
 @mock.patch("pathlib.Path.exists")
 @mock.patch("logging.info")
 def test_run_user_scripts_commit(mock_info, mock_exists, mock_run):
-    instance = FileOperations()  # Replace with the actual class name
+    instance = FileOperations() 
     userscripts = {"script1": "script1.py"}
     mock_exists.return_value = True
     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
