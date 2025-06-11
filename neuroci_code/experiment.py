@@ -68,7 +68,7 @@ class Experiment:
 
     def run_pipeline(self, dataset, dataset_path, pipeline, pipeline_version):
         self.ssh_manager.run_nipoppy_command(
-            action="run",
+            action="process",
             dataset=dataset,
             dataset_path=dataset_path,
             pipeline=pipeline,

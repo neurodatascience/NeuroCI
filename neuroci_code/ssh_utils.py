@@ -220,7 +220,7 @@ class SSHConnectionManager:
 
         base_command = f"nipoppy {action} --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
     
-        if action == 'run':
+        if action == 'process':
             base_command += f" --hpc {self.scheduler}"
         # Uncomment the following lines if --hpc is needed for 'extract' in the future
         # elif action == 'extract':

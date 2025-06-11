@@ -37,7 +37,7 @@ class FileOperations:
             dest_base.mkdir(parents=True, exist_ok=True)
 
             # Download essential configuration files from the dataset
-            for file in ["manifest.tsv", "global_config.json", "derivatives/imaging_bagel.tsv"]:
+            for file in ["manifest.tsv", "global_config.json", "derivatives/processing_status.tsv"]:
                 remote_path = f"{dataset_path}/{file}"
                 local_path = dest_base / file
                 local_path.parent.mkdir(parents=True, exist_ok=True)
