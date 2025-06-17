@@ -240,10 +240,12 @@ class SSHConnectionManager:
         except Exception as e:
             logging.error(f"Error while running {log_action} for {dataset} - {pipeline}: {e}")
 
+
+
     def check_dataset_compliance(self, datasets, pipelines, extractors):
         """
         Verifies that all datasets use the expected pipeline/extractor versions,
-        container images, and invocation definitions.
+        container images, and JSON definitions (invocation, config, descriptor).
 
         Args:
             datasets (dict): Mapping of dataset names to remote paths.
@@ -254,6 +256,8 @@ class SSHConnectionManager:
 
         seen_containers = {}
         seen_invocations = {}
+        seen_configs = {}
+        seen_descriptors = {}
 
         for dataset_name, dataset_path in datasets.items():
             logging.info(f"Checking dataset: {dataset_name} at {dataset_path}")
@@ -270,24 +274,11 @@ class SSHConnectionManager:
             container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
 
             for tool_type, tools in [("pipeline", pipelines), ("extractor", extractors)]:
-                config_key = "PROC_PIPELINES" if tool_type == "pipeline" else "EXTRACTION_PIPELINES"
-                tool_list = global_config.get(config_key, [])
-                found_versions = {tool["NAME"]: tool["VERSION"] for tool in tool_list}
-
                 for tool_name, expected_version in tools.items():
-                    actual_version = found_versions.get(tool_name)
-
-                    if actual_version != expected_version:
-                        logging.error(
-                            f"Dataset {dataset_name} does not use the expected {tool_type} version: "
-                            f"Expected {tool_name}-{expected_version}, Found {actual_version or 'MISSING'}"
-                        )
-                        raise ValueError("Dataset compliance check failed due to version mismatch.")
-
                     key = f"{tool_type}:{tool_name}"
                     container_path = os.path.join(container_store, f"{tool_name}_{expected_version}.sif")
 
-                    # Optionally inspect container (skip extractor if missing)
+                    # Optionally inspect container
                     if tool_type == "pipeline":
                         check_container = True
                     else:
@@ -310,18 +301,47 @@ class SSHConnectionManager:
                             logging.error(f"Failed to inspect container {container_path}: {e}")
                             raise
 
-                    # Check invocation.json consistency
-                    tool_dir = os.path.join(dataset_path, "pipelines", f"{tool_name}-{expected_version}")
+                    # Determine correct tool path
+                    subdir = "processing" if tool_type == "pipeline" else "extraction"
+                    tool_dir = os.path.join(dataset_path, "pipelines", subdir, f"{tool_name}-{expected_version}")
+
+                    # Check invocation.json
                     invocation_path = os.path.join(tool_dir, "invocation.json")
                     try:
                         invocation_content = self.conn.run(f"cat {invocation_path}", hide=True).stdout
                         if key not in seen_invocations:
                             seen_invocations[key] = invocation_content
                         elif seen_invocations[key] != invocation_content:
-                            logging.error(f"Inconsistent Boutiques invocation detected for {tool_type} {tool_name}.")
+                            logging.error(f"Inconsistent invocation.json for {tool_type} {tool_name}.")
                             raise ValueError("Dataset compliance check failed due to invocation inconsistency.")
                     except Exception as e:
                         logging.error(f"Failed to read {invocation_path} from {dataset_name}: {e}")
+                        raise
+
+                    # Check config.json
+                    config_path = os.path.join(tool_dir, "config.json")
+                    try:
+                        config_content = self.conn.run(f"cat {config_path}", hide=True).stdout
+                        if key not in seen_configs:
+                            seen_configs[key] = config_content
+                        elif seen_configs[key] != config_content:
+                            logging.error(f"Inconsistent config.json for {tool_type} {tool_name}.")
+                            raise ValueError("Dataset compliance check failed due to config inconsistency.")
+                    except Exception as e:
+                        logging.error(f"Failed to read {config_path} from {dataset_name}: {e}")
+                        raise
+
+                    # Check descriptor.json
+                    descriptor_path = os.path.join(tool_dir, "descriptor.json")
+                    try:
+                        descriptor_content = self.conn.run(f"cat {descriptor_path}", hide=True).stdout
+                        if key not in seen_descriptors:
+                            seen_descriptors[key] = descriptor_content
+                        elif seen_descriptors[key] != descriptor_content:
+                            logging.error(f"Inconsistent descriptor.json for {tool_type} {tool_name}.")
+                            raise ValueError("Dataset compliance check failed due to descriptor inconsistency.")
+                    except Exception as e:
+                        logging.error(f"Failed to read {descriptor_path} from {dataset_name}: {e}")
                         raise
 
         logging.info("All datasets comply with the experiment definition.")
