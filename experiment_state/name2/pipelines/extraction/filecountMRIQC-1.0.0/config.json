@@ -1,0 +1,18 @@
+{
+    "NAME": "filecountMRIQC",
+    "VERSION": "1.0.0",
+    "PROC_DEPENDENCIES": [
+        {
+            "NAME": "mriqc",
+            "VERSION": "23.1.0"
+        }
+    ],
+    "STEPS": [
+        {
+            "INVOCATION_FILE": "invocation.json",
+            "DESCRIPTOR_FILE": "descriptor.json"
+        }
+    ],
+    "PIPELINE_TYPE": "extraction",
+    "SCHEMA_VERSION": "1"
+}
