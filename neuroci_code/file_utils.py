@@ -51,11 +51,11 @@ class FileOperations:
 
             # Download extractor and pipeline outputs
             for tool, version in extractors.items():
-                pipeline_dir = f"pipelines/{tool}-{version}"
+                pipeline_dir = f"pipelines/extraction/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
             for tool, version in pipelines.items():
-                pipeline_dir = f"pipelines/{tool}-{version}"
+                pipeline_dir = f"pipelines/processing/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
                 # Also fetch the IDP outputs for the pipeline
