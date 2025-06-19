@@ -31,7 +31,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
      - Declare dependencies in `requirements.txt`
 6. **Experiment Configuration**:
    - Edit `experiment_definition.yaml` to specify:
-     - Nipoppy Dataset paths (we also encourage adding a comment alongside the path describing the dataset and/or link to its landing page).
+     - Nipoppy Dataset paths
      - Pipeline names/versions
      - User script filenames (to be executed in the order provided).
      - Target host and scheduler (slurm/sge)
