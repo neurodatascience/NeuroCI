@@ -138,10 +138,15 @@ class FileOperations:
     def run_user_scripts(self, userscripts):
         """
         Executes user-defined Python scripts for post-processing or analysis.
-        
+
         Args:
             userscripts: Dictionary mapping script keys to filenames.
         """
+        state_dir = Path("/tmp") / "neuroci_idp_state"
+        if not (state_dir.exists() and any(state_dir.iterdir())):
+            logging.info("Skipping user scripts: /tmp/neuroci_idp_state does not exist or is empty.")
+            return
+
         script_dir = self.repo_root / "user_scripts"
         logging.info("Starting user-defined processing scripts...")
 
