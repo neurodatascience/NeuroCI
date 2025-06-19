@@ -27,13 +27,13 @@ v2.0 is marked by a number of changes from the original architecture, relying on
    - Place lightweight Python scripts in `user_scripts/` directory
    - Scripts should:
      - Process IDP outputs from `/tmp/neuroci_idp_state/`
-     - Save results to `experiment_root/experiment_state`
+     - Save results to `experiment_root/experiment_state/`
      - Declare dependencies in `requirements.txt`
      - Not crash catastrophically if the IDPs are not yet in the directory.
 6. **Experiment Configuration**:
    - Edit `experiment_definition.yaml` to specify:
      - Nipoppy Dataset paths
-     - Pipeline/extractor names/versions
+     - Pipeline names/versions
      - User script filenames (to be executed in the order provided).
      - Target host and scheduler (slurm/sge)
    - Modifying this file triggers the Github Actions CI run.
