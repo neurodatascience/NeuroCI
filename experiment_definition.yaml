@@ -1,6 +1,6 @@
 datasets: 
-  name1: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds1"
-  name2: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds2"
+  name1: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds1" # OpenNeuro 1-subject 'Test' dataset: https://openneuro.org/datasets/ds005072
+  name2: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds2" # OpenNeuro 1-subject 'Test' dataset: https://openneuro.org/datasets/ds005072
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   mriqc: "23.1.0"
@@ -11,4 +11,4 @@ userscripts: # Python scripts stored in the user_scripts directory in the reposi
 
 target_host: "ducky" # The target HPC host. Must be the name of a host that is specified in the SSH config file.
 prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_new/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it).
-scheduler: "sge" # Scheduler to use (slurm and sge are currently functional)
+scheduler: "sge" # Scheduler to use (slurm and sge are currently functional).
