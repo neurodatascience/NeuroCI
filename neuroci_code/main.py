@@ -8,14 +8,13 @@ def main(experiment_definition):
 
     this_experiment = Experiment(experiment_definition)
 
-    this_experiment.check_dataset_compliance()
+    #Commenting out until extractor situation is sorted...Might delete this function all-together...
+    #this_experiment.check_dataset_compliance()
 
     for dataset, dataset_path in this_experiment.datasets.items():
         for pipeline, pipeline_version in this_experiment.pipelines.items():
             this_experiment.update_tracker_info(dataset, dataset_path, pipeline, pipeline_version)
             this_experiment.run_pipeline(dataset, dataset_path, pipeline, pipeline_version)
-        for extractor, extractor_version in this_experiment.extractors.items():
-            this_experiment.run_extractor(dataset, dataset_path, extractor, extractor_version)
     
     this_experiment.push_state_to_repo()
     this_experiment.run_user_processing()

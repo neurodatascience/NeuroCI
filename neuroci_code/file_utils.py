@@ -12,7 +12,7 @@ class FileOperations:
         # Set the root of the repository (assumes this script is two levels deep inside the repo)
         self.repo_root = Path(__file__).resolve().parents[1]
 
-    def push_state_to_repo(self, conn, datasets, pipelines, extractors):
+    def push_state_to_repo(self, conn, datasets, pipelines):
         """
         Downloads relevant files and pipeline outputs from remote datasets via SSH,
         stores them in a local 'experiment_state' directory, and pushes them to the Git repo.
@@ -21,7 +21,6 @@ class FileOperations:
             conn: SSH connection manager object.
             datasets: Dictionary mapping dataset names to remote paths.
             pipelines: Dictionary of pipelines with their versions.
-            extractors: Dictionary of extractors with their versions.
         """
         target_dir = self.repo_root / "experiment_state"
         logging.info(f"Syncing experiment state to local repo at: {target_dir}")
@@ -49,11 +48,7 @@ class FileOperations:
                 except Exception as e:
                     logging.warning(f"✗ Failed to download {file}: {e}")
 
-            # Download extractor and pipeline outputs
-            for tool, version in extractors.items():
-                pipeline_dir = f"pipelines/extraction/{tool}-{version}"
-                self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
-
+            # Download pipeline outputs
             for tool, version in pipelines.items():
                 pipeline_dir = f"pipelines/processing/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)

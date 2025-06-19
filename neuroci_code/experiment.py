@@ -10,7 +10,6 @@ class Experiment:
         
         self.datasets = experiment_definition['datasets']
         self.pipelines = experiment_definition['pipelines']
-        self.extractors = experiment_definition['extractors']
         self.userscripts = experiment_definition['userscripts']
         self.target_host = experiment_definition.get('target_host')
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '')
@@ -44,7 +43,6 @@ class Experiment:
 
     def _log_experiment_config(self):
         logging.info(f'Experiment initialized with datasets: {self.datasets}, pipelines: {self.pipelines}')
-        logging.info(f'Extractors: {self.extractors}')
         logging.info(f'User scripts: {self.userscripts}')
         logging.info(f'Target host: {self.target_host}')
         logging.info(f'Prefix command: {self.prefix_cmd}')
@@ -53,8 +51,7 @@ class Experiment:
     def check_dataset_compliance(self):
         self.ssh_manager.check_dataset_compliance(
             datasets=self.datasets,
-            pipelines=self.pipelines,
-            extractors=self.extractors
+            pipelines=self.pipelines
         )
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
@@ -76,22 +73,12 @@ class Experiment:
             use_bash=True
         )
 
-    def run_extractor(self, dataset, dataset_path, pipeline, pipeline_version):
-        self.ssh_manager.run_nipoppy_command(
-            action="extract",
-            dataset=dataset,
-            dataset_path=dataset_path,
-            pipeline=pipeline,
-            pipeline_version=pipeline_version,
-            use_bash=True
-        )
 
     def push_state_to_repo(self):
         self.file_ops.push_state_to_repo(
             conn=self.ssh_manager.conn,
             datasets=self.datasets,
-            pipelines=self.pipelines,
-            extractors=self.extractors
+            pipelines=self.pipelines
         )
 
     def run_user_processing(self):

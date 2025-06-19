@@ -203,7 +203,7 @@ class SSHConnectionManager:
         Constructs and runs a nipoppy command on the remote host.
 
         Args:
-            action (str): One of ['track', 'run', 'extract'].
+            action (str): One of ['track', 'process'].
             dataset (str): Dataset name.
             dataset_path (str): Path to dataset on remote host.
             pipeline (str): Pipeline name.
@@ -212,8 +212,7 @@ class SSHConnectionManager:
         """
         log_action = {
             "track": "tracker info",
-            "run": "pipeline",
-            "extract": "extractor"
+            "process": "pipeline"
         }.get(action, action)
 
         logging.info(f'Running {log_action} for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
@@ -222,9 +221,6 @@ class SSHConnectionManager:
     
         if action == 'process':
             base_command += f" --hpc {self.scheduler}"
-        # Uncomment the following lines if --hpc is needed for 'extract' in the future
-        # elif action == 'extract':
-        #     base_command += f" --hpc {self.scheduler}"
 
         full_command = f"{self.prefix_cmd} && {base_command}"
         if use_bash:
