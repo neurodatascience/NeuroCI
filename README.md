@@ -72,7 +72,6 @@ v2.0 is marked by a number of changes from the original architecture, relying on
   - Coordinates the complete workflow
 
 ## Known Limitations (Stuff to address)
-- Nipoppy extractors are not yet tracked, which will lead them to running over and over. This will either be addressed here or in the Nipoppy codebase in the future.
 - I will create a user_template branch for users to fork without all of my personal configs cluttering it up.
 - We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will (eventually) be addressed by importing some Nipoppy code.
 - Some users will not want their paths and private stuff to be exposed in the experiment definition and SSH config files. This will (eventually) be addressed by creating the option to provide all this information as a CI secret instead of reading from a file.
