@@ -27,13 +27,13 @@ v2.0 is marked by a number of changes from the original architecture, relying on
    - Place lightweight Python scripts in `user_scripts/` directory
    - Scripts should:
      - Process IDP outputs from `/tmp/neuroci_idp_state/`
-     - Save results to `experiment_root/`
+     - Save results to `experiment_root/experiment_state/`
      - Declare dependencies in `requirements.txt`
      - Not crash catastrophically if the IDPs are not yet in the directory.
 6. **Experiment Configuration**:
    - Edit `experiment_definition.yaml` to specify:
      - Nipoppy Dataset paths
-     - Pipeline/extractor names/versions
+     - Pipeline names/versions
      - User script filenames (to be executed in the order provided).
      - Target host and scheduler (slurm/sge)
    - Modifying this file triggers the Github Actions CI run.
@@ -72,7 +72,6 @@ v2.0 is marked by a number of changes from the original architecture, relying on
   - Coordinates the complete workflow
 
 ## Known Limitations (Stuff to address)
-- Nipoppy extractors are not yet tracked, which will lead them to running over and over. This will either be addressed here or in the Nipoppy codebase in the future.
 - I will create a user_template branch for users to fork without all of my personal configs cluttering it up.
 - We are limited to the file invocations for state backup being called 'invocation.json' as a generic step name. This will (eventually) be addressed by importing some Nipoppy code.
 - Some users will not want their paths and private stuff to be exposed in the experiment definition and SSH config files. This will (eventually) be addressed by creating the option to provide all this information as a CI secret instead of reading from a file.
