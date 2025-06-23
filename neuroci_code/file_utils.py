@@ -2,6 +2,7 @@ import logging
 import subprocess
 import shutil
 import json
+import os
 from pathlib import Path
 
 class FileOperations:
