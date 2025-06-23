@@ -16,7 +16,8 @@ class FileOperations:
         """
         Downloads relevant files and pipeline outputs from remote datasets via SSH,
         stores them in a local 'experiment_state' directory, and pushes them to the Git repo.
-        
+        Also saves container metadata using `singularity inspect --json`.
+
         Args:
             conn: SSH connection manager object.
             datasets: Dictionary mapping dataset names to remote paths.
@@ -56,6 +57,32 @@ class FileOperations:
                 # Also fetch the IDP outputs for the pipeline
                 idp_dir = f"derivatives/{tool}/{version}/idp"
                 self._download_directory(conn, f"{dataset_path}/{idp_dir}", Path("/tmp") / "neuroci_idp_state" / dataset_name / idp_dir)
+
+            # --- New block: Save Singularity container inspection output ---
+            container_dir = dest_base / "containers"
+            container_dir.mkdir(parents=True, exist_ok=True)
+
+            global_config_path = f"{dataset_path}/global_config.json"
+            try:
+                result = conn.run(f"cat {global_config_path}", hide=True)
+                global_config = json.loads(result.stdout)
+                container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
+            except Exception as e:
+                logging.warning(f"Failed to read container store from {global_config_path}: {e}")
+                container_store = None
+
+            if container_store:
+                for tool, version in pipelines.items():
+                    container_path = os.path.join(container_store, f"{tool}_{version}.sif")
+                    local_json_path = container_dir / f"{tool}_{version}.json"
+                    try:
+                        logging.info(f"Inspecting container: {container_path}")
+                        inspect_result = conn.run(f"singularity inspect --json {container_path}", hide=True)
+                        with open(local_json_path, "w") as f:
+                            f.write(inspect_result.stdout)
+                        logging.info(f"✓ Saved container metadata for {tool}-{version}")
+                    except Exception as e:
+                        logging.warning(f"✗ Failed to inspect container {container_path}: {e}")
 
         # Commit and push all the newly downloaded data to Git
         self._commit_and_push("Update experiment state")
