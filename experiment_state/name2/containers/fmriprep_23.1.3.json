@@ -1,0 +1,23 @@
+{
+	"data": {
+		"attributes": {
+			"labels": {
+				"org.label-schema.build-arch": "amd64",
+				"org.label-schema.build-date": "Monday_4_September_2023_11:54:25_EDT",
+				"org.label-schema.description": "fMRIPrep - robust fMRI preprocessing tool",
+				"org.label-schema.name": "fMRIPrep",
+				"org.label-schema.schema-version": "1.0",
+				"org.label-schema.url": "http://fmriprep.org",
+				"org.label-schema.usage.singularity.deffile.bootstrap": "docker",
+				"org.label-schema.usage.singularity.deffile.from": "nipreps/fmriprep:23.1.3",
+				"org.label-schema.usage.singularity.version": "3.11.4-jammy",
+				"org.label-schema.vcs-ref": "0ed3a93e",
+				"org.label-schema.vcs-url": "https://github.com/nipreps/fmriprep",
+				"org.label-schema.version": "23.1.3",
+				"org.opencontainers.image.ref.name": "ubuntu",
+				"org.opencontainers.image.version": "22.04"
+			}
+		}
+	},
+	"type": "container"
+}
