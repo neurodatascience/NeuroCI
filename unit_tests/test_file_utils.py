@@ -24,7 +24,7 @@ def test_push_state_to_repo(mock_warning, mock_info, mock_rmtree, mock_exists, m
     pipelines = {"fmriprep": "1.0.0"}
     extractors = {}
     mock_conn.get.side_effect = [None, Exception("Download failed")]
-    instance.push_state_to_repo(mock_conn, datasets, pipelines, extractors)
+    instance.push_state_to_repo(mock_conn, datasets, pipelines)
     assert mock_conn.get.call_count == 3  # manifest.tsv, global_config.json, and derivatives/imaging_bagel.tsv
 
 @mock.patch("ssh_utils.SSHConnectionManager")
@@ -39,8 +39,8 @@ def test_push_state_to_repo_download_directory(mock_warning, mock_info, mock_rmt
     pipelines = {"fmriprep": "1.0.0"}
     extractors = {"some_extractor": "1.0.0"}
     instance._download_directory = mock.Mock()
-    instance.push_state_to_repo(mock_conn, datasets, pipelines, extractors)
-    assert instance._download_directory.call_count == 3  # pipeline, extractor, and IDP outputs
+    instance.push_state_to_repo(mock_conn, datasets, pipelines)
+    assert instance._download_directory.call_count == 2  # pipeline, and IDP outputs
 
 @mock.patch("ssh_utils.SSHConnectionManager")
 @mock.patch("pathlib.Path.mkdir")
@@ -54,7 +54,7 @@ def test_push_state_to_repo_commit_and_push(mock_warning, mock_info, mock_rmtree
     pipelines = {"fmriprep": "1.0.0"}
     extractors = {}
     instance._commit_and_push = mock.Mock()
-    instance.push_state_to_repo(mock_conn, datasets, pipelines, extractors)
+    instance.push_state_to_repo(mock_conn, datasets, pipelines)
     instance._commit_and_push.assert_called_once_with("Update experiment state")
 
 @mock.patch("ssh_utils.Connection")
@@ -199,64 +199,91 @@ def test_commit_and_push_git_failure(mock_error, mock_run):
     mock_error.assert_called_once_with("✗ Git operation failed: Command '['git', 'commit']' returned non-zero exit status 1.")
 
 @mock.patch("subprocess.run")
+@mock.patch("pathlib.Path.iterdir")
 @mock.patch("pathlib.Path.exists")
 @mock.patch("logging.info")
 @mock.patch("logging.error")
-def test_run_user_scripts(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations() 
+def test_run_user_scripts(mock_error, mock_info, mock_exists, mock_iterdir, mock_run):
+    instance = FileOperations()
     userscripts = {"script1": "script1.py"}
     mock_exists.return_value = True
+    mock_iterdir.return_value = [mock.Mock()]  # Simulate non-empty dir
     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
     instance._commit_and_push = mock.Mock()
     instance.run_user_scripts(userscripts)
     mock_info.assert_any_call("✓ Successfully executed: script1.py")
     instance._commit_and_push.assert_called_once_with("Update experiment state from user scripts")
 
+
 @mock.patch("subprocess.run")
+@mock.patch("pathlib.Path.iterdir", return_value=[pathlib.Path("/tmp/neuroci_idp_state/file.txt")])
 @mock.patch("pathlib.Path.exists")
 @mock.patch("logging.info")
 @mock.patch("logging.error")
-def test_run_user_scripts_not_found(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations() 
+def test_run_user_scripts_not_found(mock_error, mock_info, mock_exists, mock_iterdir, mock_run):
+    instance = FileOperations()
     userscripts = {"script1": "script1.py"}
-    mock_exists.return_value = False
-
-    instance.run_user_scripts(userscripts)
-
     script_path = instance.repo_root / "user_scripts" / "script1.py"
+    state_path = pathlib.Path("/tmp/neuroci_idp_state")
+    
+    mock_exists.side_effect = [
+        True,  # for state_path.exists()
+        False  # for script_path.exists()
+    ]
+    
+    instance.run_user_scripts(userscripts)
+    
     mock_error.assert_called_once_with(f"User script not found: {script_path}")
 
 @mock.patch("subprocess.run")
+@mock.patch("pathlib.Path.iterdir", return_value=[pathlib.Path("/tmp/neuroci_idp_state/file.txt")])
 @mock.patch("pathlib.Path.exists")
 @mock.patch("logging.info")
 @mock.patch("logging.error")
-def test_run_user_scripts_failure(mock_error, mock_info, mock_exists, mock_run):
-    instance = FileOperations() 
+def test_run_user_scripts_failure(mock_error, mock_info, mock_exists, mock_iterdir, mock_run):
+    instance = FileOperations()
     userscripts = {"script1": "script1.py"}
-    mock_exists.return_value = True
-
+    script_path = instance.repo_root / "user_scripts" / "script1.py"
+    state_path = pathlib.Path("/tmp/neuroci_idp_state")
+    
+    mock_exists.side_effect = [
+        True,  # for state_path.exists()
+        True   # for script_path.exists()
+    ]
+    
     # Simulate a script failure
     mock_run.side_effect = subprocess.CalledProcessError(1, ["python"])
     instance._commit_and_push = mock.Mock()
-
+    
     with pytest.raises(RuntimeError):
         instance.run_user_scripts(userscripts)
-
+    
     # Get the actual error call argument and assert the start of the message
     error_msg = mock_error.call_args[0][0]
     assert error_msg.startswith("✗ Error executing script1.py: ")
     instance._commit_and_push.assert_not_called()
 
 
+
 @mock.patch("subprocess.run")
+@mock.patch("pathlib.Path.iterdir", return_value=[pathlib.Path("/tmp/neuroci_idp_state/file.txt")])
 @mock.patch("pathlib.Path.exists")
 @mock.patch("logging.info")
-def test_run_user_scripts_commit(mock_info, mock_exists, mock_run):
-    instance = FileOperations() 
+def test_run_user_scripts_commit(mock_info, mock_exists, mock_iterdir, mock_run):
+    instance = FileOperations()
     userscripts = {"script1": "script1.py"}
-    mock_exists.return_value = True
+    script_path = instance.repo_root / "user_scripts" / "script1.py"
+    state_path = pathlib.Path("/tmp/neuroci_idp_state")
+    
+    mock_exists.side_effect = [
+        True,  # for state_path.exists()
+        True   # for script_path.exists()
+    ]
+    
     mock_run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
     instance._commit_and_push = mock.Mock()
+    
     instance.run_user_scripts(userscripts)
+    
     instance._commit_and_push.assert_called_once_with("Update experiment state from user scripts")
     mock_info.assert_called_with("Committing results of user scripts to repo...")

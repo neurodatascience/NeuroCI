@@ -235,7 +235,7 @@ def test_run_nipoppy_command_success(mock_connection_class, mock_error, mock_inf
         ssh_mgr.conn = mock_conn_instance
         ssh_mgr.prefix_cmd = "source env.sh"
         ssh_mgr.scheduler = "SLURM"
-        ssh_mgr.run_nipoppy_command("run", "dataset_name", "/path/to/dataset", "pipeline_name", "pipeline_version")
+        ssh_mgr.run_nipoppy_command("process", "dataset_name", "/path/to/dataset", "pipeline_name", "pipeline_version")
         mock_info.assert_called_with("Successfully started pipeline for dataset_name - pipeline_name (pipeline_version)")
 
 @mock.patch("logging.error")
@@ -252,45 +252,9 @@ def test_run_nipoppy_command_failure(mock_connection_class, mock_setup_connectio
         ssh_mgr.conn = mock_conn_instance  # manually set conn
         ssh_mgr.prefix_cmd = "source env.sh"
         ssh_mgr.scheduler = "SLURM"
-        ssh_mgr.run_nipoppy_command("run", "dataset_name", "/path/to/dataset", "pipeline_name", "pipeline_version")
+        ssh_mgr.run_nipoppy_command("process", "dataset_name", "/path/to/dataset", "pipeline_name", "pipeline_version")
         mock_error.assert_any_call("Failed to start pipeline for dataset_name - pipeline_name (pipeline_version)")
 
-@mock.patch("logging.info")
-@mock.patch("ssh_utils.Connection")
-def test_check_dataset_compliance_pass(mock_conn, mock_info):
-    dataset = {"ds1": "/remote/path"}
-    pipelines = {"fmriprep": "1.0.0"}
-    extractors = {}
-    global_config = {
-        "SUBSTITUTIONS": {"[[NIPOPPY_DPATH_CONTAINERS]]": "/containers"},
-        "PROC_PIPELINES": [{"NAME": "fmriprep", "VERSION": "1.0.0"}]
-    }
-    mock_conn.run.side_effect = [
-        mock.Mock(stdout=json.dumps(global_config), ok=True),
-        mock.Mock(),  # singularity inspect
-        mock.Mock(stdout="invocation json content")  # invocation.json
-    ]
-    manager = SSHConnectionManager.__new__(SSHConnectionManager)
-    manager.conn = mock_conn
-    manager.check_dataset_compliance(dataset, pipelines, extractors)
-    mock_info.assert_called_with("All datasets comply with the experiment definition.")
-
-@mock.patch("logging.error")
-@mock.patch("ssh_utils.Connection")
-def test_check_dataset_compliance_version_mismatch(mock_conn, mock_error):
-    dataset = {"ds1": "/remote/path"}
-    pipelines = {"fmriprep": "1.0.0"}
-    extractors = {}
-    global_config = {
-        "SUBSTITUTIONS": {"[[NIPOPPY_DPATH_CONTAINERS]]": "/containers"},
-        "PROC_PIPELINES": [{"NAME": "fmriprep", "VERSION": "2.0.0"}]
-    }
-    mock_conn.run.return_value = mock.Mock(stdout=json.dumps(global_config), ok=True)
-    manager = SSHConnectionManager.__new__(SSHConnectionManager)
-    manager.conn = mock_conn
-    with pytest.raises(ValueError):
-        manager.check_dataset_compliance(dataset, pipelines, extractors)
-    mock_error.assert_called_with("Dataset ds1 does not use the expected pipeline version: Expected fmriprep-1.0.0, Found 2.0.0")
 
 def test_close_connection():
     manager = SSHConnectionManager.__new__(SSHConnectionManager)

@@ -31,7 +31,6 @@ def test_init_valid_experiment_definition(mock_file_ops, mock_ssh_manager, base_
     instance = Experiment(base_definition)
     assert instance.datasets == base_definition["datasets"]
     assert instance.pipelines == base_definition["pipelines"]
-    assert instance.extractors == base_definition["extractors"]
     assert instance.userscripts == base_definition["userscripts"]
     assert instance.target_host == base_definition["target_host"]
     assert instance.prefix_cmd == base_definition["prefix_cmd"]
