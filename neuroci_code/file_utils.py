@@ -56,11 +56,18 @@ class FileOperations:
                 pipeline_dir = f"pipelines/processing/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
-                # Also fetch the IDP outputs for the pipeline
+                # Fetch the IDP outputs as a compressed tarball
                 idp_dir = f"derivatives/{tool}/{version}/idp"
-                self._download_directory(conn, f"{dataset_path}/{idp_dir}", Path("/tmp") / "neuroci_idp_state" / dataset_name / idp_dir)
+                local_tar_path = Path("/tmp") / "neuroci_idp_state" / dataset_name / f"{tool}_{version}_idp.tar.gz"
+                self._download_tarball_from_remote_dir(
+                    conn,
+                    remote_dir=f"{dataset_path}/{idp_dir}",
+                    remote_base=dataset_path,
+                    local_tar_path=local_tar_path,
+                    remote_tar_name=f"/tmp/{tool}_{version}_idp.tar.gz"
+                )
 
-            # --- New block: Save Singularity container inspection output ---
+            # Save Singularity container inspection output
             container_dir = dest_base / "containers"
             container_dir.mkdir(parents=True, exist_ok=True)
 
@@ -88,6 +95,46 @@ class FileOperations:
 
         # Commit and push all the newly downloaded data to Git
         self._commit_and_push("Update experiment state")
+
+
+    def _download_tarball_from_remote_dir(self, conn, remote_dir, remote_base, local_tar_path, remote_tar_name):
+        """
+        Archives and downloads a remote directory as a tar.gz file to avoid many small transfers,
+        then extracts it locally and deletes the archive.
+
+        Args:
+            conn: SSH connection object.
+            remote_dir: Full path to the remote directory to archive.
+            remote_base: Base directory relative to which tar should archive.
+            local_tar_path: Local file path to save the downloaded tar.gz.
+            remote_tar_name: Remote file path for temporary tar.gz (e.g., /tmp/foo_v1_idp.tar.gz).
+        """
+        local_tar_path.parent.mkdir(parents=True, exist_ok=True)
+        relative_path = os.path.relpath(remote_dir, remote_base)
+        extract_dir = local_tar_path.parent / relative_path
+
+        try:
+            logging.info(f"Creating tarball on remote: {remote_tar_name} from {remote_dir}")
+            conn.run(f"tar -czf {remote_tar_name} -C {remote_base} {relative_path}", hide=True)
+
+            logging.info(f"Downloading tarball: {remote_tar_name} -> {local_tar_path}")
+            conn.get(remote_tar_name, str(local_tar_path))
+
+            conn.run(f"rm -f {remote_tar_name}", hide=True)
+            logging.info(f"✓ Downloaded and cleaned up tarball for: {relative_path}")
+
+            # Extract the tarball
+            logging.info(f"Extracting tarball: {local_tar_path} -> {extract_dir}")
+            shutil.unpack_archive(str(local_tar_path), extract_dir)
+            logging.info(f"✓ Extracted to: {extract_dir}")
+
+            # Optionally delete the local archive
+            local_tar_path.unlink()
+            logging.info(f"✓ Deleted archive: {local_tar_path}")
+
+        except Exception as e:
+            logging.warning(f"✗ Failed to handle tarball from {remote_dir}: {e}")
+
 
     def _download_directory(self, conn, remote_dir, local_dir):
         """
