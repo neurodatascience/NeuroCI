@@ -56,7 +56,7 @@ class Experiment:
 
     def update_tracker_info(self, dataset, dataset_path, pipeline, pipeline_version):
         self.ssh_manager.run_nipoppy_command(
-            action="track",
+            action="track-processing",
             dataset=dataset,
             dataset_path=dataset_path,
             pipeline=pipeline,

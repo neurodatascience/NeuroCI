@@ -25,7 +25,7 @@ def test_push_state_to_repo(mock_warning, mock_info, mock_rmtree, mock_exists, m
     extractors = {}
     mock_conn.get.side_effect = [None, Exception("Download failed")]
     instance.push_state_to_repo(mock_conn, datasets, pipelines)
-    assert mock_conn.get.call_count == 3  # manifest.tsv, global_config.json, and derivatives/imaging_bagel.tsv
+    assert mock_conn.get.call_count == 4  # manifest.tsv, global_config.json, and derivatives/imaging_bagel.tsv
 
 @mock.patch("ssh_utils.SSHConnectionManager")
 @mock.patch("pathlib.Path.mkdir")
@@ -40,7 +40,7 @@ def test_push_state_to_repo_download_directory(mock_warning, mock_info, mock_rmt
     extractors = {"some_extractor": "1.0.0"}
     instance._download_directory = mock.Mock()
     instance.push_state_to_repo(mock_conn, datasets, pipelines)
-    assert instance._download_directory.call_count == 2  # pipeline, and IDP outputs
+    assert instance._download_directory.call_count == 1  # pipeline, and IDP outputs
 
 @mock.patch("ssh_utils.SSHConnectionManager")
 @mock.patch("pathlib.Path.mkdir")

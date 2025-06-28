@@ -203,7 +203,7 @@ class SSHConnectionManager:
         Constructs and runs a nipoppy command on the remote host.
 
         Args:
-            action (str): One of ['track', 'process'].
+            action (str): One of ['track-processing', 'process'].
             dataset (str): Dataset name.
             dataset_path (str): Path to dataset on remote host.
             pipeline (str): Pipeline name.
@@ -211,7 +211,7 @@ class SSHConnectionManager:
             use_bash (bool): Whether to wrap command in bash login shell.
         """
         log_action = {
-            "track": "tracker info",
+            "track-processing": "tracker info",
             "process": "pipeline"
         }.get(action, action)
 

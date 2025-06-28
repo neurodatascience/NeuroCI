@@ -239,7 +239,7 @@ def test_run_nipoppy_command_success(mock_connection_class, mock_error, mock_inf
         mock_info.assert_called_with("Successfully started pipeline for dataset_name - pipeline_name (pipeline_version)")
 
 @mock.patch("logging.error")
-@mock.patch("ssh_utils.SSHConnectionManager._setup_connection")  # 👈 Patch this
+@mock.patch("ssh_utils.SSHConnectionManager._setup_connection")  
 @mock.patch("ssh_utils.Connection")
 def test_run_nipoppy_command_failure(mock_connection_class, mock_setup_connection, mock_error):
     mock_conn_instance = mock.MagicMock()
