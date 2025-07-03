@@ -56,15 +56,15 @@ class FileOperations:
                 pipeline_dir = f"pipelines/processing/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
-                # Fetch the IDP outputs as a compressed tarball
-                idp_dir = f"derivatives/{tool}/{version}/idp"
-                local_tar_path = Path("/tmp") / "neuroci_idp_state" / dataset_name / f"{tool}_{version}_idp.tar.gz"
+                # Fetch the outputs as a compressed tarball
+                output_dir = f"derivatives/{tool}/{version}/output"
+                local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
                 self._download_tarball_from_remote_dir(
                     conn,
-                    remote_dir=f"{dataset_path}/{idp_dir}",
+                    remote_dir=f"{dataset_path}/{output_dir}",
                     remote_base=dataset_path,
                     local_tar_path=local_tar_path,
-                    remote_tar_name=f"/tmp/{tool}_{version}_idp.tar.gz"
+                    remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz"
                 )
 
             # Save Singularity container inspection output
@@ -107,7 +107,7 @@ class FileOperations:
             remote_dir: Full path to the remote directory to archive.
             remote_base: Base directory relative to which tar should archive.
             local_tar_path: Local file path to save the downloaded tar.gz.
-            remote_tar_name: Remote file path for temporary tar.gz (e.g., /tmp/foo_v1_idp.tar.gz).
+            remote_tar_name: Remote file path for temporary tar.gz (e.g., /tmp/foo_v1_output.tar.gz).
         """
         local_tar_path.parent.mkdir(parents=True, exist_ok=True)
         relative_path = os.path.relpath(remote_dir, remote_base)
@@ -232,9 +232,9 @@ class FileOperations:
         Args:
             userscripts: Dictionary mapping script keys to filenames.
         """
-        state_dir = Path("/tmp") / "neuroci_idp_state"
+        state_dir = Path("/tmp") / "neuroci_output_state"
         if not (state_dir.exists() and any(state_dir.iterdir())):
-            logging.info("Skipping user scripts: /tmp/neuroci_idp_state does not exist or is empty.")
+            logging.info("Skipping user scripts: /tmp/neuroci_output_state does not exist or is empty.")
             return
 
         script_dir = self.repo_root / "user_scripts"
