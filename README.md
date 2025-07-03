@@ -48,7 +48,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 - **Experiment**: Main class orchestrating the workflow
   - Validates experiment definition
   - Manages dataset compliance checks
-  - Coordinates pipeline execution and result extraction
+  - Coordinates pipeline execution
   - Handles SSH connections and file operations
 
 #### `ssh_utils.py`
