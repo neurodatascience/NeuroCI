@@ -26,7 +26,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 5. **User Scripts**:
    - Place lightweight Python scripts in `user_scripts/` directory
    - Scripts should:
-     - Process IDP outputs from `/tmp/neuroci_idp_state/` (directory for downloaded Nipoppy IDP outputs)
+     - Process outputs from `/tmp/neuroci_output_state/` (directory for downloaded Nipoppy dataset outputs)
      - Save results to `experiment_root/experiment_state/` (recommended, but can be saved elsewhere)
      - Declare dependencies in `requirements.txt`
 6. **Experiment Configuration**:
