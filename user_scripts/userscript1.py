@@ -3,18 +3,18 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 # Define base paths
-idp_root = Path("/tmp/neuroci_idp_state")
+output_root = Path("/tmp/neuroci_output_state")
 experiment_state_root = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
 experiment_state_root.mkdir(parents=True, exist_ok=True)
 
 data = {}
 
 # Walk through datasets and pipelines
-for dataset_dir in idp_root.iterdir():
+for dataset_dir in output_root.iterdir():
     if not dataset_dir.is_dir():
         continue
 
-    for pipeline_dir in dataset_dir.glob("derivatives/*/*/idp"):
+    for pipeline_dir in dataset_dir.glob("derivatives/*/*/output"):
         file_count_path = pipeline_dir / "file_count.txt"
         if file_count_path.exists():
             try:
