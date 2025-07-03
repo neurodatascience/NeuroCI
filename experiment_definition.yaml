@@ -1,6 +1,6 @@
 datasets: 
-  name1: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds1" # OpenNeuro 1-subject 'Test' dataset: https://openneuro.org/datasets/ds005072
-  name2: "/data/origami/jacob/neuroci_test/nipoppy_datasets/new_ds2" # OpenNeuro 1-subject 'Test' dataset: https://openneuro.org/datasets/ds005072
+  ds004101: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds004101_nipoppy" # OpenNeuro - Resting-state fMRI data acquired before and after a course of infra-low frequency neurofeedback - https://openneuro.org/datasets/ds004101/versions/1.0.1
+  ds006039: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds006039_nipoppy" # OpenNeuro - Category-specific Associative Inference in Memory Dataset - https://openneuro.org/datasets/ds006039/versions/1.0.2
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   mriqc: "23.1.0"
