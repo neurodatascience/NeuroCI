@@ -117,6 +117,20 @@ class FileOperations:
             logging.info(f"Creating tarball on remote: {remote_tar_name} from {remote_dir}")
             conn.run(f"tar -czf {remote_tar_name} -C {remote_base} {relative_path}", hide=True)
 
+            # Check tarball size before downloading
+            result = conn.run(f"stat -c %s {remote_tar_name}", hide=True)
+            tar_size_bytes = int(result.stdout.strip())
+            max_tar_size_mb = 25 # Maximum size in mb...Perhaps should be user determined elsewhere?
+            max_tar_size_bytes = max_tar_size_mb * 1024 * 1024
+
+            if tar_size_bytes > max_tar_size_bytes:
+                size_mb = tar_size_bytes / (1024 * 1024)
+                conn.run(f"rm -f {remote_tar_name}", hide=True)
+                raise ValueError(
+                    f"Tarball too large to download in CI: {size_mb:.2f} MB. "
+                    f"Please reduce the size below {max_tar_size_mb} MB by further processing your results."
+                )
+
             logging.info(f"Downloading tarball: {remote_tar_name} -> {local_tar_path}")
             conn.get(remote_tar_name, str(local_tar_path))
 
@@ -128,7 +142,7 @@ class FileOperations:
             shutil.unpack_archive(str(local_tar_path), extract_dir)
             logging.info(f"✓ Extracted to: {extract_dir}")
 
-            # Optionally delete the local archive
+            # Delete the local archive
             local_tar_path.unlink()
             logging.info(f"✓ Deleted archive: {local_tar_path}")
 
