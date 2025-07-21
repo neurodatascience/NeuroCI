@@ -35,7 +35,13 @@
                 }
             }
         },
-        "EXTRACTION": {}
+        "EXTRACTION": {
+            "fs_stats": {
+                "0.2.1": {
+                    "FREESURFER_LICENSE_FILE": null
+                }
+            }
+        }
     },
     "CUSTOM": {}
 }

@@ -1,0 +1,40 @@
+{
+  "tool-version": "6.0",
+  "schema-version": "0.5",
+  "name": "fslanat",
+  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash -c 'mkdir -p \"$(dirname \"$(echo [OUTPUT_DIR] | sed s/^-o\\ //)\")\" && fsl_anat [INPUT_FILE] [OUTPUT_DIR]'",
+  "inputs": [
+    {
+      "command-line-flag": "-i",
+      "description": "Input image file (e.g., .nii.gz).",
+      "value-key": "[INPUT_FILE]",
+      "type": "File",
+      "list": false,
+      "optional": false,
+      "id": "infile",
+      "name": "Input file"
+    },
+    {
+      "command-line-flag": "-o",
+      "description": "Specifies the output folder name. .anat extension is automatically appended.",
+      "value-key": "[OUTPUT_DIR]",
+      "type": "String",
+      "list": false,
+      "optional": false,
+      "id": "outdir",
+      "name": "Output directory"
+    }
+  ],
+  "output-files": [
+    {
+      "description": "A folder containing the output files for fsl_anat.",
+      "list": false,
+      "id": "folder_out",
+      "optional": false,
+      "path-template": "[OUTPUT_DIR].anat",
+      "name": "Output folder"
+    }
+  ],
+  "description": "Minimal fsl_anat descriptor with only input file and output directory."
+}
+
