@@ -1,0 +1,6 @@
+{
+    "PATHS": [
+        "[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/out.anat/T1_subcort_seg.nii.gz",
+	"[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/out.anat/subcortical_volumes.json"
+    ]
+}

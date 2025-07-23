@@ -1,0 +1,43 @@
+{
+  "tool-version": "6.0.7.1",
+  "schema-version": "0.5",
+  "name": "fslanat",
+  "description": "Runs FSL's anatomical segmentation and extracts subcortical volumes using fslstats.",
+  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash [SCRIPT] [T1_INPUT] [OUTPUT_DIR]",
+  "inputs": [
+    {
+      "id": "script",
+      "name": "Extraction script",
+      "type": "File",
+      "description": "Shell script to run fsl_anat and extract volumes using fslstats.",
+      "value-key": "[SCRIPT]",
+      "optional": false
+    },
+    {
+      "id": "t1_input",
+      "name": "T1-weighted image",
+      "type": "File",
+      "description": "Input T1 image to be segmented.",
+      "value-key": "[T1_INPUT]",
+      "optional": false
+    },
+    {
+      "id": "outdir",
+      "name": "Output directory",
+      "type": "String",
+      "description": "Directory where output will be saved.",
+      "value-key": "[OUTPUT_DIR]",
+      "optional": false
+    }
+  ],
+  "output-files": [
+    {
+      "id": "volumes_json",
+      "name": "Volumes JSON output",
+      "path-template": "[OUTPUT_DIR].anat/subcortical_volumes.json",
+      "description": "JSON file with subcortical volumes.",
+      "optional": false
+    }
+  ]
+}
+

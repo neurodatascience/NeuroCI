@@ -1,0 +1,41 @@
+{
+    "CONTAINER_CONFIG": {
+        "COMMAND": "singularity",
+        "ARGS": [
+            "--cleanenv"
+        ],
+        "ENV_VARS": {},
+        "INHERIT": true
+    },
+    "HPC_PREAMBLE": [
+        "source /data/origami/jacob/neuroci_test/venv_pypi/bin/activate"
+    ],
+    "DICOM_DIR_MAP_FILE": null,
+    "DICOM_DIR_PARTICIPANT_FIRST": true,
+    "SUBSTITUTIONS": {
+        "[[NIPOPPY_DPATH_CONTAINERS]]": "/data/origami/container_store/nipoppy",
+        "[[HEUDICONV_HEURISTIC_FILE]]": "<PATH_TO_HEURISTIC_FILE>",
+        "[[DCM2BIDS_CONFIG_FILE]]": "<PATH_TO_CONFIG_FILE>",
+        "[[FREESURFER_LICENSE_FILE]]": "/data/origami/jacob/neuroci_test/nipoppy_datasets/license.txt",
+        "[[TEMPLATEFLOW_HOME]]": "/data/origami/jacob/01finaltest/01root/templateflow_dir",
+        "[[HPC_ACCOUNT_NAME]]": "origami.q"
+    },
+    "PIPELINE_VARIABLES": {
+        "BIDSIFICATION": {},
+        "PROCESSING": {
+            "mriqc": {
+                "23.1.0": {
+                    "TEMPLATEFLOW_HOME": "/data/origami/jacob/01finaltest/01root/templateflow_dir"
+                }
+            },
+            "fmriprep": {
+                "23.1.3": {
+                    "FREESURFER_LICENSE_FILE": "/data/origami/jacob/neuroci_test/nipoppy_datasets/license.txt",
+                    "TEMPLATEFLOW_HOME": "/data/origami/jacob/01finaltest/01root/templateflow_dir"
+                }
+            }
+        },
+        "EXTRACTION": {}
+    },
+    "CUSTOM": {}
+}
