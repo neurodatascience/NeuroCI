@@ -1,0 +1,157 @@
+{
+    "output-files": [
+        {
+            "name": "Output",
+            "optional": false,
+            "description": "The subject data upon which to operate",
+            "id": "subjid_output",
+            "path-template": "[SUBJID]"
+        }
+    ],
+    "name": "freesurfer",
+    "schema-version": "0.5",
+    "tool-version": "8.0.0.1",
+    "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash -c 'export SUBJECTS_DIR=[SUBJECTS_DIR]; export FS_LICENSE=[LICENSE_FILE]; recon-all [SUBJID] [INPUT] [DIRECTIVES] [QCACHE] [MPRAGE] [3T] [CW256] [NOTAL-CHECK] [HYPPOCAMPAL-SUBFIELDS] [BRAINSTEM-STRUCTURES] [NO-WSGCAATLAS] [NO-SKULLSTRIP]'",
+    "error-codes": [
+        {
+            "description": "Crashed",
+            "code": 1
+        }
+    ],
+    "inputs": [
+        {
+            "name": "License file",
+            "value-key": "[LICENSE_FILE]",
+            "optional": false,
+            "description": "Valid license file needed to run FreeSurfer.",
+            "id": "license",
+            "type": "File"
+        },
+        {
+            "name": "Output directory",
+            "value-key": "[SUBJECTS_DIR]",
+            "optional": false,
+            "description": "Directory where the output data will be stored.",
+            "id": "subjects_dir",
+            "type": "String"
+        },
+        {
+            "name": "Output name",
+            "command-line-flag": "-subjid",
+            "optional": false,
+            "value-key": "[SUBJID]",
+            "type": "String",
+            "id": "subjid"
+        },
+        {
+            "name": "NIFTI file",
+            "id": "input",
+            "optional": false,
+            "value-key": "[INPUT]",
+            "description": "Single NIFTI file from series.",
+            "command-line-flag": "-i",
+            "type": "File"
+        },
+        {
+            "name": "Directive",
+            "default-value": "-all",
+            "value-key": "[DIRECTIVES]",
+            "optional": false,
+            "type": "String",
+            "id": "directives",
+            "value-choices": [
+                "-all",
+                "-autorecon1",
+                "-autorecon2",
+                "-autorecon2-cp",
+                "-autorecon2-wm",
+                "-autorecon2-inflate1",
+                "-autorecon2-perhemi",
+                "-autorecon3"
+            ]
+        },
+        {
+            "name": "qcache",
+            "id": "qcache_flag",
+            "optional": true,
+            "value-key": "[QCACHE]",
+            "description": "Produce the pre-cached files required by the Qdec utility, allowing rapid analysis of group data.",
+            "command-line-flag": "-qcache",
+            "type": "Flag"
+        },
+        {
+            "name": "mprage",
+            "id": "mprage_flag",
+            "optional": true,
+            "value-key": "[MPRAGE]",
+            "description": "Assume scan parameters are MGH MP-RAGE protocol.",
+            "command-line-flag": "-mprage",
+            "type": "Flag"
+        },
+        {
+            "name": "3T",
+            "id": "3T_flag",
+            "optional": true,
+            "value-key": "[3T]",
+            "description": "The -3T flag enables two specific options in recon-all for images acquired with a 3T scanner:  3T-specific NU intensity correction parameters are used in the Non-Uniform normalization stage, and the Schwartz 3T atlas is used for Talairach alignment",
+            "command-line-flag": "-3T",
+            "type": "Flag"
+        },
+        {
+            "name": "cw256",
+            "id": "cw256_flag",
+            "optional": true,
+            "value-key": "[CW256]",
+            "description": "Include this flag after -autorecon1 if images have a FOV > 256.",
+            "command-line-flag": "-cw256",
+            "type": "Flag"
+        },
+        {
+            "name": "Notal check",
+            "id": "notal_flag",
+            "optional": true,
+            "value-key": "[NOTAL-CHECK]",
+            "description": "Skip the automatic failure detection of Talairach alignment.",
+            "command-line-flag": "-notal-check",
+            "type": "Flag"
+        },
+        {
+            "name": "Hippocampal-subfileds-T1",
+            "id": "hippocampal_subfields_T1_flag",
+            "optional": true,
+            "value-key": "[HYPPOCAMPAL-SUBFIELDS]",
+            "description": "Segmentation of hippocampal subfields using input T1 scan.",
+            "command-line-flag": "-hippocampal-subfields-T1",
+            "type": "Flag"
+        },
+        {
+            "name": "Brainstem Structures",
+            "id": "brainstem_structures_flag",
+            "optional": true,
+            "value-key": "[BRAINSTEM-STRUCTURES]",
+            "description": "Segmentation of brainstem structures.",
+            "command-line-flag": "-brainstem-structures",
+            "type": "Flag"
+        },
+        {
+            "name": "No wsgcaatlas",
+            "id": "no_wsgcaatlas_flag",
+            "optional": true,
+            "value-key": "[NO-WSGCAATLAS]",
+            "description": "Do not use GCA atlas when skull stripping.",
+            "command-line-flag": "-no-wsgcaatlas",
+            "type": "Flag"
+        },
+        {
+            "name": "No skull strip",
+            "id": "noskullstrip_flag",
+            "optional": true,
+            "value-key": "[NO-SKULLSTRIP]",
+            "description": "Exclude skull strip step.",
+            "command-line-flag": "-noskullstrip",
+            "type": "Flag"
+        }
+    ],
+    "description": "Performs all, or any part of, the FreeSurfer cortical reconstruction process (https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all)."
+}
+

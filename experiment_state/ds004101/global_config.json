@@ -16,7 +16,7 @@
         "[[NIPOPPY_DPATH_CONTAINERS]]": "/data/origami/container_store/nipoppy",
         "[[HEUDICONV_HEURISTIC_FILE]]": "<PATH_TO_HEURISTIC_FILE>",
         "[[DCM2BIDS_CONFIG_FILE]]": "<PATH_TO_CONFIG_FILE>",
-        "[[FREESURFER_LICENSE_FILE]]": "/data/origami/jacob/neuroci_test/nipoppy_datasets/license.txt",
+        "[[FREESURFER_LICENSE_FILE]]": "/data/origami/jacob/neuroci_test/nipoppy_datasets/fs_license/license.txt",
         "[[TEMPLATEFLOW_HOME]]": "/data/origami/jacob/01finaltest/01root/templateflow_dir",
         "[[HPC_ACCOUNT_NAME]]": "origami.q"
     },
