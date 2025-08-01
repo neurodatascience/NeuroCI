@@ -1,0 +1,60 @@
+{
+  "name": "samseg",
+  "schema-version": "0.5",
+  "tool-version": "8.0.0.1",
+  "description": "Runs SAMSEG for segmentation of brain structures from MRI volumes.",
+  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] run_samseg --input [INPUTS] --output [OUTPUT_DIR] [THREADS] [PALLIDUM_SEPARATE]",
+  "inputs": [
+    {
+      "name": "Input MRI volume(s)",
+      "id": "inputs",
+      "type": "File",
+      "list": true,
+      "optional": false,
+      "value-key": "[INPUTS]",
+      "description": "List of input NIFTI (.nii/.nii.gz) or MGZ volumes (e.g., T1w, T2w) that are co-registered and have same grid/voxel dimensions."
+    },
+    {
+      "name": "Output directory",
+      "id": "output_dir",
+      "type": "String",
+      "optional": false,
+      "value-key": "[OUTPUT_DIR]",
+      "description": "Path to the directory where SAMSEG output will be stored."
+    },
+    {
+      "name": "Threads",
+      "id": "threads",
+      "type": "Number",
+      "optional": true,
+      "value-key": "[THREADS]",
+      "command-line-flag": "--threads",
+      "description": "Number of threads to use for processing."
+    },
+    {
+      "name": "Separate Pallidum",
+      "id": "pallidum_separate_flag",
+      "type": "Flag",
+      "optional": true,
+      "value-key": "[PALLIDUM_SEPARATE]",
+      "command-line-flag": "--pallidum-separate",
+      "description": "Separate the pallidum from white matter (useful if input includes T2w or FLAIR)."
+    }
+  ],
+  "output-files": [
+    {
+      "name": "Segmentation Output",
+      "id": "seg_output",
+      "optional": false,
+      "path-template": "[OUTPUT_DIR]",
+      "description": "Directory containing SAMSEG segmentation outputs."
+    }
+  ],
+  "error-codes": [
+    {
+      "code": 1,
+      "description": "SAMSEG failed to run."
+    }
+  ]
+}
+
