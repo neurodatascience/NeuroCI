@@ -6,6 +6,7 @@ pipelines: # Use the *exact* same pipeline names and versions specified in the N
   mriqc: "23.1.0"
   fslanat: "6.0.7.1"
   freesurfer: "8.0.0.1"
+  samseg: "8.0.0.1"
 
 userscripts: # Python scripts stored in the user_scripts directory in the repository.
   script1: "userscript1.py"
