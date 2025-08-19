@@ -2,6 +2,7 @@ import logging
 import subprocess
 import shutil
 import json
+import csv
 import os
 from pathlib import Path
 
@@ -56,15 +57,21 @@ class FileOperations:
                 pipeline_dir = f"pipelines/processing/{tool}-{version}"
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
-                # Fetch the outputs as a compressed tarball
-                output_dir = f"derivatives/{tool}/{version}/output"
+
+                manifest_path = dataset_path / "manifest.tsv"
+                tracker_path = dataset_path / f"pipelines/processing/{tool}-{version}/tracker.json"
+                file_paths_to_download = _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
+
+                # Prepare local tarball path
                 local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
+
+                # Download selected files as a tarball
                 self._download_tarball_from_remote_dir(
                     conn,
-                    remote_dir=f"{dataset_path}/{output_dir}",
                     remote_base=dataset_path,
                     local_tar_path=local_tar_path,
-                    remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz"
+                    remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz",
+                    file_paths_to_download=file_paths_to_download
                 )
 
             # Save Singularity container inspection output
@@ -97,57 +104,108 @@ class FileOperations:
         self._commit_and_push("Update experiment state")
 
 
-    def _download_tarball_from_remote_dir(self, conn, remote_dir, remote_base, local_tar_path, remote_tar_name):
+    def _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path):
         """
-        Archives and downloads a remote directory as a tar.gz file to avoid many small transfers,
+        Reads a manifest.tsv and a tracker.json, and returns a list of file paths
+        with placeholders substituted with participant/session IDs in BIDS style,
+        prepended with the dataset derivatives path.
+
+        Args:
+            manifest_path: Path to the manifest.tsv
+            tracker_path: Path to the tracker.json
+            dataset_path: Base path of the dataset
+
+        Returns:
+            List of relative paths (strings) to include in the tarball.
+        """
+        # Read manifest
+        participants = []
+        with open(manifest_path, newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            for row in reader:
+                participants.append({
+                    "participant_id": row["participant_id"],
+                    "session_id": row["session_id"]
+                })
+
+        # Read tracker
+        with open(tracker_path) as f:
+            tracker = json.load(f)
+        paths_template = tracker.get("PATHS", [])
+
+        resolved_paths = []
+        for p in participants:
+            sub_id = f"sub-{p['participant_id']}"
+            ses_id = f"ses-{p['session_id']}"
+            for t_path in paths_template:
+                path = t_path.replace("[[NIPOPPY_BIDS_PARTICIPANT_ID]]", sub_id)
+                path = path.replace("[[NIPOPPY_BIDS_SESSION_ID]]", ses_id)
+                
+                # Prepend dataset derivatives path
+                full_path = os.path.join(dataset_path, "derivatives", "tool", "version", "output", path)
+                resolved_paths.append(full_path)
+
+        return resolved_paths
+
+
+    def _download_tarball_from_remote_dir(self, conn, remote_base, local_tar_path, remote_tar_name, file_paths_to_download):
+        """
+        Archives and downloads selected files from a remote directory as a tar.gz file,
         then extracts it locally and deletes the archive.
 
         Args:
             conn: SSH connection object.
-            remote_dir: Full path to the remote directory to archive.
             remote_base: Base directory relative to which tar should archive.
             local_tar_path: Local file path to save the downloaded tar.gz.
             remote_tar_name: Remote file path for temporary tar.gz (e.g., /tmp/foo_v1_output.tar.gz).
+            file_paths_to_download: List of file paths (relative to remote_base) to include in tarball.
         """
+        import shlex
         local_tar_path.parent.mkdir(parents=True, exist_ok=True)
-        relative_path = os.path.relpath(remote_dir, remote_base)
-        extract_dir = local_tar_path.parent / relative_path
+
+        # Trim paths to start from derivatives/tool/... for clean extraction
+        def relative_for_tar(path):
+            parts = path.split('/')
+            if 'derivatives' in parts:
+                idx = parts.index('derivatives')
+                return '/'.join(parts[idx:])
+            return path
+
+        tar_paths = [relative_for_tar(p) for p in file_paths_to_download]
+
+        # Quote each path to handle spaces/special characters
+        quoted_paths = " ".join(shlex.quote(p) for p in tar_paths)
 
         try:
-            logging.info(f"Creating tarball on remote: {remote_tar_name} from {remote_dir}")
-            conn.run(f"tar -czf {remote_tar_name} -C {remote_base} {relative_path}", hide=True)
+            logging.info(f"Creating tarball on remote: {remote_tar_name} with selected files")
+            conn.run(f"tar -czf {shlex.quote(remote_tar_name)} -C {shlex.quote(remote_base)} {quoted_paths}", hide=True)
 
-            # Check tarball size before downloading
-            result = conn.run(f"stat -c %s {remote_tar_name}", hide=True)
+            # Check tarball size
+            result = conn.run(f"stat -c %s {shlex.quote(remote_tar_name)}", hide=True)
             tar_size_bytes = int(result.stdout.strip())
-            max_tar_size_mb = 25 # Maximum size in mb...Perhaps should be user determined elsewhere?
-            max_tar_size_bytes = max_tar_size_mb * 1024 * 1024
-
-            if tar_size_bytes > max_tar_size_bytes:
+            max_tar_size_mb = 25
+            if tar_size_bytes > max_tar_size_mb * 1024 * 1024:
                 size_mb = tar_size_bytes / (1024 * 1024)
-                conn.run(f"rm -f {remote_tar_name}", hide=True)
-                raise ValueError(
-                    f"Tarball too large to download in CI: {size_mb:.2f} MB. "
-                    f"Please reduce the size below {max_tar_size_mb} MB by further processing your results."
-                )
+                conn.run(f"rm -f {shlex.quote(remote_tar_name)}", hide=True)
+                raise ValueError(f"Tarball too large: {size_mb:.2f} MB. Reduce size below {max_tar_size_mb} MB.")
 
             logging.info(f"Downloading tarball: {remote_tar_name} -> {local_tar_path}")
             conn.get(remote_tar_name, str(local_tar_path))
+            conn.run(f"rm -f {shlex.quote(remote_tar_name)}", hide=True)
+            logging.info(f"✓ Downloaded and cleaned up tarball")
 
-            conn.run(f"rm -f {remote_tar_name}", hide=True)
-            logging.info(f"✓ Downloaded and cleaned up tarball for: {relative_path}")
-
-            # Extract the tarball
+            # Extract
+            extract_dir = local_tar_path.parent
             logging.info(f"Extracting tarball: {local_tar_path} -> {extract_dir}")
             shutil.unpack_archive(str(local_tar_path), extract_dir)
             logging.info(f"✓ Extracted to: {extract_dir}")
 
-            # Delete the local archive
+            # Delete local archive
             local_tar_path.unlink()
             logging.info(f"✓ Deleted archive: {local_tar_path}")
 
         except Exception as e:
-            logging.warning(f"✗ Failed to handle tarball from {remote_dir}: {e}")
+            logging.warning(f"✗ Failed to handle tarball: {e}")
 
 
     def _download_directory(self, conn, remote_dir, local_dir):
