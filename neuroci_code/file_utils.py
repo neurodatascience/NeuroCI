@@ -106,39 +106,24 @@ class FileOperations:
 
     def _resolve_tracker_paths(self, conn, manifest_path, tracker_path, dataset_path, tool, version):
         """
-        Reads a remote manifest.tsv and tracker.json via Fabric/Paramiko,
-        and returns a list of file paths with placeholders substituted 
-        with participant/session IDs in BIDS style, prepended with the 
-        dataset derivatives path.
-
-        Args:
-            conn: fabric.Connection, used to open remote files
-            manifest_path: str, remote path to manifest.tsv
-            tracker_path: str, remote path to tracker.json
-            dataset_path: str, base path of the dataset on HPC
-            tool: str, processing tool name
-            version: str, tool version
-
-        Returns:
-            List of resolved remote paths (strings).
+        Reads a manifest.tsv and a tracker.json directly from the HPC via Fabric,
+        and returns a list of file paths with placeholders substituted.
         """
-        participants = []
 
-        # --- Read manifest.tsv remotely ---
-        with conn.sftp().open(manifest_path, "r") as f:
-            reader = csv.DictReader((line.decode("utf-8") for line in f), delimiter="\t")
-            for row in reader:
-                participants.append({
-                    "participant_id": row["participant_id"],
-                    "session_id": row["session_id"]
-                })
+        # Read manifest remotely
+        result = conn.run(f"cat {manifest_path}", hide=True)
+        reader = csv.DictReader(result.stdout.splitlines(), delimiter="\t")
+        participants = [
+            {"participant_id": row["participant_id"], "session_id": row["session_id"]}
+            for row in reader
+        ]
 
-        # --- Read tracker.json remotely ---
-        with conn.sftp().open(tracker_path, "r") as f:
-            tracker = json.load(f)
-
+        # Read tracker remotely
+        result = conn.run(f"cat {tracker_path}", hide=True)
+        tracker = json.loads(result.stdout)
         paths_template = tracker.get("PATHS", [])
 
+        # Resolve paths
         resolved_paths = []
         for p in participants:
             sub_id = f"sub-{p['participant_id']}"
@@ -148,9 +133,7 @@ class FileOperations:
                 path = path.replace("[[NIPOPPY_BIDS_SESSION_ID]]", ses_id)
 
                 # Prepend dataset derivatives path
-                full_path = os.path.join(
-                    dataset_path, "derivatives", tool, version, "output", path
-                )
+                full_path = os.path.join(dataset_path, "derivatives", tool, version, "output", path)
                 resolved_paths.append(full_path)
 
         return resolved_paths
