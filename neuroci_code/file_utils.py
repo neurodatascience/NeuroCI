@@ -60,16 +60,6 @@ class FileOperations:
 
                 manifest_path = Path(dataset_path) / "manifest.tsv"
                 tracker_path = Path(dataset_path) / f"pipelines/processing/{tool}-{version}/tracker.json"
-
-                print("------------------------------------------------------------")
-                print(f"HEYEYEYEYOO manifest_path: {manifest_path} (exists={manifest_path.exists()})")
-                print(f"AYAYAHAYAYA tracker_path: {tracker_path} (exists={tracker_path.exists()})")
-                print(f"manifest_path absolute: {manifest_path.resolve()}")
-                print(f"tracker_path absolute: {tracker_path.resolve()}")
-                print(f"manifest readable: {os.access(manifest_path, os.R_OK)}")
-                print(f"tracker readable: {os.access(tracker_path, os.R_OK)}")
-                print(f"Current working directory: {Path.cwd()}")
-                print(f"dataset_path contents: {list(dataset_path.iterdir())}")
                 file_paths_to_download = self._resolve_tracker_paths(manifest_path, tracker_path, dataset_path, tool, version)
 
                 # Prepare local tarball path
