@@ -59,7 +59,7 @@ class FileOperations:
 
 
                 manifest_path = f"{dataset_path}/manifest.tsv"
-                tracker_path = dataset_path / f"pipelines/processing/{tool}-{version}/tracker.json"
+                tracker_path = f"{dataset_path}/pipelines/processing/{tool}-{version}/tracker.json"
                 file_paths_to_download = _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
 
                 # Prepare local tarball path
