@@ -58,8 +58,8 @@ class FileOperations:
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
 
-                manifest_path = f"{dataset_path}/manifest.tsv"
-                tracker_path = f"{dataset_path}/pipelines/processing/{tool}-{version}/tracker.json"
+                manifest_path = Path(dataset_path) / "manifest.tsv"
+                tracker_path = Path(dataset_path) / f"pipelines/processing/{tool}-{version}/tracker.json"
 
                 print("------------------------------------------------------------")
                 print(f"HEYEYEYEYOO manifest_path: {manifest_path} (exists={manifest_path.exists()})")
