@@ -131,6 +131,8 @@ class FileOperations:
             List of absolute paths (Path objects) to include in the tarball.
         """
         dataset_path = Path(dataset_path)
+        manifest_path = Path(manifest_path)
+        tracker_path = Path(tracker_path)
 
         # Read manifest
         participants = []
