@@ -60,7 +60,7 @@ class FileOperations:
 
                 manifest_path = f"{dataset_path}/manifest.tsv"
                 tracker_path = f"{dataset_path}/pipelines/processing/{tool}-{version}/tracker.json"
-                file_paths_to_download = _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
+                file_paths_to_download = self._resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
 
                 # Prepare local tarball path
                 local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
