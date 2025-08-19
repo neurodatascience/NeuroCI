@@ -169,7 +169,7 @@ class FileOperations:
 
         try:
             logging.info(f"Creating tarball on remote: {remote_tar_name} with selected files")
-            conn.run(f"tar -czf {shlex.quote(remote_tar_name)} -C {shlex.quote(remote_base)} {quoted_paths}", hide=True)
+            conn.run( f"tar -czf {shlex.quote(remote_tar_name)} --ignore-failed-read -C {shlex.quote(remote_base)} {quoted_paths}", hide=True )
 
             # Check tarball size
             result = conn.run(f"stat -c %s {shlex.quote(remote_tar_name)}", hide=True)
