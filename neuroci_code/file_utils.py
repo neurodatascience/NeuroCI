@@ -60,7 +60,7 @@ class FileOperations:
 
                 manifest_path = f"{dataset_path}/manifest.tsv"
                 tracker_path = f"{dataset_path}/pipelines/processing/{tool}-{version}/tracker.json"
-                file_paths_to_download = self._resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
+                file_paths_to_download = self._resolve_tracker_paths(manifest_path, tracker_path, dataset_path, tool, version)
 
                 # Prepare local tarball path
                 local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
@@ -104,7 +104,7 @@ class FileOperations:
         self._commit_and_push("Update experiment state")
 
 
-    def _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path):
+    def _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path, tool, version):
         """
         Reads a manifest.tsv and a tracker.json, and returns a list of file paths
         with placeholders substituted with participant/session IDs in BIDS style,
@@ -114,10 +114,14 @@ class FileOperations:
             manifest_path: Path to the manifest.tsv
             tracker_path: Path to the tracker.json
             dataset_path: Base path of the dataset
+            tool: Name of the tool for the derivatives path
+            version: Version of the tool for the derivatives path
 
         Returns:
-            List of relative paths (strings) to include in the tarball.
+            List of absolute paths (Path objects) to include in the tarball.
         """
+        dataset_path = Path(dataset_path)
+
         # Read manifest
         participants = []
         with open(manifest_path, newline="") as f:
@@ -141,8 +145,8 @@ class FileOperations:
                 path = t_path.replace("[[NIPOPPY_BIDS_PARTICIPANT_ID]]", sub_id)
                 path = path.replace("[[NIPOPPY_BIDS_SESSION_ID]]", ses_id)
                 
-                # Prepend dataset derivatives path
-                full_path = os.path.join(dataset_path, "derivatives", "tool", "version", "output", path)
+                # Prepend dataset derivatives path using Path
+                full_path = dataset_path / "derivatives" / tool / version / "output" / path
                 resolved_paths.append(full_path)
 
         return resolved_paths
