@@ -58,7 +58,7 @@ class FileOperations:
                 self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
 
 
-                manifest_path = dataset_path / "manifest.tsv"
+                manifest_path = f"{dataset_path}/manifest.tsv"
                 tracker_path = dataset_path / f"pipelines/processing/{tool}-{version}/tracker.json"
                 file_paths_to_download = _resolve_tracker_paths(self, manifest_path, tracker_path, dataset_path)
 
