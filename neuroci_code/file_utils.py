@@ -282,6 +282,8 @@ class FileOperations:
             userscripts: Dictionary mapping script keys to filenames.
         """
         state_dir = Path("/tmp") / "neuroci_output_state"
+        subprocess.run(["tree", str(state_dir)])
+
         if not (state_dir.exists() and any(state_dir.iterdir())):
             logging.info("Skipping user scripts: /tmp/neuroci_output_state does not exist or is empty.")
             return
