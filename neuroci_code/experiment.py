@@ -14,6 +14,7 @@ class Experiment:
         self.target_host = experiment_definition.get('target_host')
         self.prefix_cmd = experiment_definition.get('prefix_cmd', '')
         self.scheduler = experiment_definition.get('scheduler', 'slurm')
+        self.max_dl_size_per_dataset_tool_mb = experiment_definition.get('max_dl_size_per_dataset_tool_mb')
         
         self._log_experiment_config()
         
@@ -78,7 +79,8 @@ class Experiment:
         self.file_ops.push_state_to_repo(
             conn=self.ssh_manager.conn,
             datasets=self.datasets,
-            pipelines=self.pipelines
+            pipelines=self.pipelines,
+            max_dl_size_per_dataset_tool_mb=self.max_dl_size_per_dataset_tool_mb
         )
 
     def run_user_processing(self):

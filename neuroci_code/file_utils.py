@@ -15,7 +15,7 @@ class FileOperations:
         # Set the root of the repository (assumes this script is two levels deep inside the repo)
         self.repo_root = Path(__file__).resolve().parents[1]
 
-    def push_state_to_repo(self, conn, datasets, pipelines):
+    def push_state_to_repo(self, conn, datasets, pipelines, max_dl_size_per_dataset_tool_mb):
         """
         Downloads relevant files and pipeline outputs from remote datasets via SSH,
         stores them in a local 'experiment_state' directory, and pushes them to the Git repo.
@@ -71,7 +71,8 @@ class FileOperations:
                     remote_base=dataset_path,
                     local_tar_path=local_tar_path,
                     remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz",
-                    file_paths_to_download=file_paths_to_download
+                    file_paths_to_download=file_paths_to_download,
+                    max_dl_size_per_dataset_tool_mb=max_dl_size_per_dataset_tool_mb
                 )
 
             # Save Singularity container inspection output
@@ -139,7 +140,7 @@ class FileOperations:
         return resolved_paths
 
 
-    def _download_tarball_from_remote_dir(self, conn, remote_base, local_tar_path, remote_tar_name, file_paths_to_download):
+    def _download_tarball_from_remote_dir(self, conn, remote_base, local_tar_path, remote_tar_name, file_paths_to_download, max_dl_size_per_dataset_tool_mb):
         """
         Archives and downloads selected files from a remote directory as a tar.gz file,
         then extracts it locally and deletes the archive.
@@ -174,7 +175,7 @@ class FileOperations:
             # Check tarball size
             result = conn.run(f"stat -c %s {shlex.quote(remote_tar_name)}", hide=True)
             tar_size_bytes = int(result.stdout.strip())
-            max_tar_size_mb = 25
+            max_tar_size_mb = max_dl_size_per_dataset_tool_mb
             if tar_size_bytes > max_tar_size_mb * 1024 * 1024:
                 size_mb = tar_size_bytes / (1024 * 1024)
                 conn.run(f"rm -f {shlex.quote(remote_tar_name)}", hide=True)
