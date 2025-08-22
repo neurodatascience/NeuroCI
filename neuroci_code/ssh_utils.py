@@ -1,14 +1,8 @@
-"""
-ssh_utils.py
-
-Provides SSH connection management and remote command execution utilities
-for interacting with remote servers in a reproducible neuroimaging pipeline context.
-"""
-
 import logging
 import os
 import subprocess
 import json
+import shlex
 from pathlib import Path
 from fabric import Connection
 from paramiko.config import SSHConfig
