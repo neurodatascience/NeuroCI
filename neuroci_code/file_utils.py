@@ -4,6 +4,7 @@ import shutil
 import json
 import csv
 import os
+import shlex
 from pathlib import Path
 
 class FileOperations:
@@ -33,76 +34,93 @@ class FileOperations:
             logging.info(f"Processing dataset: {dataset_name} from {dataset_path}")
             dest_base = target_dir / dataset_name
 
-            # Remove any previously saved state for the dataset
+            # Reset dataset state directory
             if dest_base.exists():
                 logging.warning(f"Cleaning up old state in: {dest_base}")
                 shutil.rmtree(dest_base)
             dest_base.mkdir(parents=True, exist_ok=True)
 
-            # Download essential configuration files from the dataset
-            for file in ["manifest.tsv", "global_config.json", "derivatives/processing_status.tsv"]:
-                remote_path = f"{dataset_path}/{file}"
-                local_path = dest_base / file
-                local_path.parent.mkdir(parents=True, exist_ok=True)
+            self._download_dataset_configs(conn, dataset_path, dest_base)
+            self._download_pipeline_outputs(
+                conn,
+                dataset_name,
+                dataset_path,
+                dest_base,
+                pipelines,
+                max_dl_size_per_dataset_tool_mb
+            )
+            self._save_container_metadata(conn, dataset_path, dest_base, pipelines)
 
-                logging.info(f"Downloading file: {remote_path} -> {local_path}")
-                try:
-                    conn.get(remote_path, str(local_path))
-                    logging.info(f"✓ Downloaded {file}")
-                except Exception as e:
-                    logging.warning(f"✗ Failed to download {file}: {e}")
-
-            # Download pipeline outputs
-            for tool, version in pipelines.items():
-                pipeline_dir = f"pipelines/processing/{tool}-{version}"
-                self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
-
-
-                manifest_path = f"{dataset_path}/manifest.tsv"
-                tracker_path = f"{dataset_path}/pipelines/processing/{tool}-{version}/tracker.json"
-                file_paths_to_download = self._resolve_tracker_paths(conn, manifest_path, tracker_path, dataset_path, tool, version)
-
-                # Prepare local tarball path
-                local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
-
-                # Download selected files as a tarball
-                self._download_tarball_from_remote_dir(
-                    conn,
-                    remote_base=dataset_path,
-                    local_tar_path=local_tar_path,
-                    remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz",
-                    file_paths_to_download=file_paths_to_download,
-                    max_dl_size_per_dataset_tool_mb=max_dl_size_per_dataset_tool_mb
-                )
-
-            # Save Singularity container inspection output
-            container_dir = dest_base / "containers"
-            container_dir.mkdir(parents=True, exist_ok=True)
-
-            global_config_path = f"{dataset_path}/global_config.json"
-            try:
-                result = conn.run(f"cat {global_config_path}", hide=True)
-                global_config = json.loads(result.stdout)
-                container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
-            except Exception as e:
-                logging.warning(f"Failed to read container store from {global_config_path}: {e}")
-                container_store = None
-
-            if container_store:
-                for tool, version in pipelines.items():
-                    container_path = os.path.join(container_store, f"{tool}_{version}.sif")
-                    local_json_path = container_dir / f"{tool}_{version}.json"
-                    try:
-                        logging.info(f"Inspecting container: {container_path}")
-                        inspect_result = conn.run(f"singularity inspect --json {container_path}", hide=True)
-                        with open(local_json_path, "w") as f:
-                            f.write(inspect_result.stdout)
-                        logging.info(f"✓ Saved container metadata for {tool}-{version}")
-                    except Exception as e:
-                        logging.warning(f"✗ Failed to inspect container {container_path}: {e}")
-
-        # Commit and push all the newly downloaded data to Git
+        # Commit and push updated experiment state
         self._commit_and_push("Update experiment state")
+
+
+    def _download_dataset_configs(self, conn, dataset_path, dest_base):
+        """Download manifest and config files for a dataset."""
+        files_to_fetch = ["manifest.tsv", "global_config.json", "derivatives/processing_status.tsv"]
+        for file in files_to_fetch:
+            remote_path = f"{dataset_path}/{file}"
+            local_path = dest_base / file
+            local_path.parent.mkdir(parents=True, exist_ok=True)
+
+            logging.info(f"Downloading file: {remote_path} -> {local_path}")
+            try:
+                conn.get(remote_path, str(local_path))
+                logging.info(f"✓ Downloaded {file}")
+            except Exception as e:
+                logging.warning(f"✗ Failed to download {file}: {e}")
+
+
+    def _download_pipeline_outputs(self, conn, dataset_name, dataset_path, dest_base, pipelines, max_dl_size_per_dataset_tool_mb):
+        """Download pipeline directories and tracked outputs as tarballs."""
+        for tool, version in pipelines.items():
+            pipeline_dir = f"pipelines/processing/{tool}-{version}"
+            self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
+
+            manifest_path = f"{dataset_path}/manifest.tsv"
+            tracker_path = f"{dataset_path}/{pipeline_dir}/tracker.json"
+            file_paths = self._resolve_tracker_paths(conn, manifest_path, tracker_path, dataset_path, tool, version)
+
+            local_tar_path = Path("/tmp") / "neuroci_output_state" / dataset_name / f"{tool}_{version}_output.tar.gz"
+
+            self._download_tarball_from_remote_dir(
+                conn,
+                remote_base=dataset_path,
+                local_tar_path=local_tar_path,
+                remote_tar_name=f"/tmp/{tool}_{version}_output.tar.gz",
+                file_paths_to_download=file_paths,
+                max_dl_size_per_dataset_tool_mb=max_dl_size_per_dataset_tool_mb,
+            )
+
+
+    def _save_container_metadata(self, conn, dataset_path, dest_base, pipelines):
+        """Inspect Singularity containers and save metadata as JSON files."""
+        container_dir = dest_base / "containers"
+        container_dir.mkdir(parents=True, exist_ok=True)
+
+        global_config_path = f"{dataset_path}/global_config.json"
+        try:
+            result = conn.run(f"cat {global_config_path}", hide=True)
+            global_config = json.loads(result.stdout)
+            container_store = global_config["SUBSTITUTIONS"]["[[NIPOPPY_DPATH_CONTAINERS]]"]
+        except Exception as e:
+            logging.warning(f"Failed to read container store from {global_config_path}: {e}")
+            container_store = None
+
+        if not container_store:
+            return
+
+        for tool, version in pipelines.items():
+            container_path = os.path.join(container_store, f"{tool}_{version}.sif")
+            local_json_path = container_dir / f"{tool}_{version}.json"
+            try:
+                logging.info(f"Inspecting container: {container_path}")
+                inspect_result = conn.run(f"singularity inspect --json {container_path}", hide=True)
+                with open(local_json_path, "w") as f:
+                    f.write(inspect_result.stdout)
+                logging.info(f"✓ Saved container metadata for {tool}-{version}")
+            except Exception as e:
+                logging.warning(f"✗ Failed to inspect container {container_path}: {e}")
 
 
     def _resolve_tracker_paths(self, conn, manifest_path, tracker_path, dataset_path, tool, version):
@@ -152,7 +170,6 @@ class FileOperations:
             remote_tar_name: Remote file path for temporary tar.gz (e.g., /tmp/foo_v1_output.tar.gz).
             file_paths_to_download: List of file paths (relative to remote_base) to include in tarball.
         """
-        import shlex
         local_tar_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Trim paths to start from derivatives/tool/... for clean extraction
