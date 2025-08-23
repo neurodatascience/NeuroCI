@@ -26,7 +26,9 @@ v2.0 is marked by a number of changes from the original architecture, relying on
 5. **User Scripts**:
    - Place lightweight Python scripts in `user_scripts/` directory
    - Scripts should:
-     - Process outputs from `/tmp/neuroci_output_state/` (directory for downloaded Nipoppy dataset outputs)
+     - Process outputs from `/tmp/neuroci_output_state/` (directory for downloaded Nipoppy dataset outputs).  
+       - Files copied here from the HPC are those tracked by Nipoppy, specifically those listed in the pipeline’s `tracker.json`.  
+       - Wildcards are not supported by design, to encourage minimal transfers and limit syncing to only the specific files needed for analysis scripts.
      - Save results to `experiment_root/experiment_state/` (recommended, but can be saved elsewhere)
      - Declare dependencies in `requirements.txt`
 6. **Experiment Configuration**:
