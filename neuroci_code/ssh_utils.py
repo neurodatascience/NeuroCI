@@ -194,8 +194,7 @@ class SSHConnectionManager:
 
     def run_nipoppy_command(self, action, dataset, dataset_path, pipeline, pipeline_version, use_bash=False):
         """
-        Constructs and runs a nipoppy command on the remote host, safely quoting all
-        dynamic arguments to prevent shell injection.
+        Constructs and runs a nipoppy command on the remote host.
 
         Args:
             action (str): One of ['track-processing', 'process'].
@@ -212,24 +211,14 @@ class SSHConnectionManager:
 
         logging.info(f'Running {log_action} for dataset: {dataset} at {dataset_path}, pipeline: {pipeline} ({pipeline_version})')
 
-        # Safely quote all dynamic values
-        safe_dataset_path = shlex.quote(dataset_path)
-        safe_pipeline = shlex.quote(pipeline)
-        safe_pipeline_version = shlex.quote(pipeline_version)
-        safe_scheduler = shlex.quote(self.scheduler)
-        safe_prefix_cmd = safe_prefix_cmd = " ".join(shlex.quote(arg) for arg in self.prefix_cmd.split())
+        base_command = f"nipoppy {action} --dataset {dataset_path} --pipeline {pipeline} --pipeline-version {pipeline_version}"
+    
+        if action == 'process':
+            base_command += f" --hpc {self.scheduler}"
 
-        # Build base nipoppy command
-        base_command = f"nipoppy {action} --dataset {safe_dataset_path} --pipeline {safe_pipeline} --pipeline-version {safe_pipeline_version}"
-        if action == "process":
-            base_command += f" --hpc {safe_scheduler}"
-
-        # Combine with prefix
-        full_command = f"{safe_prefix_cmd} && {base_command}"
-
-        # Optionally wrap in bash login shell
+        full_command = f"{self.prefix_cmd} && {base_command}"
         if use_bash:
-            full_command = f"bash -l -c {shlex.quote(full_command)}"
+            full_command = f"bash -l -c '{full_command}'"
 
         try:
             result = self.conn.run(full_command, hide=True)
