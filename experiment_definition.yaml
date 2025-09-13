@@ -4,8 +4,9 @@ datasets:
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   fslanat: "6.0.7.1"
-  freesurfer: "8.0.0.1"
-  samseg: "8.0.0.1"
+  freesurfer2MNI: "8.0.0.1"
+  freesurfer2MNI: "7.4.1"
+  samseg2MNI: "8.0.0.1"
 
 userscripts: # Python scripts stored in the user_scripts directory in the repository
   script1: "userscript1.py"
