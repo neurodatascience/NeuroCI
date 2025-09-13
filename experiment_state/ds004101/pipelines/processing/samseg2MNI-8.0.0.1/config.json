@@ -1,8 +1,8 @@
 {
-    "NAME": "freesurfer",
+    "NAME": "samseg2MNI",
     "VERSION": "8.0.0.1",
     "CONTAINER_INFO": {
-        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/[[PIPELINE_NAME]]_[[PIPELINE_VERSION]].sif",
+        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer_8.0.0.1.sif",
         "URI": "docker:??"
     },
     "CONTAINER_CONFIG": {
@@ -11,8 +11,10 @@
         "ARGS": [
 		"--bind",
 		"[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]",
+                "--bind",
+                "[[FREESURFER_LICENSE_FILE]]",
 		"--bind",
-		"[[FREESURFER_LICENSE_FILE]]"
+		"[[NIPOPPY_DPATH_ROOT]]/sourcedata"
         ]
     },
     "STEPS": [

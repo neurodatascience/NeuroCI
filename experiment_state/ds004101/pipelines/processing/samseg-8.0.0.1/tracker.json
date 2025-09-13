@@ -1,6 +1,0 @@
-{
-    "PATHS": [
-        "[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/samseg/seg.mgz",
-	"[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/samseg/samseg.stats"
-    ]
-}

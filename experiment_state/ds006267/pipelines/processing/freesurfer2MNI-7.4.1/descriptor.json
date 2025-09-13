@@ -11,7 +11,7 @@
     "name": "freesurfer",
     "schema-version": "0.5",
     "tool-version": "8.0.0.1",
-    "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash -c 'export SUBJECTS_DIR=[SUBJECTS_DIR]; export FS_LICENSE=[LICENSE_FILE]; recon-all [SUBJID] [INPUT] [DIRECTIVES] [QCACHE] [MPRAGE] [3T] [CW256] [NOTAL-CHECK] [HYPPOCAMPAL-SUBFIELDS] [BRAINSTEM-STRUCTURES] [NO-WSGCAATLAS] [NO-SKULLSTRIP]'",
+    "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash -c '[SCRIPT] [LICENSE_FILE] [INPUT] [SUBJECTS_DIR] [SUBJID] [DIRECTIVES] [STD_SPACE] [QCACHE] [MPRAGE] [3T] [CW256] [NOTAL-CHECK] [HYPPOCAMPAL-SUBFIELDS] [BRAINSTEM-STRUCTURES] [NO-WSGCAATLAS] [NO-SKULLSTRIP]'",
     "error-codes": [
         {
             "description": "Crashed",
@@ -37,7 +37,6 @@
         },
         {
             "name": "Output name",
-            "command-line-flag": "-subjid",
             "optional": false,
             "value-key": "[SUBJID]",
             "type": "String",
@@ -49,7 +48,6 @@
             "optional": false,
             "value-key": "[INPUT]",
             "description": "Single NIFTI file from series.",
-            "command-line-flag": "-i",
             "type": "File"
         },
         {
@@ -75,7 +73,7 @@
             "id": "qcache_flag",
             "optional": true,
             "value-key": "[QCACHE]",
-            "description": "Produce the pre-cached files required by the Qdec utility, allowing rapid analysis of group data.",
+            "description": "Produce the pre-cached files required by the Qdec utility.",
             "command-line-flag": "-qcache",
             "type": "Flag"
         },
@@ -93,7 +91,7 @@
             "id": "3T_flag",
             "optional": true,
             "value-key": "[3T]",
-            "description": "The -3T flag enables two specific options in recon-all for images acquired with a 3T scanner:  3T-specific NU intensity correction parameters are used in the Non-Uniform normalization stage, and the Schwartz 3T atlas is used for Talairach alignment",
+            "description": "Enable 3T-specific options.",
             "command-line-flag": "-3T",
             "type": "Flag"
         },
@@ -116,7 +114,7 @@
             "type": "Flag"
         },
         {
-            "name": "Hippocampal-subfileds-T1",
+            "name": "Hippocampal-subfields-T1",
             "id": "hippocampal_subfields_T1_flag",
             "optional": true,
             "value-key": "[HYPPOCAMPAL-SUBFIELDS]",
@@ -150,8 +148,29 @@
             "description": "Exclude skull strip step.",
             "command-line-flag": "-noskullstrip",
             "type": "Flag"
+        },
+        {
+            "name": "Standard space reference",
+            "id": "std_space",
+            "optional": false,
+            "value-key": "[STD_SPACE]",
+            "description": "Standard reference image (e.g., MNI152_T1_1mm.nii.gz).",
+            "type": "File"
+        },
+        {
+            "name": "Wrapper script",
+            "id": "script",
+            "optional": false,
+            "value-key": "[SCRIPT]",
+            "description": "Bash script that runs recon-all, converts aseg.mgz to NIfTI, and registers to STD_SPACE.",
+            "type": "File"
         }
     ],
-    "description": "Performs all, or any part of, the FreeSurfer cortical reconstruction process (https://surfer.nmr.mgh.harvard.edu/fswiki/recon-all)."
+    "custom": {
+          "nipoppy": {
+              "CONTAINER_SUBCOMMAND": "exec"
+          }
+     },
+    "description": "Runs FreeSurfer recon-all, converts aseg.mgz to NIfTI, and registers it to standard space with ANTs."
 }
 

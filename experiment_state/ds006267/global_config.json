@@ -13,7 +13,7 @@
     "DICOM_DIR_MAP_FILE": null,
     "DICOM_DIR_PARTICIPANT_FIRST": true,
     "SUBSTITUTIONS": {
-        "[[NIPOPPY_DPATH_CONTAINERS]]": "/data/origami/container_store/nipoppy",
+        "[[NIPOPPY_DPATH_CONTAINERS]]": "/data/origami/jacob/neuroci_test/nipoppy_datasets/my_containers",
         "[[HEUDICONV_HEURISTIC_FILE]]": "<PATH_TO_HEURISTIC_FILE>",
         "[[DCM2BIDS_CONFIG_FILE]]": "<PATH_TO_CONFIG_FILE>",
         "[[FREESURFER_LICENSE_FILE]]": "/data/origami/jacob/neuroci_test/nipoppy_datasets/license.txt",
