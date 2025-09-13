@@ -217,7 +217,7 @@ class SSHConnectionManager:
         safe_pipeline = shlex.quote(pipeline)
         safe_pipeline_version = shlex.quote(pipeline_version)
         safe_scheduler = shlex.quote(self.scheduler)
-        safe_prefix_cmd = shlex.quote(self.prefix_cmd)
+        safe_prefix_cmd = safe_prefix_cmd = " ".join(shlex.quote(arg) for arg in self.prefix_cmd.split())
 
         # Build base nipoppy command
         base_command = f"nipoppy {action} --dataset {safe_dataset_path} --pipeline {safe_pipeline} --pipeline-version {safe_pipeline_version}"
