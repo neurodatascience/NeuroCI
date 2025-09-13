@@ -1,0 +1,11 @@
+{
+    "license": "[[FREESURFER_LICENSE_FILE]]",
+    "subjid": "[[NIPOPPY_BIDS_PARTICIPANT_ID]]",
+    "input": "[[NIPOPPY_DPATH_BIDS]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/anat/[[NIPOPPY_BIDS_PARTICIPANT_ID]]_[[NIPOPPY_BIDS_SESSION_ID]]_T1w.nii.gz",
+    "subjects_dir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]",
+    "directives": "-all",
+    "std_space": "[[NIPOPPY_DPATH_ROOT]]/sourcedata/MNI152_T1_1mm_Brain.nii.gz",
+    "script": "[[NIPOPPY_DPATH_ROOT]]/pipelines/processing/freesurfer2MNI-8.0.0.1/run_freesurfer.sh"
+}
+
+

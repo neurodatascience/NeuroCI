@@ -1,5 +1,5 @@
 {
-    "NAME": "samseg2MNI",
+    "NAME": "freesurfer8001ants243",
     "VERSION": "8.0.0.1",
     "CONTAINER_INFO": {
         "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer_8.0.0.1.sif",
@@ -11,10 +11,10 @@
         "ARGS": [
 		"--bind",
 		"[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]",
-                "--bind",
-                "[[FREESURFER_LICENSE_FILE]]",
 		"--bind",
-		"[[NIPOPPY_DPATH_ROOT]]/sourcedata"
+		"[[FREESURFER_LICENSE_FILE]]",
+                "--bind",
+                "[[NIPOPPY_DPATH_ROOT]]/sourcedata"
         ]
     },
     "STEPS": [
