@@ -2,7 +2,7 @@
     "NAME": "freesurfer8001ants243",
     "VERSION": "8.0.0.1",
     "CONTAINER_INFO": {
-        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer_8.0.0.1.sif",
+        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer8001ants243_8.0.0.1.sif",
         "URI": "docker:??"
     },
     "CONTAINER_CONFIG": {

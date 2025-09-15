@@ -2,7 +2,7 @@
     "NAME": "freesurfer741ants243",
     "VERSION": "7.4.1",
     "CONTAINER_INFO": {
-        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer_7.4.1.sif",
+        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/freesurfer741ants243_7.4.1.sif",
         "URI": "docker:??"
     },
     "CONTAINER_CONFIG": {

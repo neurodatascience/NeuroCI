@@ -7,6 +7,6 @@
   "threads": 4,
   "pallidum_separate_flag": false,
   "std_space": "[[NIPOPPY_DPATH_ROOT]]/sourcedata/MNI152_T1_1mm.nii.gz",
-  "script": "[[NIPOPPY_DPATH_ROOT]]/pipelines/processing/samseg8001ants243/run_pipeline.sh"
+  "script": "[[NIPOPPY_DPATH_ROOT]]/pipelines/processing/samseg8001ants243-8.0.0.1/run_pipeline.sh"
 }
 
