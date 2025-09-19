@@ -3,7 +3,7 @@ datasets:
   ds006267: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds006267_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds006267/versions/1.0.0
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
-  fslanat: "6.0.7.1"
+  fslanat6071ants243: "6.0.7.1"
   freesurfer8001ants243: "8.0.0.1"
   freesurfer741ants243: "7.4.1"
   samseg8001ants243: "8.0.0.1"
