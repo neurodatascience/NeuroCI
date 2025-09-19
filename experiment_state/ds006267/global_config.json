@@ -8,7 +8,8 @@
         "INHERIT": true
     },
     "HPC_PREAMBLE": [
-        "source /data/origami/jacob/neuroci_test/venv_pypi/bin/activate"
+        "source /data/origami/jacob/neuroci_test/venv_pypi/bin/activate",
+	"export PYTHONUNBUFFERED=1"
     ],
     "DICOM_DIR_MAP_FILE": null,
     "DICOM_DIR_PARTICIPANT_FIRST": true,

@@ -3,11 +3,11 @@
 		"attributes": {
 			"labels": {
 				"org.label-schema.build-arch": "amd64",
-				"org.label-schema.build-date": "Thursday_30_January_2025_17:6:55_EST",
+				"org.label-schema.build-date": "Thursday_18_September_2025_17:12:48_EDT",
 				"org.label-schema.schema-version": "1.0",
+				"org.label-schema.usage.apptainer.version": "1.3.5",
 				"org.label-schema.usage.singularity.deffile.bootstrap": "docker",
-				"org.label-schema.usage.singularity.deffile.from": "debian:bullseye-slim",
-				"org.label-schema.usage.singularity.version": "3.8.5"
+				"org.label-schema.usage.singularity.deffile.from": "debian:bullseye-slim"
 			}
 		}
 	},

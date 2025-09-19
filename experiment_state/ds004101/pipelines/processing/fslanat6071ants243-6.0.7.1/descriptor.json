@@ -1,9 +1,9 @@
 {
   "tool-version": "6.0.7.1",
   "schema-version": "0.5",
-  "name": "fslanat",
-  "description": "Runs FSL's anatomical segmentation and extracts subcortical volumes using fslstats.",
-  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash [SCRIPT] [T1_INPUT] [OUTPUT_DIR]",
+  "name": "fslanat6071ants243_6.0.7.1.sif",
+  "description": "Runs FSL's anatomical segmentation and extracts subcortical volumes using fslstats, uses antsRegistration to register segmentation to standard space.",
+  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash [SCRIPT] [T1_INPUT] [OUTPUT_DIR] [STD_SPACE]",
   "inputs": [
     {
       "id": "script",
@@ -28,6 +28,14 @@
       "description": "Directory where output will be saved.",
       "value-key": "[OUTPUT_DIR]",
       "optional": false
+    },
+    {
+      "name": "Standard Space Template",
+      "id": "std_space",
+      "type": "File",
+      "optional": false,
+      "value-key": "[STD_SPACE]",
+      "description": "Path to the standard space (e.g., MNI152) template used as the fixed image in registration."
     }
   ],
   "output-files": [
@@ -38,6 +46,11 @@
       "description": "JSON file with subcortical volumes.",
       "optional": false
     }
-  ]
+  ],
+  "custom": {
+        "nipoppy": {
+            "CONTAINER_SUBCOMMAND": "exec"
+        }
+   }
 }
 

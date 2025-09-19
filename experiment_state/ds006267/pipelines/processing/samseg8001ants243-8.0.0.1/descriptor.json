@@ -1,5 +1,5 @@
 {
-  "name": "samseg",
+  "name": "samseg8001ants243",
   "schema-version": "0.5",
   "tool-version": "8.0.0.1",
   "description": "Runs SAMSEG for segmentation of brain structures from MRI volumes and registers the segmentation to MNI space.",

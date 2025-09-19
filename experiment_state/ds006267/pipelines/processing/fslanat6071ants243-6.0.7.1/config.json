@@ -1,8 +1,8 @@
 {
-    "NAME": "fslanat",
+    "NAME": "fslanat6071ants243",
     "VERSION": "6.0.7.1",
     "CONTAINER_INFO": {
-        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/[[PIPELINE_NAME]]_[[PIPELINE_VERSION]].sif",
+        "FILE": "[[NIPOPPY_DPATH_CONTAINERS]]/fslanat6071ants243_6.0.7.1.sif",
         "URI": "docker:??"
     },
     "CONTAINER_CONFIG": {
@@ -10,7 +10,9 @@
         },
         "ARGS": [
 		"--bind",
-		"[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]"
+		"[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]",
+                "--bind",
+                "[[NIPOPPY_DPATH_ROOT]]/sourcedata"
         ]
     },
     "STEPS": [

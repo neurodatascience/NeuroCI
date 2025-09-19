@@ -8,7 +8,7 @@
             "path-template": "[SUBJID]"
         }
     ],
-    "name": "freesurfer7",
+    "name": "freesurfer741ants243",
     "schema-version": "0.5",
     "tool-version": "8.0.0.1",
     "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash -c '[SCRIPT] [LICENSE_FILE] [INPUT] [SUBJECTS_DIR] [SUBJID] [DIRECTIVES] [STD_SPACE] [QCACHE] [MPRAGE] [3T] [CW256] [NOTAL-CHECK] [HYPPOCAMPAL-SUBFIELDS] [BRAINSTEM-STRUCTURES] [NO-WSGCAATLAS] [NO-SKULLSTRIP]'",
