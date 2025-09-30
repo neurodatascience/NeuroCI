@@ -2,3 +2,4 @@ fabric
 pytest
 matplotlib
 pytest-mock
+pandas
