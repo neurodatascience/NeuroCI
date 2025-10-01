@@ -184,4 +184,4 @@ if __name__ == "__main__":
     print(f"Tidy DataFrame shape: {df_tidy.shape}")
 
     df_wide = pivot_wide(df_tidy)
-    print(f"Wide DataFrame shape: {df_wide.shape}_
+    print(f"Wide DataFrame shape: {df_wide.shape}")
