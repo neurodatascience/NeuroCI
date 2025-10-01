@@ -1,6 +1,6 @@
 fabric
 pytest
-matplotlib
 pytest-mock
 pandas
 seaborn
+matplotlib
