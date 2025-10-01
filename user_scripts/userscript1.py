@@ -48,10 +48,11 @@ def parse_samseg(path: Path):
             roi, vol = parts[0], parts[1]
 
             # Normalize ROI names to match COMMON_STRUCTURES
-            roi = roi.replace(" ", "-")
+            roi = roi.replace("_", "-")  # Replace underscores with hyphens
             roi = roi.replace("Brain-Stem", "Brainstem")
-            roi = roi.replace("VentralDC", "VentralDC")  # optional, just in case
-
+            # Remove any remaining underscores and normalize
+            roi = roi.replace(" ", "-")
+            
             if roi in COMMON_STRUCTURES:
                 try:
                     results[roi] = float(vol)
@@ -94,9 +95,15 @@ def discover_files(state_dir: Path):
         for pipeline_root in derivatives.iterdir():
             if not pipeline_root.is_dir():
                 continue
-            for output_dir in pipeline_root.glob("*/output"):
-                pipeline_name = pipeline_root.name
-                version = output_dir.parent.name
+            pipeline_name = pipeline_root.name
+            for version_dir in pipeline_root.iterdir():
+                if not version_dir.is_dir():
+                    continue
+                version = version_dir.name
+                output_dir = version_dir / "output"
+                if not output_dir.exists():
+                    continue
+                    
                 for subj_dir in output_dir.iterdir():
                     if not subj_dir.is_dir():
                         continue
@@ -105,6 +112,8 @@ def discover_files(state_dir: Path):
                         if not ses_dir.is_dir():
                             continue
                         ses = ses_dir.name
+                        
+                        # Look for FreeSurfer files
                         fs_stats = ses_dir / subj / "stats" / "aseg.stats"
                         if fs_stats.exists():
                             results.append({
@@ -116,6 +125,8 @@ def discover_files(state_dir: Path):
                                 "file_type": "freesurfer",
                                 "path": fs_stats,
                             })
+                        
+                        # Look for SAMSEG files - they're directly in session/samseg/
                         samseg_stats = ses_dir / "samseg" / "samseg.stats"
                         if samseg_stats.exists():
                             results.append({
@@ -127,6 +138,8 @@ def discover_files(state_dir: Path):
                                 "file_type": "samseg",
                                 "path": samseg_stats,
                             })
+                        
+                        # Look for FSL files
                         fsl_json = ses_dir / "out.anat" / "subcortical_volumes.json"
                         if fsl_json.exists():
                             results.append({
@@ -149,13 +162,17 @@ def build_tidy_dataframe(files_meta):
         parser = PARSERS.get(r["file_type"])
         if parser is None:
             continue
-        vols = parser(r["path"])
-        for struct, vol in vols.items():
-            tidy_rows.append({
-                **r,  # keep metadata
-                "structure": struct,
-                "volume_mm3": vol,
-            })
+        try:
+            vols = parser(r["path"])
+            for struct, vol in vols.items():
+                tidy_rows.append({
+                    **r,  # keep metadata
+                    "structure": struct,
+                    "volume_mm3": vol,
+                })
+        except Exception as e:
+            print(f"Error parsing {r['path']}: {e}")
+            continue
     return pd.DataFrame(tidy_rows)
 
 # ----------------------------
@@ -181,6 +198,22 @@ if __name__ == "__main__":
 
     df_tidy = build_tidy_dataframe(files_meta)
     print(f"Tidy DataFrame shape: {df_tidy.shape}")
+    
+    # Save tidy DataFrame
+    df_tidy.to_csv("df_tidy.csv", index=False)
+    print("Saved tidy DataFrame to df_tidy.csv")
 
     df_wide = pivot_wide(df_tidy)
     print(f"Wide DataFrame shape: {df_wide.shape}")
+    
+    # Save wide DataFrame
+    df_wide.to_csv("df_wide.csv", index=False)
+    print("Saved wide DataFrame to df_wide.csv")
+    
+    # Print pipeline counts for verification
+    print("\nPipeline counts:")
+    print(df_tidy['pipeline'].value_counts())
+    
+    # Print file type counts for verification  
+    print("\nFile type counts:")
+    print(df_tidy['file_type'].value_counts())
