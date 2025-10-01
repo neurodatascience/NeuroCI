@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 import pandas as pd
-import re
 
 # ----------------------------
 # Config
@@ -39,14 +38,21 @@ def parse_samseg(path: Path):
     results = {}
     with open(path) as f:
         for line in f:
-            if line.startswith("#"):
+            line = line.strip()
+            if not line.startswith("# Measure"):
                 continue
-            parts = [x.strip() for x in line.split(",")]
+            # Example line:
+            # "# Measure Left-Hippocampus, 3979.967775, mm^3"
+            parts = [p.strip() for p in line.split(",")]
             if len(parts) < 2:
                 continue
-            roi, vol = parts[0], parts[1]
-            # Normalize ROI names: remove spaces, fix capitalization
+            roi = parts[0].replace("# Measure", "").strip()
+            vol = parts[1]
+
+            # Normalize ROI names
             roi = roi.replace(" ", "-")
+            roi = roi.replace("Brain-Stem", "Brainstem")
+
             if roi in COMMON_STRUCTURES:
                 try:
                     results[roi] = float(vol)
@@ -176,18 +182,6 @@ if __name__ == "__main__":
 
     df_tidy = build_tidy_dataframe(files_meta)
     print(f"Tidy DataFrame shape: {df_tidy.shape}")
-    #print(df_tidy.head())
 
     df_wide = pivot_wide(df_tidy)
-    print(f"Wide DataFrame shape: {df_wide.shape}")
-    #print(df_wide.head())
-
-    # ----------------------------
-    # Save tidy DataFrame
-    # ----------------------------
-    experiment_state_root = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
-    experiment_state_root.mkdir(parents=True, exist_ok=True)
-
-    tidy_path = experiment_state_root / "df_tidy.csv"
-    df_tidy.to_csv(tidy_path, index=False)
-    print(f"✓ Saved tidy DataFrame to {tidy_path}")
+    print(f"Wide DataFrame shape: {df_wide.shape}_
