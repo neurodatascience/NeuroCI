@@ -9,15 +9,28 @@ def create_boxen_figures(df_tidy, output_dir):
     # Set style for better visuals
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['font.size'] = 8
     
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
         
         print(f"Creating boxen plots for {dataset} with {len(dataset_data)} rows...")
         
+        # Create shorter pipeline names for display
+        pipeline_mapping = {
+            'fslanat6071ants243': 'FSL6071',
+            'freesurfer741ants243': 'FS741',
+            'freesurfer8001ants243': 'FS8001', 
+            'samseg8001ants243': 'SAMSEG8'
+        }
+        
+        # Create a copy with shortened pipeline names
+        plot_data = dataset_data.copy()
+        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+        
         g = sns.catplot(
-            data=dataset_data,
-            x='pipeline', 
+            data=plot_data,
+            x='pipeline_short', 
             y='volume_mm3',
             col='structure',
             col_wrap=5,
@@ -30,6 +43,10 @@ def create_boxen_figures(df_tidy, output_dir):
         
         g.set_titles("{col_name}")
         g.set_xticklabels(rotation=45)
+        g.set_axis_labels("Pipeline", "Volume (mm³)")
+        
+        # Adjust layout to make room for x-axis labels
+        g.fig.subplots_adjust(bottom=0.15)
         g.fig.suptitle(f'Pipeline Variability (Boxen) - {dataset}', y=1.02, fontsize=16)
         
         output_path = output_dir / f'boxen_comparison_{dataset}.png'
