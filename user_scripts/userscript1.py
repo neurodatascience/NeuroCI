@@ -36,28 +36,26 @@ def parse_fsl(path: Path):
 
 def parse_samseg(path: Path):
     results = {}
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line.startswith("# Measure"):
-                continue
-            # line looks like: "# Measure Left-Amygdala, 1651.577379, mm^3"
-            parts = [p.strip() for p in line[len("# Measure "):].split(",")]
-            if len(parts) < 2:
-                continue
-            roi, vol = parts[0], parts[1]
-
-            # Normalize ROI names to match COMMON_STRUCTURES
-            roi = roi.replace("_", "-")  # Replace underscores with hyphens
+    try:
+        # Read the CSV file
+        df = pd.read_csv(path)
+        
+        # Normalize ROI names and filter for common structures
+        for _, row in df.iterrows():
+            roi = row['ROI']
+            
+            # Normalize ROI names
+            # Replace Brain-Stem with Brainstem
             roi = roi.replace("Brain-Stem", "Brainstem")
-            # Remove any remaining underscores and normalize
-            roi = roi.replace(" ", "-")
+            # Replace underscores with hyphens
+            roi = roi.replace("_", "-")
             
             if roi in COMMON_STRUCTURES:
-                try:
-                    results[roi] = float(vol)
-                except ValueError:
-                    continue
+                results[roi] = float(row['volume_mm3'])
+                
+    except Exception as e:
+        print(f"Error parsing SAMSEG CSV {path}: {e}")
+        
     return results
 
 def parse_freesurfer(path: Path):
@@ -126,9 +124,9 @@ def discover_files(state_dir: Path):
                                 "path": fs_stats,
                             })
                         
-                        # Look for SAMSEG files - they're directly in session/samseg/
-                        samseg_stats = ses_dir / "samseg" / "samseg.stats"
-                        if samseg_stats.exists():
+                        # Look for SAMSEG CSV files
+                        samseg_csv = ses_dir / "samseg" / "samseg.csv"
+                        if samseg_csv.exists():
                             results.append({
                                 "dataset": dataset_dir.name,
                                 "pipeline": pipeline_name,
@@ -136,7 +134,7 @@ def discover_files(state_dir: Path):
                                 "subject": subj,
                                 "session": ses,
                                 "file_type": "samseg",
-                                "path": samseg_stats,
+                                "path": samseg_csv,
                             })
                         
                         # Look for FSL files
@@ -217,3 +215,9 @@ if __name__ == "__main__":
     # Print file type counts for verification  
     print("\nFile type counts:")
     print(df_tidy['file_type'].value_counts())
+    
+    # Print structure counts to verify SAMSEG is working
+    print("\nStructure counts by pipeline:")
+    samseg_structures = df_tidy[df_tidy['pipeline'].str.contains('samseg')]['structure'].value_counts()
+    print("SAMSEG structures:")
+    print(samseg_structures)
