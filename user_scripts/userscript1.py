@@ -69,6 +69,11 @@ def parse_freesurfer(path: Path):
                 continue
             struct_name = parts[4]
             volume = parts[3]
+            
+            # Normalize structure names to match COMMON_STRUCTURES
+            if struct_name == "Brain-Stem":
+                struct_name = "Brainstem"
+            
             if struct_name in COMMON_STRUCTURES:
                 results[struct_name] = float(volume)
     return results
