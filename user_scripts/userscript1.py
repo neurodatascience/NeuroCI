@@ -176,8 +176,18 @@ if __name__ == "__main__":
 
     df_tidy = build_tidy_dataframe(files_meta)
     print(f"Tidy DataFrame shape: {df_tidy.shape}")
-    print(df_tidy.head())
+    #print(df_tidy.head())
 
     df_wide = pivot_wide(df_tidy)
     print(f"Wide DataFrame shape: {df_wide.shape}")
-    print(df_wide.head())
+    #print(df_wide.head())
+
+    # ----------------------------
+    # Save tidy DataFrame
+    # ----------------------------
+    experiment_state_root = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
+    experiment_state_root.mkdir(parents=True, exist_ok=True)
+
+    tidy_path = experiment_state_root / "df_tidy.csv"
+    df_tidy.to_csv(tidy_path, index=False)
+    print(f"✓ Saved tidy DataFrame to {tidy_path}")
