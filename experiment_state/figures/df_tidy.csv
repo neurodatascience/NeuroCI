@@ -138,6 +138,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Caudate,3275.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Putamen,5223.4
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Pallidum,1668.7
+ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Brainstem,22954.1
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Hippocampus,4656.2
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Amygdala,1762.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Accumbens-area,511.3
@@ -152,6 +153,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Caudate,3562.8
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Putamen,4335.7
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Pallidum,1455.6
+ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Brainstem,19747.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Hippocampus,4072.2
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Amygdala,1527.5
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Accumbens-area,493.5
@@ -166,6 +168,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Caudate,3050.2
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Putamen,4233.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Pallidum,1517.4
+ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Brainstem,19304.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Hippocampus,3705.9
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Amygdala,1534.9
 ds004101,freesurfer8001ants243,8.0.0.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Accumbens-area,490.5
@@ -180,6 +183,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Caudate,2704.4
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Putamen,3756.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Pallidum,1053.8
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Brainstem,19430.8
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Hippocampus,3789.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Amygdala,1667.9
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Accumbens-area,400.0
@@ -194,6 +198,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Caudate,3601.5
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Putamen,5007.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Pallidum,1435.9
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Brainstem,22031.0
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Hippocampus,4390.9
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Amygdala,1458.1
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Accumbens-area,516.7
@@ -208,6 +213,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Caudate,3303.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Putamen,5328.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Pallidum,1393.8
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Brainstem,20281.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Hippocampus,4230.6
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Amygdala,1739.0
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Accumbens-area,559.5
@@ -222,6 +228,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Caudate,3734.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Putamen,5132.9
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Pallidum,1494.1
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Brainstem,21395.3
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Hippocampus,4490.1
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Amygdala,1895.8
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Accumbens-area,607.3
@@ -236,6 +243,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Caudate,2783.2
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Putamen,4061.0
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Pallidum,1265.5
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Brainstem,21268.1
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Hippocampus,4092.4
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Amygdala,1785.7
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Accumbens-area,397.9
@@ -250,6 +258,7 @@ ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroc
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Caudate,2546.7
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Putamen,4248.4
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Pallidum,1205.5
+ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Brainstem,18130.4
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Hippocampus,4366.8
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Amygdala,1699.5
 ds004101,freesurfer8001ants243,8.0.0.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Accumbens-area,543.6
@@ -264,6 +273,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Caudate,3058.5
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Putamen,4658.5
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Pallidum,2024.3
+ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Brainstem,23128.7
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Hippocampus,4851.4
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Amygdala,1595.5
 ds004101,freesurfer741ants243,7.4.1,sub-10570,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10570/ses-1pre/sub-10570/stats/aseg.stats,Left-Accumbens-area,306.1
@@ -278,6 +288,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Caudate,3269.5
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Putamen,4127.4
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Pallidum,1857.1
+ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Brainstem,20311.9
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Hippocampus,4024.9
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Amygdala,1294.4
 ds004101,freesurfer741ants243,7.4.1,sub-10134,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10134/ses-1pre/sub-10134/stats/aseg.stats,Left-Accumbens-area,353.4
@@ -292,6 +303,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Caudate,2875.9
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Putamen,3684.2
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Pallidum,1683.9
+ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Brainstem,19198.5
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Hippocampus,3754.5
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Amygdala,1366.0
 ds004101,freesurfer741ants243,7.4.1,sub-10332,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-10332/ses-1pre/sub-10332/stats/aseg.stats,Left-Accumbens-area,271.2
@@ -306,6 +318,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Caudate,2648.1
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Putamen,3120.0
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Pallidum,1426.1
+ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Brainstem,19702.9
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Hippocampus,3673.5
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Amygdala,1412.4
 ds004101,freesurfer741ants243,7.4.1,sub-09381,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09381/ses-1pre/sub-09381/stats/aseg.stats,Left-Accumbens-area,168.5
@@ -320,6 +333,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Caudate,3355.0
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Putamen,4617.7
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Pallidum,1956.2
+ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Brainstem,22580.8
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Hippocampus,4276.5
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Amygdala,1384.9
 ds004101,freesurfer741ants243,7.4.1,sub-09300,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09300/ses-1pre/sub-09300/stats/aseg.stats,Left-Accumbens-area,306.6
@@ -334,6 +348,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Caudate,3142.6
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Putamen,4839.8
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Pallidum,2132.2
+ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Brainstem,19143.8
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Hippocampus,4064.4
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Amygdala,1612.0
 ds004101,freesurfer741ants243,7.4.1,sub-09380,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09380/ses-1pre/sub-09380/stats/aseg.stats,Left-Accumbens-area,397.3
@@ -348,6 +363,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Caudate,3438.1
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Putamen,4858.7
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Pallidum,2058.0
+ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Brainstem,21378.4
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Hippocampus,4361.8
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Amygdala,1870.7
 ds004101,freesurfer741ants243,7.4.1,sub-09114,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09114/ses-1pre/sub-09114/stats/aseg.stats,Left-Accumbens-area,443.0
@@ -362,6 +378,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Caudate,2385.5
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Putamen,3628.2
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Pallidum,1654.6
+ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Brainstem,21539.3
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Hippocampus,4114.1
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Amygdala,1754.3
 ds004101,freesurfer741ants243,7.4.1,sub-09260,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09260/ses-1pre/sub-09260/stats/aseg.stats,Left-Accumbens-area,270.5
@@ -376,6 +393,7 @@ ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_o
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Caudate,2840.8
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Putamen,2880.2
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Pallidum,1455.0
+ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Brainstem,18799.5
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Hippocampus,4287.0
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Amygdala,1587.0
 ds004101,freesurfer741ants243,7.4.1,sub-09160,ses-1pre,freesurfer,/tmp/neuroci_output_state/ds004101/derivatives/freesurfer741ants243/7.4.1/output/sub-09160/ses-1pre/sub-09160/stats/aseg.stats,Left-Accumbens-area,206.6
@@ -855,6 +873,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Caudate,4781.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Putamen,5900.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Pallidum,1580.1
+ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Brainstem,17784.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Hippocampus,3765.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Amygdala,1608.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Accumbens-area,785.1
@@ -869,6 +888,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Caudate,4301.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Putamen,6918.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Pallidum,1940.1
+ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Brainstem,18956.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Hippocampus,4172.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Amygdala,1888.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Accumbens-area,694.5
@@ -883,6 +903,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Caudate,3679.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Putamen,4941.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Pallidum,1446.0
+ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Brainstem,15577.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Hippocampus,3601.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Amygdala,1569.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Accumbens-area,508.4
@@ -897,6 +918,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Caudate,3617.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Putamen,5701.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Pallidum,1530.0
+ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Brainstem,17474.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Hippocampus,3405.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Amygdala,1361.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Accumbens-area,766.0
@@ -911,6 +933,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Caudate,4233.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Putamen,6298.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Pallidum,1796.7
+ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Brainstem,17597.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Hippocampus,4367.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Amygdala,1618.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Accumbens-area,656.4
@@ -925,6 +948,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Caudate,4315.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Putamen,5657.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Pallidum,1564.8
+ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Brainstem,16129.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Hippocampus,3712.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Amygdala,1712.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Accumbens-area,695.8
@@ -939,6 +963,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Caudate,4638.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Putamen,5932.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Pallidum,1751.7
+ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Brainstem,22002.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Hippocampus,4414.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Amygdala,1600.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Accumbens-area,705.3
@@ -953,6 +978,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Caudate,4504.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Putamen,5516.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Pallidum,1712.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Brainstem,20331.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Hippocampus,4457.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Amygdala,1591.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Accumbens-area,631.4
@@ -967,6 +993,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Caudate,4536.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Putamen,6895.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Pallidum,2022.5
+ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Brainstem,18735.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Hippocampus,3964.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Amygdala,1657.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Accumbens-area,741.9
@@ -981,6 +1008,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Caudate,4803.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Putamen,6239.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Pallidum,1984.2
+ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Brainstem,17848.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Hippocampus,4164.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Amygdala,1632.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Accumbens-area,680.3
@@ -995,6 +1023,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Caudate,4633.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Putamen,5619.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Pallidum,1699.5
+ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Brainstem,15948.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Hippocampus,3395.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Amygdala,1394.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Accumbens-area,580.6
@@ -1009,6 +1038,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Caudate,4260.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Putamen,5205.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Pallidum,1549.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Brainstem,19663.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Hippocampus,3848.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Amygdala,1832.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Accumbens-area,658.7
@@ -1023,6 +1053,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Caudate,4461.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Putamen,6945.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Pallidum,1947.4
+ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Brainstem,21092.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Hippocampus,4343.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Amygdala,1829.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Accumbens-area,828.0
@@ -1037,6 +1068,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Caudate,4770.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Putamen,6631.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Pallidum,1882.8
+ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Brainstem,20023.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Hippocampus,4396.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Amygdala,1787.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Accumbens-area,679.7
@@ -1051,6 +1083,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Caudate,5481.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Putamen,6449.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Pallidum,2026.1
+ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Brainstem,23707.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Hippocampus,4133.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Amygdala,1859.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Accumbens-area,801.6
@@ -1065,6 +1098,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Caudate,4436.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Putamen,5755.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Pallidum,1549.1
+ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Brainstem,16904.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Hippocampus,4235.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Amygdala,1558.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Accumbens-area,631.7
@@ -1079,6 +1113,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Caudate,4812.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Putamen,6191.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Pallidum,1816.7
+ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Brainstem,17663.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Hippocampus,4256.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Amygdala,1595.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Accumbens-area,676.1
@@ -1093,6 +1128,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Caudate,4389.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Putamen,6446.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Pallidum,1869.1
+ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Brainstem,21774.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Hippocampus,4359.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Amygdala,1655.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Accumbens-area,836.8
@@ -1107,6 +1143,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Caudate,4464.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Putamen,6392.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Pallidum,1706.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Brainstem,18419.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Hippocampus,4916.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Amygdala,1775.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Accumbens-area,714.3
@@ -1121,6 +1158,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Caudate,4151.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Putamen,6415.5
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Pallidum,1713.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Brainstem,19404.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Hippocampus,3970.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Amygdala,1672.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Accumbens-area,638.2
@@ -1135,6 +1173,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Caudate,4413.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Putamen,6485.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Pallidum,1855.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Brainstem,18998.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Hippocampus,4411.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Amygdala,1749.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Accumbens-area,781.2
@@ -1149,6 +1188,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Caudate,3661.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Putamen,5155.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Pallidum,1312.9
+ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Brainstem,14017.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Hippocampus,3677.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Amygdala,1471.2
 ds006267,freesurfer8001ants243,8.0.0.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Accumbens-area,613.0
@@ -1163,6 +1203,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Caudate,4386.4
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Putamen,7892.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Pallidum,1945.3
+ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Brainstem,18849.7
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Hippocampus,3666.9
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Amygdala,1847.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Accumbens-area,839.6
@@ -1177,6 +1218,7 @@ ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_outp
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Caudate,5211.1
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Putamen,6154.3
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Pallidum,1817.6
+ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Brainstem,17155.8
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Hippocampus,3994.0
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Amygdala,1665.6
 ds006267,freesurfer8001ants243,8.0.0.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer8001ants243/8.0.0.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Accumbens-area,640.5
@@ -1191,6 +1233,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Caudate,4386.0
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Putamen,5031.6
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Pallidum,1819.6
+ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Brainstem,17253.2
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Hippocampus,3778.9
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Amygdala,1503.4
 ds006267,freesurfer741ants243,7.4.1,sub-03,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-03/ses-1/sub-03/stats/aseg.stats,Left-Accumbens-area,687.7
@@ -1205,6 +1248,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Caudate,4063.6
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Putamen,6264.6
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Pallidum,1948.2
+ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Brainstem,19274.5
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Hippocampus,4373.6
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Amygdala,1778.9
 ds006267,freesurfer741ants243,7.4.1,sub-02,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-02/ses-1/sub-02/stats/aseg.stats,Left-Accumbens-area,655.7
@@ -1219,6 +1263,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Caudate,3138.2
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Putamen,4343.7
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Pallidum,1413.2
+ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Brainstem,16057.7
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Hippocampus,3485.1
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Amygdala,1399.1
 ds006267,freesurfer741ants243,7.4.1,sub-13,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-13/ses-1/sub-13/stats/aseg.stats,Left-Accumbens-area,378.2
@@ -1233,6 +1278,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Caudate,3233.9
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Putamen,4880.1
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Pallidum,1769.8
+ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Brainstem,17420.9
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Hippocampus,3482.1
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Amygdala,1352.3
 ds006267,freesurfer741ants243,7.4.1,sub-18,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-18/ses-1/sub-18/stats/aseg.stats,Left-Accumbens-area,555.4
@@ -1247,6 +1293,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Caudate,3964.5
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Putamen,5725.0
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Pallidum,1963.0
+ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Brainstem,18041.5
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Hippocampus,4457.7
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Amygdala,1703.3
 ds006267,freesurfer741ants243,7.4.1,sub-20,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-20/ses-1/sub-20/stats/aseg.stats,Left-Accumbens-area,509.9
@@ -1261,6 +1308,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Caudate,4047.0
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Putamen,5017.2
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Pallidum,1808.1
+ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Brainstem,16630.4
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Hippocampus,3901.5
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Amygdala,1532.3
 ds006267,freesurfer741ants243,7.4.1,sub-08,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-08/ses-1/sub-08/stats/aseg.stats,Left-Accumbens-area,595.1
@@ -1275,6 +1323,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Caudate,4070.8
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Putamen,5418.2
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Pallidum,2001.8
+ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Brainstem,23714.3
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Hippocampus,4270.8
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Amygdala,1427.9
 ds006267,freesurfer741ants243,7.4.1,sub-06,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-06/ses-1/sub-06/stats/aseg.stats,Left-Accumbens-area,510.1
@@ -1289,6 +1338,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Caudate,4099.4
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Putamen,4848.7
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Pallidum,1886.0
+ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Brainstem,20293.9
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Hippocampus,4104.8
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Amygdala,1555.8
 ds006267,freesurfer741ants243,7.4.1,sub-21,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-21/ses-1/sub-21/stats/aseg.stats,Left-Accumbens-area,546.9
@@ -1303,6 +1353,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Caudate,3721.7
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Putamen,6632.5
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Pallidum,2181.8
+ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Brainstem,18814.3
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Hippocampus,3777.2
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Amygdala,1663.9
 ds006267,freesurfer741ants243,7.4.1,sub-12,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-12/ses-1/sub-12/stats/aseg.stats,Left-Accumbens-area,635.0
@@ -1317,6 +1368,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Caudate,4529.4
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Putamen,5582.3
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Pallidum,1942.0
+ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Brainstem,18729.1
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Hippocampus,4211.5
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Amygdala,1539.8
 ds006267,freesurfer741ants243,7.4.1,sub-15,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-15/ses-1/sub-15/stats/aseg.stats,Left-Accumbens-area,605.0
@@ -1331,6 +1383,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Caudate,4149.8
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Putamen,4871.3
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Pallidum,1833.1
+ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Brainstem,16983.3
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Hippocampus,3355.8
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Amygdala,1463.6
 ds006267,freesurfer741ants243,7.4.1,sub-24,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-24/ses-1/sub-24/stats/aseg.stats,Left-Accumbens-area,549.1
@@ -1345,6 +1398,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Caudate,3694.0
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Putamen,4387.2
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Pallidum,1728.5
+ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Brainstem,20270.3
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Hippocampus,3721.6
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Amygdala,1594.6
 ds006267,freesurfer741ants243,7.4.1,sub-01,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-01/ses-1/sub-01/stats/aseg.stats,Left-Accumbens-area,458.5
@@ -1359,6 +1413,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Caudate,4230.5
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Putamen,6241.9
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Pallidum,2192.5
+ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Brainstem,21664.9
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Hippocampus,4402.2
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Amygdala,1720.5
 ds006267,freesurfer741ants243,7.4.1,sub-19,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-19/ses-1/sub-19/stats/aseg.stats,Left-Accumbens-area,777.8
@@ -1373,6 +1428,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Caudate,4368.0
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Putamen,5609.9
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Pallidum,2217.3
+ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Brainstem,20622.8
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Hippocampus,4385.3
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Amygdala,1939.5
 ds006267,freesurfer741ants243,7.4.1,sub-09,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-09/ses-1/sub-09/stats/aseg.stats,Left-Accumbens-area,817.4
@@ -1387,6 +1443,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Caudate,5183.9
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Putamen,4906.1
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Pallidum,2558.3
+ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Brainstem,24544.9
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Hippocampus,4221.7
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Amygdala,1691.3
 ds006267,freesurfer741ants243,7.4.1,sub-23,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-23/ses-1/sub-23/stats/aseg.stats,Left-Accumbens-area,632.4
@@ -1401,6 +1458,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Caudate,4110.5
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Putamen,4708.8
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Pallidum,2174.7
+ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Brainstem,17933.6
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Hippocampus,4228.7
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Amygdala,1579.5
 ds006267,freesurfer741ants243,7.4.1,sub-07,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-07/ses-1/sub-07/stats/aseg.stats,Left-Accumbens-area,629.0
@@ -1415,6 +1473,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Caudate,4238.9
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Putamen,5543.6
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Pallidum,2133.4
+ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Brainstem,18810.3
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Hippocampus,3944.2
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Amygdala,1495.1
 ds006267,freesurfer741ants243,7.4.1,sub-22,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-22/ses-1/sub-22/stats/aseg.stats,Left-Accumbens-area,506.0
@@ -1429,6 +1488,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Caudate,3685.1
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Putamen,5968.9
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Pallidum,2218.7
+ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Brainstem,22677.0
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Hippocampus,4090.5
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Amygdala,1498.5
 ds006267,freesurfer741ants243,7.4.1,sub-11,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-11/ses-1/sub-11/stats/aseg.stats,Left-Accumbens-area,695.9
@@ -1443,6 +1503,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Caudate,4002.8
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Putamen,5178.8
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Pallidum,2388.4
+ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Brainstem,18897.1
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Hippocampus,4279.8
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Amygdala,1702.4
 ds006267,freesurfer741ants243,7.4.1,sub-16,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-16/ses-1/sub-16/stats/aseg.stats,Left-Accumbens-area,575.0
@@ -1457,6 +1518,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Caudate,4058.0
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Putamen,5364.3
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Pallidum,2244.0
+ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Brainstem,20020.2
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Hippocampus,3918.5
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Amygdala,1495.0
 ds006267,freesurfer741ants243,7.4.1,sub-10,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-10/ses-1/sub-10/stats/aseg.stats,Left-Accumbens-area,507.1
@@ -1471,6 +1533,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Caudate,4212.2
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Putamen,5178.4
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Pallidum,2430.0
+ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Brainstem,19684.5
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Hippocampus,4125.0
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Amygdala,1494.5
 ds006267,freesurfer741ants243,7.4.1,sub-14,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-14/ses-1/sub-14/stats/aseg.stats,Left-Accumbens-area,632.5
@@ -1485,6 +1548,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Caudate,3253.2
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Putamen,4512.3
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Pallidum,1691.1
+ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Brainstem,15162.4
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Hippocampus,3477.7
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Amygdala,1360.4
 ds006267,freesurfer741ants243,7.4.1,sub-05,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-05/ses-1/sub-05/stats/aseg.stats,Left-Accumbens-area,443.1
@@ -1499,6 +1563,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Caudate,4137.3
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Putamen,7207.2
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Pallidum,2091.1
+ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Brainstem,19507.2
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Hippocampus,4026.9
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Amygdala,1733.0
 ds006267,freesurfer741ants243,7.4.1,sub-04,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-04/ses-1/sub-04/stats/aseg.stats,Left-Accumbens-area,873.9
@@ -1513,6 +1578,7 @@ ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Caudate,4264.3
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Putamen,5363.3
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Pallidum,1861.6
+ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Brainstem,17084.1
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Hippocampus,3767.0
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Amygdala,1727.1
 ds006267,freesurfer741ants243,7.4.1,sub-17,ses-1,freesurfer,/tmp/neuroci_output_state/ds006267/derivatives/freesurfer741ants243/7.4.1/output/sub-17/ses-1/sub-17/stats/aseg.stats,Left-Accumbens-area,540.5
