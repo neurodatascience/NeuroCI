@@ -3,3 +3,4 @@ pytest
 matplotlib
 pytest-mock
 pandas
+seaborn
