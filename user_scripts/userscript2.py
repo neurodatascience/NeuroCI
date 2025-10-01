@@ -9,7 +9,7 @@ def create_boxen_figures(df_tidy, output_dir):
     # Set style for better visuals
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.size'] = 10
     
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
@@ -28,26 +28,35 @@ def create_boxen_figures(df_tidy, output_dir):
         plot_data = dataset_data.copy()
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
+        # Get the unique pipeline names in order
+        pipeline_order = list(pipeline_mapping.values())
+        
         g = sns.catplot(
             data=plot_data,
             x='pipeline_short', 
             y='volume_mm3',
             col='structure',
             col_wrap=5,
-            kind='boxen',  # Enhanced box plot
+            kind='boxen',
             height=3,
             aspect=1.2,
             sharey=False,
-            palette='viridis'
+            palette='viridis',
+            order=pipeline_order  # Ensure consistent order
         )
         
+        # Set titles and labels explicitly
         g.set_titles("{col_name}")
-        g.set_xticklabels(rotation=45)
-        g.set_axis_labels("Pipeline", "Volume (mm³)")
         
-        # Adjust layout to make room for x-axis labels
-        g.fig.subplots_adjust(bottom=0.15)
-        g.fig.suptitle(f'Pipeline Variability (Boxen) - {dataset}', y=1.02, fontsize=16)
+        # Set x-tick labels for ALL subplots
+        for ax in g.axes.flat:
+            ax.set_xticklabels(pipeline_order, rotation=45, ha='right')
+            ax.set_xlabel('Pipeline')
+            ax.set_ylabel('Volume (mm³)')
+        
+        # Adjust layout
+        g.fig.subplots_adjust(bottom=0.15, top=0.92)
+        g.fig.suptitle(f'Pipeline Variability (Boxen) - {dataset}', fontsize=16)
         
         output_path = output_dir / f'boxen_comparison_{dataset}.png'
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
