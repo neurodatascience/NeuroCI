@@ -45,9 +45,7 @@ def parse_samseg(path: Path):
             roi = row['ROI']
             
             # Normalize ROI names
-            # Replace Brain-Stem with Brainstem
             roi = roi.replace("Brain-Stem", "Brainstem")
-            # Replace underscores with hyphens
             roi = roi.replace("_", "-")
             
             if roi in COMMON_STRUCTURES:
@@ -156,12 +154,19 @@ def discover_files(state_dir: Path):
 # ----------------------------
 def build_tidy_dataframe(files_meta):
     tidy_rows = []
+    samseg_files_processed = 0
     for r in files_meta:
         parser = PARSERS.get(r["file_type"])
         if parser is None:
             continue
         try:
             vols = parser(r["path"])
+            if r["file_type"] == "samseg" and vols:
+                samseg_files_processed += 1
+                if samseg_files_processed <= 3:  # Print first 3 for debugging
+                    print(f"SAMSEG file #{samseg_files_processed}: {r['path'].name}")
+                    print(f"  Found {len(vols)} structures: {list(vols.keys())}")
+            
             for struct, vol in vols.items():
                 tidy_rows.append({
                     **r,  # keep metadata
@@ -171,17 +176,48 @@ def build_tidy_dataframe(files_meta):
         except Exception as e:
             print(f"Error parsing {r['path']}: {e}")
             continue
+    
+    print(f"\nTotal SAMSEG files successfully processed: {samseg_files_processed}")
     return pd.DataFrame(tidy_rows)
 
 # ----------------------------
 # Wide pivot for ML
 # ----------------------------
 def pivot_wide(df_tidy: pd.DataFrame):
+    # Debug: show what's in the DataFrame before pivoting
+    print("\nDataFrame info before pivot:")
+    print(f"Total rows: {len(df_tidy)}")
+    print("Pipeline distribution:")
+    print(df_tidy['pipeline'].value_counts())
+    
+    # Check if we have SAMSEG data
+    samseg_data = df_tidy[df_tidy['pipeline'].str.contains('samseg', case=False, na=False)]
+    if len(samseg_data) > 0:
+        print(f"SAMSEG data found: {len(samseg_data)} rows")
+        print("Sample SAMSEG data:")
+        print(samseg_data[['dataset', 'subject', 'pipeline', 'structure', 'volume_mm3']].head(10))
+    else:
+        print("NO SAMSEG DATA FOUND IN TIDY DATAFRAME!")
+        return pd.DataFrame()
+    
     df_wide = df_tidy.pivot_table(
         index=["dataset", "subject", "session"],
         columns=["pipeline", "structure"],
         values="volume_mm3"
     )
+    
+    # Debug: show pivot result
+    print(f"\nPivot result shape: {df_wide.shape}")
+    print("Pivot columns (first 20):")
+    print(df_wide.columns[:20])
+    
+    # Check for SAMSEG columns in pivot
+    samseg_columns = [col for col in df_wide.columns if 'samseg' in str(col).lower()]
+    print(f"SAMSEG columns in pivot: {len(samseg_columns)}")
+    if samseg_columns:
+        print("First 10 SAMSEG columns:")
+        print(samseg_columns[:10])
+    
     # flatten MultiIndex columns
     df_wide.columns = [f"{pipe}__{struct}" for pipe, struct in df_wide.columns]
     df_wide = df_wide.reset_index()
@@ -201,23 +237,33 @@ if __name__ == "__main__":
     df_tidy.to_csv("df_tidy.csv", index=False)
     print("Saved tidy DataFrame to df_tidy.csv")
 
+    # Check what's actually in the tidy CSV
+    print("\n=== Checking df_tidy.csv ===")
+    df_check = pd.read_csv("df_tidy.csv")
+    print(f"Loaded df_tidy.csv shape: {df_check.shape}")
+    print("Pipeline counts in saved CSV:")
+    print(df_check['pipeline'].value_counts())
+    
+    samseg_in_csv = df_check[df_check['pipeline'].str.contains('samseg', case=False, na=False)]
+    print(f"SAMSEG rows in saved CSV: {len(samseg_in_csv)}")
+    if len(samseg_in_csv) > 0:
+        print("Sample SAMSEG from CSV:")
+        print(samseg_in_csv[['dataset', 'subject', 'pipeline', 'structure', 'volume_mm3']].head())
+
     df_wide = pivot_wide(df_tidy)
-    print(f"Wide DataFrame shape: {df_wide.shape}")
+    if len(df_wide) > 0:
+        print(f"Wide DataFrame shape: {df_wide.shape}")
+        
+        # Save wide DataFrame
+        df_wide.to_csv("df_wide.csv", index=False)
+        print("Saved wide DataFrame to df_wide.csv")
+    else:
+        print("No wide DataFrame created due to missing data")
     
-    # Save wide DataFrame
-    df_wide.to_csv("df_wide.csv", index=False)
-    print("Saved wide DataFrame to df_wide.csv")
-    
-    # Print pipeline counts for verification
-    print("\nPipeline counts:")
+    # Print final summary
+    print("\n=== FINAL SUMMARY ===")
+    print("Pipeline counts:")
     print(df_tidy['pipeline'].value_counts())
     
-    # Print file type counts for verification  
     print("\nFile type counts:")
     print(df_tidy['file_type'].value_counts())
-    
-    # Print structure counts to verify SAMSEG is working
-    print("\nStructure counts by pipeline:")
-    samseg_structures = df_tidy[df_tidy['pipeline'].str.contains('samseg')]['structure'].value_counts()
-    print("SAMSEG structures:")
-    print(samseg_structures)
