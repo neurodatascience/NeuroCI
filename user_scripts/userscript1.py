@@ -41,17 +41,16 @@ def parse_samseg(path: Path):
             line = line.strip()
             if not line.startswith("# Measure"):
                 continue
-            # Example line:
-            # "# Measure Left-Hippocampus, 3979.967775, mm^3"
-            parts = [p.strip() for p in line.split(",")]
+            # line looks like: "# Measure Left-Amygdala, 1651.577379, mm^3"
+            parts = [p.strip() for p in line[len("# Measure "):].split(",")]
             if len(parts) < 2:
                 continue
-            roi = parts[0].replace("# Measure", "").strip()
-            vol = parts[1]
+            roi, vol = parts[0], parts[1]
 
-            # Normalize ROI names
+            # Normalize ROI names to match COMMON_STRUCTURES
             roi = roi.replace(" ", "-")
             roi = roi.replace("Brain-Stem", "Brainstem")
+            roi = roi.replace("VentralDC", "VentralDC")  # optional, just in case
 
             if roi in COMMON_STRUCTURES:
                 try:
