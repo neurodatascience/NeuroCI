@@ -1,6 +1,7 @@
 datasets: 
   ds004101: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds004101_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds004101/versions/1.0.1
   ds006267: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds006267_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds006267/versions/1.0.0
+  FastSurfer: "/data/origami/jacob/neuroci_test/nipoppy_datasets/FastSurferAnonBIDS_nipoppy" # Small FastSurfer train/test/validation set, sampled from many datasets.
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   fslanat6071ants243: "6.0.7.1"
