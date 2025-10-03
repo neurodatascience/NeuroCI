@@ -1,0 +1,12 @@
+{
+  "license": "[[FREESURFER_LICENSE_FILE]]",
+  "inputs": [
+    "[[NIPOPPY_DPATH_BIDS]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/anat/[[NIPOPPY_BIDS_PARTICIPANT_ID]]_[[NIPOPPY_BIDS_SESSION_ID]]_T1w.nii.gz"
+  ],
+  "output_dir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/samseg",
+  "threads": 4,
+  "pallidum_separate_flag": false,
+  "std_space": "[[NIPOPPY_DPATH_ROOT]]/sourcedata/MNI152_T1_1mm.nii.gz",
+  "script": "[[NIPOPPY_DPATH_ROOT]]/pipelines/processing/samseg8001ants243-8.0.0.1/run_pipeline.sh"
+}
+
