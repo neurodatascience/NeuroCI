@@ -3,62 +3,64 @@ import seaborn as sns
 import pandas as pd
 from pathlib import Path
 
-def create_boxen_figures(df_tidy, output_dir):
-    """Create boxen plots which show more percentiles"""
+def create_distribution_figures(df_tidy, output_dir):
+    """Create KDE plots showing the full distributions for all pipelines per structure."""
     
-    # Set style for better visuals
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['font.size'] = 10
+    plt.rcParams['font.size'] = 12
+    
+    pipeline_mapping = {
+        'fslanat6071ants243': 'FSL6071',
+        'freesurfer741ants243': 'FS741',
+        'freesurfer8001ants243': 'FS8001', 
+        'samseg8001ants243': 'SAMSEG8'
+    }
+    pipeline_order = list(pipeline_mapping.values())
+    palette = sns.color_palette("tab10", len(pipeline_order))
     
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
+        print(f"Creating distribution plots for {dataset} with {len(dataset_data)} rows...")
         
-        print(f"Creating boxen plots for {dataset} with {len(dataset_data)} rows...")
-        
-        # Create shorter pipeline names for display
-        pipeline_mapping = {
-            'fslanat6071ants243': 'FSL6071',
-            'freesurfer741ants243': 'FS741',
-            'freesurfer8001ants243': 'FS8001', 
-            'samseg8001ants243': 'SAMSEG8'
-        }
-        
-        # Create a copy with shortened pipeline names
         plot_data = dataset_data.copy()
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
-        # Get the unique pipeline names in order
-        pipeline_order = list(pipeline_mapping.values())
+        structures = plot_data['structure'].unique()
+        n_cols = 5
+        n_rows = (len(structures) + n_cols - 1) // n_cols
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
         
-        g = sns.catplot(
-            data=plot_data,
-            x='pipeline_short', 
-            y='volume_mm3',
-            col='structure',
-            col_wrap=5,
-            kind='boxen',
-            height=3,
-            aspect=1.2,
-            sharey=False,
-            palette='viridis',
-            order=pipeline_order  # Ensure consistent order
-        )
+        for i, structure in enumerate(structures):
+            ax = axes[i // n_cols, i % n_cols]
+            structure_data = plot_data[plot_data['structure'] == structure]
+            
+            for j, pipeline in enumerate(pipeline_order):
+                subset = structure_data[structure_data['pipeline_short'] == pipeline]
+                sns.kdeplot(
+                    data=subset,
+                    x='volume_mm3',
+                    fill=True,
+                    alpha=0.5,
+                    label=pipeline,
+                    color=palette[j],
+                    ax=ax
+                )
+            
+            ax.set_title(structure)
+            ax.set_xlabel('Volume (mm³)')
+            ax.set_ylabel('Density')
+            ax.legend()
         
-        # Set titles and labels explicitly
-        g.set_titles("{col_name}")
+        # Remove empty subplots
+        total_plots = n_rows * n_cols
+        for k in range(len(structures), total_plots):
+            fig.delaxes(axes[k // n_cols, k % n_cols])
         
-        # Set x-tick labels for ALL subplots
-        for ax in g.axes.flat:
-            ax.set_xticklabels(pipeline_order, rotation=45, ha='right')
-            ax.set_xlabel('Pipeline')
-            ax.set_ylabel('Volume (mm³)')
+        fig.suptitle(f'Pipeline Distributions - {dataset}', fontsize=18)
+        fig.tight_layout(rect=[0, 0.03, 1, 0.95])
         
-        # Adjust layout
-        g.fig.subplots_adjust(bottom=0.15, top=0.92)
-        g.fig.suptitle(f'Pipeline Variability (Boxen) - {dataset}', fontsize=16)
-        
-        output_path = output_dir / f'boxen_comparison_{dataset}.png'
+        output_path = output_dir / f'distribution_comparison_{dataset}.png'
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
         print(f"Saved: {output_path}")
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         EXPERIMENT_STATE_ROOT.mkdir(parents=True, exist_ok=True)
         
         # Generate figures
-        create_boxen_figures(df_tidy, EXPERIMENT_STATE_ROOT)
+        create_distribution_figures(df_tidy, EXPERIMENT_STATE_ROOT)
         print("✓ Boxen plots generated successfully!")
         
     else:
