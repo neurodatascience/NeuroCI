@@ -125,7 +125,20 @@ class FileOperations:
         return resolved_paths
 
 
-    def _download_tarball_from_remote_dir(self, conn, remote_base, local_tar_path, remote_tar_name, file_paths_to_download, max_dl_size_per_dataset_tool_mb):
+    def _download_tarball_from_remote_dir(
+        self,
+        conn,
+        remote_base,
+        local_tar_path,
+        remote_tar_name,
+        file_paths_to_download,
+        max_dl_size_per_dataset_tool_mb
+    ):
+        """
+        Create a tarball remotely from a specific list of files, download it,
+        extract locally, and clean up — all without hitting "Argument list too long".
+        """
+
         local_tar_path.parent.mkdir(parents=True, exist_ok=True)
 
         def relative_for_tar(path):
@@ -136,35 +149,50 @@ class FileOperations:
             return path
 
         tar_paths = [relative_for_tar(p) for p in file_paths_to_download]
-        quoted_paths = " ".join(shlex.quote(p) for p in tar_paths)
 
         try:
             logging.info(f"Creating tarball on remote: {remote_tar_name} with selected files")
-            conn.run(
-                f"tar -czf {shlex.quote(remote_tar_name)} --ignore-failed-read -C {shlex.quote(remote_base)} {quoted_paths}",
-                hide=True
-            )
 
+            # --- Create remote file list safely ---
+            filelist_name = f"{remote_tar_name}.list"
+            conn.run(f"rm -f {shlex.quote(filelist_name)}", hide=True)
+
+            # Build the file list remotely, avoiding local expansion
+            # Note: this still goes through the remote shell, so extremely long path lists may need chunking,
+            # but it avoids local ARG_MAX issues entirely.
+            escaped_paths = " ".join(shlex.quote(p) for p in tar_paths)
+            conn.run(f"printf '%s\\n' {escaped_paths} > {shlex.quote(filelist_name)}", hide=True)
+
+            # --- Create the tarball from the file list ---
+            tar_cmd = (
+                f"tar -czf {shlex.quote(remote_tar_name)} "
+                f"--ignore-failed-read -C {shlex.quote(remote_base)} "
+                f"-T {shlex.quote(filelist_name)}"
+            )
+            conn.run(tar_cmd, hide=True)
+
+            # --- Check tarball size before download ---
             result = conn.run(f"stat -c %s {shlex.quote(remote_tar_name)}", hide=True)
             tar_size_bytes = int(result.stdout.strip())
             max_tar_size_mb = max_dl_size_per_dataset_tool_mb
             if tar_size_bytes > max_tar_size_mb * 1024 * 1024:
                 size_mb = tar_size_bytes / (1024 * 1024)
-                conn.run(f"rm -f {shlex.quote(remote_tar_name)}", hide=True)
-                raise ValueError(f"Tarball too large: {size_mb:.2f} MB. Reduce size below {max_tar_size_mb} MB.")
+                conn.run(f"rm -f {shlex.quote(remote_tar_name)} {shlex.quote(filelist_name)}", hide=True)
+                raise ValueError(f"Tarball too large: {size_mb:.2f} MB. Reduce below {max_tar_size_mb} MB.")
 
+            # --- Download, extract, and cleanup ---
             logging.info(f"Downloading tarball: {remote_tar_name} -> {local_tar_path}")
             conn.get(remote_tar_name, str(local_tar_path))
-            conn.run(f"rm -f {shlex.quote(remote_tar_name)}", hide=True)
-            logging.info(f"✓ Downloaded and cleaned up tarball")
+
+            conn.run(f"rm -f {shlex.quote(remote_tar_name)} {shlex.quote(filelist_name)}", hide=True)
+            logging.info("✓ Downloaded and cleaned up tarball")
 
             extract_dir = local_tar_path.parent
             logging.info(f"Extracting tarball: {local_tar_path} -> {extract_dir}")
             shutil.unpack_archive(str(local_tar_path), extract_dir)
-            logging.info(f"✓ Extracted to: {extract_dir}")
-
             local_tar_path.unlink()
-            logging.info(f"✓ Deleted archive: {local_tar_path}")
+
+            logging.info("✓ Extracted and deleted local tarball")
 
         except Exception as e:
             logging.warning(f"✗ Failed to handle tarball: {e}")
