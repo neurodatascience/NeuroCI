@@ -3,6 +3,32 @@ import seaborn as sns
 import pandas as pd
 from pathlib import Path
 
+def filter_complete_pipelines(df_tidy):
+    """Return subset of df_tidy where all 4 pipelines are present per subject/structure/dataset."""
+    required_pipelines = {
+        'fslanat6071ants243',
+        'freesurfer741ants243',
+        'freesurfer8001ants243',
+        'samseg8001ants243'
+    }
+
+    # Count how many unique pipelines exist per subject/structure/dataset
+    counts = (
+        df_tidy.groupby(['dataset', 'subject', 'structure'])['pipeline']
+        .nunique()
+        .reset_index(name='n_pipelines')
+    )
+
+    # Keep only those combinations where all 4 pipelines are present
+    complete = counts[counts['n_pipelines'] == len(required_pipelines)]
+
+    # Merge back to original data to keep only valid rows
+    df_filtered = df_tidy.merge(complete[['dataset', 'subject', 'structure']], on=['dataset', 'subject', 'structure'])
+    
+    print(f"Filtered from {len(df_tidy)} → {len(df_filtered)} rows (only complete 4-pipeline cases).")
+    return df_filtered
+    
+
 def create_distribution_figures(df_tidy, output_dir):
     """Create overlapping histograms (counts) for all pipelines per structure."""
     
@@ -50,7 +76,8 @@ def create_distribution_figures(df_tidy, output_dir):
                     stat='count'      # <-- this makes it counts, not density
                 )
             
-            ax.set_title(structure)
+            n_points = structure_data['subject'].nunique()
+            ax.set_title(f"{structure}\n(n={n_points})")
             ax.set_xlabel('Volume (mm³)')
             ax.set_ylabel('Count')
             ax.legend()
@@ -89,7 +116,8 @@ if __name__ == "__main__":
         EXPERIMENT_STATE_ROOT.mkdir(parents=True, exist_ok=True)
         
         # Generate figures
-        create_distribution_figures(df_tidy, EXPERIMENT_STATE_ROOT)
+        df_complete = filter_complete_pipelines(df_tidy) # Where all 4 pipelines have completed succesfully
+        create_distribution_figures(df_complete, EXPERIMENT_STATE_ROOT)
         print("✓ Boxen plots generated successfully!")
         
     else:
