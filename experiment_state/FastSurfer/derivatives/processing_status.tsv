@@ -886,7 +886,7 @@ participant_id	bids_participant_id	session_id	pipeline_name	pipeline_version	pip
 222	sub-222	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 222	sub-222	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 222	sub-222	01	fslanat6071ants243	6.0.7.1	default	ses-01	SUCCESS
-222	sub-222	01	samseg8001ants243	8.0.0.1	default	ses-01	FAIL
+222	sub-222	01	samseg8001ants243	8.0.0.1	default	ses-01	SUCCESS
 223	sub-223	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 223	sub-223	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 223	sub-223	01	fslanat6071ants243	6.0.7.1	default	ses-01	FAIL
