@@ -76,7 +76,7 @@ def create_distribution_figures(df_tidy, output_dir):
                     stat='count'      # <-- this makes it counts, not density
                 )
             
-            n_points = structure_data['subject'].nunique()
+            n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
             ax.set_title(f"{structure}\n(n={n_points})")
             ax.set_xlabel('Volume (mm³)')
             ax.set_ylabel('Count')
@@ -156,7 +156,7 @@ def create_correlation_figures(df_tidy, output_dir):
             ax.set_xlabel("")
             ax.set_ylabel("")
 
-            n_points = pivot_df.dropna().shape[0]
+            n_points = pivot_df.shape[0]
             ax.set_title(f"{structure}\n(n={n_points})")
 
         # Remove empty subplots
