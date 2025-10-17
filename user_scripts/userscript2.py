@@ -30,75 +30,6 @@ def filter_complete_pipelines(df_tidy):
     
 
 def create_distribution_figures(df_tidy, output_dir):
-    """Create overlapping histograms (counts) for all pipelines per structure with accurate n."""
-    
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    
-    sns.set_style("whitegrid")
-    plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['font.size'] = 12
-
-    pipeline_mapping = {
-        'fslanat6071ants243': 'FSL6071',
-        'freesurfer741ants243': 'FS741',
-        'freesurfer8001ants243': 'FS8001', 
-        'samseg8001ants243': 'SAMSEG8'
-    }
-    pipeline_order = list(pipeline_mapping.values())
-    palette = sns.color_palette("tab10", len(pipeline_order))
-
-    for dataset in df_tidy['dataset'].unique():
-        dataset_data = df_tidy[df_tidy['dataset'] == dataset].copy()
-        dataset_data['pipeline_short'] = dataset_data['pipeline'].map(pipeline_mapping)
-
-        structures = dataset_data['structure'].unique()
-        n_cols = 5
-        n_rows = (len(structures) + n_cols - 1) // n_cols
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
-
-        for i, structure in enumerate(structures):
-            ax = axes[i // n_cols, i % n_cols]
-            structure_data = dataset_data[dataset_data['structure'] == structure]
-
-            # n_points is the number of unique subjects (same for all pipelines)
-            n_points = structure_data['subject'].nunique()
-
-            for j, pipeline in enumerate(pipeline_order):
-                subset = structure_data[structure_data['pipeline_short'] == pipeline]
-                sns.histplot(
-                    data=subset,
-                    x='volume_mm3',
-                    bins=30,
-                    element='step',
-                    fill=True,
-                    alpha=0.4,
-                    color=palette[j],
-                    label=pipeline,
-                    ax=ax,
-                    stat='count'
-                )
-
-            ax.set_title(f"{structure}\n(n={n_points})")
-            ax.set_xlabel('Volume (mm³)')
-            ax.set_ylabel('Count')
-            ax.legend()
-
-        # Remove unused axes
-        total_plots = n_rows * n_cols
-        for k in range(len(structures), total_plots):
-            fig.delaxes(axes[k // n_cols, k % n_cols])
-
-        fig.suptitle(f'Pipeline Distributions (Counts) - {dataset}', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-
-        output_path = output_dir / f'distribution_comparison_counts_{dataset}.png'
-        plt.savefig(output_path, bbox_inches='tight', dpi=300)
-        plt.close()
-        print(f"Saved: {output_path}")
-
-
-def create_distribution_figures(df_tidy, output_dir):
     """Create overlapping histograms (counts) for all pipelines per structure."""
     
     sns.set_style("whitegrid")
@@ -145,7 +76,7 @@ def create_distribution_figures(df_tidy, output_dir):
                     stat='count'      # <-- this makes it counts, not density
                 )
             
-            n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+            n_points = structure_data['subject'].nunique()
             ax.set_title(f"{structure}\n(n={n_points})")
             ax.set_xlabel('Volume (mm³)')
             ax.set_ylabel('Count')
@@ -225,7 +156,7 @@ def create_correlation_figures(df_tidy, output_dir):
             ax.set_xlabel("")
             ax.set_ylabel("")
 
-            n_points = pivot_df.shape[0]
+            n_points = pivot_df.dropna().shape[0]
             ax.set_title(f"{structure}\n(n={n_points})")
 
         # Remove empty subplots
