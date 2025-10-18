@@ -898,7 +898,7 @@ participant_id	bids_participant_id	session_id	pipeline_name	pipeline_version	pip
 225	sub-225	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 225	sub-225	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 225	sub-225	01	fslanat6071ants243	6.0.7.1	default	ses-01	FAIL
-225	sub-225	01	samseg8001ants243	8.0.0.1	default	ses-01	FAIL
+225	sub-225	01	samseg8001ants243	8.0.0.1	default	ses-01	SUCCESS
 226	sub-226	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 226	sub-226	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 226	sub-226	01	fslanat6071ants243	6.0.7.1	default	ses-01	SUCCESS
@@ -922,7 +922,7 @@ participant_id	bids_participant_id	session_id	pipeline_name	pipeline_version	pip
 231	sub-231	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 231	sub-231	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 231	sub-231	01	fslanat6071ants243	6.0.7.1	default	ses-01	SUCCESS
-231	sub-231	01	samseg8001ants243	8.0.0.1	default	ses-01	FAIL
+231	sub-231	01	samseg8001ants243	8.0.0.1	default	ses-01	SUCCESS
 232	sub-232	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 232	sub-232	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 232	sub-232	01	fslanat6071ants243	6.0.7.1	default	ses-01	SUCCESS
@@ -1094,7 +1094,7 @@ participant_id	bids_participant_id	session_id	pipeline_name	pipeline_version	pip
 274	sub-274	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 274	sub-274	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 274	sub-274	01	fslanat6071ants243	6.0.7.1	default	ses-01	FAIL
-274	sub-274	01	samseg8001ants243	8.0.0.1	default	ses-01	FAIL
+274	sub-274	01	samseg8001ants243	8.0.0.1	default	ses-01	SUCCESS
 275	sub-275	01	freesurfer741ants243	7.4.1	default	ses-01	SUCCESS
 275	sub-275	01	freesurfer8001ants243	8.0.0.1	default	ses-01	SUCCESS
 275	sub-275	01	fslanat6071ants243	6.0.7.1	default	ses-01	SUCCESS
