@@ -1,0 +1,7 @@
+{
+  "script": "[[NIPOPPY_DPATH_ROOT]]/pipelines/processing/fslanat6071ants243-6.0.7.1/extract_volumes.sh",
+  "t1_input": "[[NIPOPPY_DPATH_BIDS]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/anat/[[NIPOPPY_BIDS_PARTICIPANT_ID]]_[[NIPOPPY_BIDS_SESSION_ID]]_acq-MPRAGE_T1w.nii.gz",
+  "outdir": "[[NIPOPPY_DPATH_PIPELINE_OUTPUT]]/[[NIPOPPY_BIDS_PARTICIPANT_ID]]/[[NIPOPPY_BIDS_SESSION_ID]]/out",
+  "std_space": "[[NIPOPPY_DPATH_ROOT]]/sourcedata/MNI152_T1_1mm_Brain.nii.gz"
+}
+
