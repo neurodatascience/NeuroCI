@@ -1,0 +1,7 @@
+{
+    "ACCOUNT": "[[HPC_ACCOUNT_NAME]]",
+    "TIME": "18:00:00",
+    "CORES": "2",
+    "MEMORY": "32G",
+    "ARRAY_CONCURRENCY_LIMIT": ""
+}
