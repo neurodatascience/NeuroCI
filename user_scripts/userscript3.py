@@ -89,63 +89,60 @@ def main():
         df2 = df[df['pipeline'] == pipe2]
         merged = df1.merge(df2, on=['dataset', 'subject', 'session', 'structure'], suffixes=(f'_{pipe1}', f'_{pipe2}'))
 
-        # Compute absolute volume difference between pipelines (magnitude only, no direction)
-        # This avoids redundant p1–p2 vs p2–p1 comparisons and ensures all diffs are positive
+        # Compute absolute volume difference between pipelines
         merged['volume_diff'] = (merged['volume_mm3_' + pipe1] - merged['volume_mm3_' + pipe2]).abs()
-
         merged['pipeline_pair'] = f"{pipe1}_vs_{pipe2}"
         merged['age'] = merged['age_' + pipe1].combine_first(merged['age_' + pipe2])
         merged['sex'] = merged['sex_' + pipe1].combine_first(merged['sex_' + pipe2])
+
         pairwise_diffs.append(merged[['dataset', 'subject', 'session', 'structure', 'pipeline_pair', 'volume_diff', 'age', 'sex']])
 
     df_diff = pd.concat(pairwise_diffs, ignore_index=True)
 
     # -------------------------------------------------------------------------
-    # Correlation with age
+    # Correlation with age per pipeline_pair × structure
     # -------------------------------------------------------------------------
-    df_age = df_diff[['pipeline_pair','structure','volume_diff','age']].copy()
+    df_age = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','age']].copy()
     df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
     df_age['age'] = pd.to_numeric(df_age['age'], errors='coerce')
-    df_age = df_age.dropna(subset=['volume_diff','age'])
-
-    # Count unique scans contributing to correlations
-    n_age = df_age.groupby(['dataset','subject','session','pipeline_pair']).ngroups
 
     corr_results = []
-    for (pair, struct), g in df_age.groupby(['pipeline_pair', 'structure']):
-        if len(g) < 3:
+    for (pair, struct), g in df_age.groupby(['pipeline_pair','structure']):
+        g = g.dropna(subset=['volume_diff','age'])
+        n = g.groupby(['dataset','subject','session']).ngroups  # unique scans
+        if n < 3:
             continue
         r, p = pearsonr(g['volume_diff'], g['age'])
-        corr_results.append({'pipeline_pair': pair, 'structure': struct, 'r': r, 'p': p})
+        corr_results.append({'pipeline_pair': pair, 'structure': struct, 'r': r, 'p': p, 'n': n})
+
     corr_df = pd.DataFrame(corr_results)
     corr_df['p_adj'] = np.minimum(corr_df['p'] * len(corr_df), 1.0)
     corr_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='r')
+
     plt.figure(figsize=(10, 6))
     sns.heatmap(corr_pivot, annot=True, cmap='coolwarm', center=0)
-    plt.title(f'Correlation of Volume Differences with Age (n={n_age} scans)')
+    plt.title('Correlation of Volume Differences with Age (n varies per pipeline_pair×structure)')
     plt.tight_layout()
     plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_heatmap.png', dpi=300)
     plt.close()
 
     # -------------------------------------------------------------------------
-    # Sex effects (t-test and Cohen's d)
+    # Sex effects per pipeline_pair × structure
     # -------------------------------------------------------------------------
     df_sex = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','sex']].copy()
     df_sex['volume_diff'] = pd.to_numeric(df_sex['volume_diff'], errors='coerce')
-    df_sex = df_sex.dropna(subset=['volume_diff','sex'])
-
-    # Count unique scans contributing to t-tests
-    n_sex = df_sex.groupby(['dataset','subject','session','pipeline_pair']).ngroups
 
     sex_results = []
-    for (pair, struct), g in df_sex.groupby(['pipeline_pair', 'structure']):
+    for (pair, struct), g in df_sex.groupby(['pipeline_pair','structure']):
+        g = g.dropna(subset=['volume_diff','sex'])
+        n = g.groupby(['dataset','subject','session']).ngroups  # unique scans
         males = g[g['sex'].str.lower().str.startswith('m')]['volume_diff']
         females = g[g['sex'].str.lower().str.startswith('f')]['volume_diff']
         if len(males) < 2 or len(females) < 2:
             continue
         t, p = ttest_ind(males, females, equal_var=False)
         cohen_d = (males.mean() - females.mean()) / np.sqrt(((males.std() ** 2 + females.std() ** 2) / 2))
-        sex_results.append({'pipeline_pair': pair, 'structure': struct, 't': t, 'p': p, 'cohen_d': cohen_d})
+        sex_results.append({'pipeline_pair': pair, 'structure': struct, 't': t, 'p': p, 'cohen_d': cohen_d, 'n': n})
 
     sex_df = pd.DataFrame(sex_results)
     sex_df['p_adj'] = np.minimum(sex_df['p'] * len(sex_df), 1.0)
@@ -156,7 +153,7 @@ def main():
     sex_pivot = sex_df.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
     plt.figure(figsize=(10, 6))
     sns.heatmap(sex_pivot, annot=True, cmap='vlag', center=0)
-    plt.title(f'Sex Effect (Cohen\'s d) on Volume Differences (n={n_sex} scans)')
+    plt.title('Sex Effect (Cohen\'s d) on Volume Differences (n varies per pipeline_pair×structure)')
     plt.tight_layout()
     plt.savefig(EXPERIMENT_STATE_ROOT / 'sex_effects_heatmap.png', dpi=300)
     plt.close()
