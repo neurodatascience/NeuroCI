@@ -103,7 +103,12 @@ def main():
     # -------------------------------------------------------------------------
     # Correlation with age
     # -------------------------------------------------------------------------
-    df_age = df_diff.dropna(subset=['age', 'volume_diff'])
+    df_age = df_diff[['pipeline_pair','structure','volume_diff','age']].copy()
+    # Ensure numeric values (avoid numpy.object_ issue)
+    df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
+    df_age['age'] = pd.to_numeric(df_age['age'], errors='coerce')
+    df_age = df_age.dropna(subset=['volume_diff','age'])
+
     n_age = len(df_age)
     corr_results = []
     for (pair, struct), g in df_age.groupby(['pipeline_pair', 'structure']):
@@ -124,7 +129,10 @@ def main():
     # -------------------------------------------------------------------------
     # Sex effects (t-test and Cohen's d)
     # -------------------------------------------------------------------------
-    df_sex = df_diff.dropna(subset=['sex', 'volume_diff'])
+    df_sex = df_diff[['pipeline_pair','structure','volume_diff','sex']].copy()
+    df_sex['volume_diff'] = pd.to_numeric(df_sex['volume_diff'], errors='coerce')
+    df_sex = df_sex.dropna(subset=['volume_diff','sex'])
+
     n_sex = len(df_sex)
     sex_results = []
     for (pair, struct), g in df_sex.groupby(['pipeline_pair', 'structure']):
@@ -147,4 +155,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
