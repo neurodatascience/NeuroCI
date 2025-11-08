@@ -253,7 +253,8 @@ class FileOperations:
 
     def run_user_scripts(self, userscripts):
         state_dir = Path("/tmp") / "neuroci_output_state"
-        subprocess.run(["tree", str(state_dir)]) # Good to check which files were transferred onto the CI
+        #subprocess.run(["tree", str(state_dir)]) # Good to check which files were transferred onto the CI
+        subprocess.run(["tree -L 2", str(state_dir)]) 
 
         if not (state_dir.exists() and any(state_dir.iterdir())):
             logging.info("Skipping user scripts: /tmp/neuroci_output_state does not exist or is empty.")
