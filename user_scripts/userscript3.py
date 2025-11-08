@@ -104,12 +104,13 @@ def main():
     # Correlation with age
     # -------------------------------------------------------------------------
     df_age = df_diff[['pipeline_pair','structure','volume_diff','age']].copy()
-    # Ensure numeric values (avoid numpy.object_ issue)
     df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
     df_age['age'] = pd.to_numeric(df_age['age'], errors='coerce')
     df_age = df_age.dropna(subset=['volume_diff','age'])
 
-    n_age = len(df_age)
+    # Count unique scans contributing to correlations
+    n_age = df_age.groupby(['dataset','subject','session','pipeline_pair']).ngroups
+
     corr_results = []
     for (pair, struct), g in df_age.groupby(['pipeline_pair', 'structure']):
         if len(g) < 3:
@@ -129,11 +130,13 @@ def main():
     # -------------------------------------------------------------------------
     # Sex effects (t-test and Cohen's d)
     # -------------------------------------------------------------------------
-    df_sex = df_diff[['pipeline_pair','structure','volume_diff','sex']].copy()
+    df_sex = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','sex']].copy()
     df_sex['volume_diff'] = pd.to_numeric(df_sex['volume_diff'], errors='coerce')
     df_sex = df_sex.dropna(subset=['volume_diff','sex'])
 
-    n_sex = len(df_sex)
+    # Count unique scans contributing to t-tests
+    n_sex = df_sex.groupby(['dataset','subject','session','pipeline_pair']).ngroups
+
     sex_results = []
     for (pair, struct), g in df_sex.groupby(['pipeline_pair', 'structure']):
         males = g[g['sex'].str.lower().str.startswith('m')]['volume_diff']
@@ -143,8 +146,13 @@ def main():
         t, p = ttest_ind(males, females, equal_var=False)
         cohen_d = (males.mean() - females.mean()) / np.sqrt(((males.std() ** 2 + females.std() ** 2) / 2))
         sex_results.append({'pipeline_pair': pair, 'structure': struct, 't': t, 'p': p, 'cohen_d': cohen_d})
+
     sex_df = pd.DataFrame(sex_results)
     sex_df['p_adj'] = np.minimum(sex_df['p'] * len(sex_df), 1.0)
+
+    # Save summary CSV of t-tests
+    sex_df.to_csv(EXPERIMENT_STATE_ROOT / 'sex_effects_summary.csv', index=False)
+
     sex_pivot = sex_df.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
     plt.figure(figsize=(10, 6))
     sns.heatmap(sex_pivot, annot=True, cmap='vlag', center=0)
