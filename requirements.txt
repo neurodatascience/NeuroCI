@@ -4,3 +4,4 @@ pytest-mock
 pandas
 seaborn
 matplotlib
+scipy
