@@ -11,8 +11,9 @@ pipelines: # Use the *exact* same pipeline names and versions specified in the N
   samseg8001ants243: "8.0.0.1"
 
 userscripts: # Python scripts stored in the user_scripts directory in the repository
-  script1: "userscript1.py"
-  script2: "userscript2.py"
+  script1: "userscript1.py" # Build table of volumetry
+  script2: "userscript2.py" # Plot volume correlations and distributions
+  script3: "userscript3.py" # Demographic analyses
 
 target_host: "ducky" # The target HPC host. Must be the name of a host that is specified in the SSH config file
 prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_pypi/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it)
