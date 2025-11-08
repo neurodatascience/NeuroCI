@@ -29,6 +29,7 @@ v2.0 is marked by a number of changes from the original architecture, relying on
      - Process outputs from `/tmp/neuroci_output_state/` (directory for downloaded Nipoppy dataset outputs).  
        - Files copied here from the HPC are those tracked by Nipoppy, specifically those listed in the pipeline’s `tracker.json`.  
        - Wildcards in the pipeline’s `tracker.json` are not supported by design, to encourage minimal transfers and limit syncing to only the specific files needed for analysis scripts.
+       - For analyses involving phenotypic/demographic data, access a nipoppy dataset's tabular data (<dataset_name>/tabular) at /tmp/neuroci_output_state/<dataset_name>/tabular.
      - Save results to `experiment_root/experiment_state/` (recommended, but can be saved elsewhere)
      - Declare dependencies in `requirements.txt`
 6. **Experiment Configuration**:
