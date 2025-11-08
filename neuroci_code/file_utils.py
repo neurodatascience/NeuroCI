@@ -54,6 +54,7 @@ class FileOperations:
 
 
     def _download_pipeline_outputs(self, conn, dataset_name, dataset_path, dest_base, pipelines, max_dl_size_per_dataset_tool_mb):
+        self._download_directory(conn, f"{dataset_path}/tabular", Path("/tmp") / "neuroci_output_state" / dataset_name / "tabular") # Dl tabular dir
         for tool, version in pipelines.items():
             pipeline_dir = f"pipelines/processing/{tool}-{version}"
             self._download_directory(conn, f"{dataset_path}/{pipeline_dir}", dest_base / pipeline_dir)
@@ -72,7 +73,6 @@ class FileOperations:
                 file_paths_to_download=file_paths,
                 max_dl_size_per_dataset_tool_mb=max_dl_size_per_dataset_tool_mb,
             )
-
 
     def _save_container_metadata(self, conn, dataset_path, dest_base, pipelines):
         container_dir = dest_base / "containers"
