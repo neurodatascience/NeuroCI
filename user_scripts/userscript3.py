@@ -126,10 +126,12 @@ def main():
     p_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='p_adj')
     
     # Mask annotations where p_adj >= 0.05
-    annot_matrix = corr_pivot.where(p_pivot < 0.05)  # keep r if significant, else NaN
+    annot_matrix = corr_pivot.copy()
+    annot_matrix[p_pivot >= 0.05] = ''  # empty string for non-significant
+    annot_matrix = annot_matrix.round(2)  # optional: round r values for display
     
     plt.figure(figsize=(10, 6))
-    sns.heatmap(corr_pivot, annot=annot_matrix, cmap='coolwarm', center=0)
+    sns.heatmap(corr_pivot, annot=annot_matrix, fmt='', cmap='coolwarm', center=0)
     plt.title('Correlation of Volume Differences with Age (significant r values only)')
     plt.tight_layout()
     plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_heatmap.png', dpi=300)
