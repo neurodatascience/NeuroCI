@@ -126,8 +126,7 @@ def main():
     p_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='p_adj')
     
     # Mask annotations where p_adj >= 0.05
-    annot_matrix = corr_pivot.copy().astype(str)
-    annot_matrix[p_pivot >= 0.05] = ''  # hide non-significant
+    annot_matrix = corr_pivot.where(p_pivot < 0.05)  # keep r if significant, else NaN
     
     plt.figure(figsize=(10, 6))
     sns.heatmap(corr_pivot, annot=annot_matrix, cmap='coolwarm', center=0)
