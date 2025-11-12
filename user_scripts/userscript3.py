@@ -105,7 +105,7 @@ def main():
     df_age = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','age']].copy()
     df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
     df_age['age'] = pd.to_numeric(df_age['age'], errors='coerce')
-
+    
     corr_results = []
     for (pair, struct), g in df_age.groupby(['pipeline_pair','structure']):
         g = g.dropna(subset=['volume_diff','age'])
@@ -114,17 +114,28 @@ def main():
             continue
         r, p = pearsonr(g['volume_diff'], g['age'])
         corr_results.append({'pipeline_pair': pair, 'structure': struct, 'r': r, 'p': p, 'n': n})
-
+    
     corr_df = pd.DataFrame(corr_results)
     corr_df['p_adj'] = np.minimum(corr_df['p'] * len(corr_df), 1.0)
+    
+    # Save summary CSV
+    corr_df.to_csv(EXPERIMENT_STATE_ROOT / 'age_correlation_summary.csv', index=False)
+    
+    # Prepare pivot tables
     corr_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='r')
-
+    p_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='p_adj')
+    
+    # Mask annotations where p_adj >= 0.05
+    annot_matrix = corr_pivot.copy().astype(str)
+    annot_matrix[p_pivot >= 0.05] = ''  # hide non-significant
+    
     plt.figure(figsize=(10, 6))
-    sns.heatmap(corr_pivot, annot=True, cmap='coolwarm', center=0)
-    plt.title('Correlation of Volume Differences with Age (n varies per pipeline_pair×structure)')
+    sns.heatmap(corr_pivot, annot=annot_matrix, cmap='coolwarm', center=0)
+    plt.title('Correlation of Volume Differences with Age (significant r values only)')
     plt.tight_layout()
     plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_heatmap.png', dpi=300)
     plt.close()
+
 
     # -------------------------------------------------------------------------
     # Sex effects per pipeline_pair × structure
