@@ -68,6 +68,34 @@ def extract_demographics(dataset_name, dfs):
     
     return df_demo
 
+def shorten_pipeline_name(pipeline_name):
+    """Shorten pipeline names for display in figures."""
+    mapping = {
+        'freesurfer741ants243': 'FS741',
+        'samseg8001ants243': 'Samseg8', 
+        'freesurfer8001ants243': 'FS8001',
+        'fslanat6071ants243': 'FSL6071'
+    }
+    return mapping.get(pipeline_name, pipeline_name)
+
+def get_structure_order():
+    """Define the desired order of structures for heatmaps."""
+    # Define base structures (without hemisphere prefix)
+    base_structures = [
+        'Thalamus', 'Caudate', 'Putamen', 'Pallidum', 
+        'Hippocampus', 'Amygdala', 'Accumbens-area'
+    ]
+    
+    # Create pairs: left then right for each structure
+    ordered_structures = []
+    for struct in base_structures:
+        ordered_structures.extend([f'Left-{struct}', f'Right-{struct}'])
+    
+    # Add Brainstem at the end
+    ordered_structures.append('Brainstem')
+    
+    return ordered_structures
+
 # -----------------------------------------------------------------------------
 # Main analysis
 # -----------------------------------------------------------------------------
@@ -107,7 +135,12 @@ def main():
 
         # Compute absolute volume difference between pipelines
         merged['volume_diff'] = (merged['volume_mm3_' + pipe1] - merged['volume_mm3_' + pipe2]).abs()
-        merged['pipeline_pair'] = f"{pipe1}_vs_{pipe2}"
+        
+        # Use shortened pipeline names for the pair
+        short_pipe1 = shorten_pipeline_name(pipe1)
+        short_pipe2 = shorten_pipeline_name(pipe2)
+        merged['pipeline_pair'] = f"{short_pipe1}_vs_{short_pipe2}"
+        
         merged['age'] = merged['age_' + pipe1].combine_first(merged['age_' + pipe2])
         merged['sex'] = merged['sex_' + pipe1].combine_first(merged['sex_' + pipe2])
 
@@ -137,9 +170,24 @@ def main():
     # Save summary CSV
     corr_df.to_csv(EXPERIMENT_STATE_ROOT / 'age_correlation_summary.csv', index=False)
     
-    # Prepare pivot tables
-    corr_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='r')
-    p_pivot = corr_df.pivot(index='structure', columns='pipeline_pair', values='p_adj')
+    # Prepare pivot tables with ordered structures
+    structure_order = get_structure_order()
+    
+    # Filter to only include structures in our desired order
+    corr_df_ordered = corr_df[corr_df['structure'].isin(structure_order)].copy()
+    
+    # Convert structure to categorical with desired order
+    corr_df_ordered['structure'] = pd.Categorical(
+        corr_df_ordered['structure'], 
+        categories=structure_order, 
+        ordered=True
+    )
+    
+    # Sort by structure order
+    corr_df_ordered = corr_df_ordered.sort_values('structure')
+    
+    corr_pivot = corr_df_ordered.pivot(index='structure', columns='pipeline_pair', values='r')
+    p_pivot = corr_df_ordered.pivot(index='structure', columns='pipeline_pair', values='p_adj')
     
     # Round r values for display
     corr_rounded = corr_pivot.round(2)
@@ -148,9 +196,9 @@ def main():
     annot_matrix = corr_rounded.astype(str)
     annot_matrix[p_pivot >= 0.05] = ''  # empty string for non-significant
     
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(10, 8))
     sns.heatmap(corr_pivot, annot=annot_matrix, fmt='', cmap='coolwarm', center=0,
-                cbar_kws={'label': 'r'})  # optional: label colorbar
+                cbar_kws={'label': 'r'})
     plt.title('Correlation of Volume Differences with Age (significant r values only)')
     plt.tight_layout()
     plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_heatmap.png', dpi=300)
@@ -181,8 +229,17 @@ def main():
     # Save summary CSV of t-tests
     sex_df.to_csv(EXPERIMENT_STATE_ROOT / 'sex_effects_summary.csv', index=False)
 
-    sex_pivot = sex_df.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
-    plt.figure(figsize=(10, 6))
+    # Apply structure ordering to sex results
+    sex_df_ordered = sex_df[sex_df['structure'].isin(structure_order)].copy()
+    sex_df_ordered['structure'] = pd.Categorical(
+        sex_df_ordered['structure'], 
+        categories=structure_order, 
+        ordered=True
+    )
+    sex_df_ordered = sex_df_ordered.sort_values('structure')
+    
+    sex_pivot = sex_df_ordered.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
+    plt.figure(figsize=(10, 8))
     sns.heatmap(sex_pivot, annot=True, cmap='vlag', center=0)
     plt.title('Sex Effect (Cohen\'s d) on Volume Differences (n varies per pipeline_pair×structure)')
     plt.tight_layout()
