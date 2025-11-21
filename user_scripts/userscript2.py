@@ -30,14 +30,17 @@ def filter_complete_pipelines(df_tidy):
 
 def get_sorted_structures(structures):
     """Sort structures: left-right pairs together, ordered by structure name."""
-    # Extract unique structure names (without hemisphere)
-    base_structures = sorted(set([s.replace('left-', '').replace('right-', '') for s in structures]))
+    if len(structures) == 0:
+        return []
+    
+    # Extract unique structure names (without hemisphere) - handle Title Case
+    base_structures = sorted(set([s.replace('Left-', '').replace('Right-', '') for s in structures]))
     
     # Create pairs: left then right for each base structure
     sorted_structures = []
     for base in base_structures:
-        left = f"left-{base}"
-        right = f"right-{base}"
+        left = f"Left-{base}"
+        right = f"Right-{base}"
         if left in structures:
             sorted_structures.append(left)
         if right in structures:
@@ -70,8 +73,18 @@ def create_distribution_figures(df_tidy, output_dir):
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
         structures = get_sorted_structures(plot_data['structure'].unique())
+        
+        # Skip if no structures found
+        if len(structures) == 0:
+            print(f"  No structures found for dataset {dataset}, skipping...")
+            continue
+            
         n_cols = 5
         n_rows = (len(structures) + n_cols - 1) // n_cols
+        
+        # Ensure at least 1 row
+        n_rows = max(1, n_rows)
+        
         fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
         
         for i, structure in enumerate(structures):
@@ -80,25 +93,28 @@ def create_distribution_figures(df_tidy, output_dir):
             
             for j, pipeline in enumerate(pipeline_order):
                 subset = structure_data[structure_data['pipeline_short'] == pipeline]
-                sns.histplot(
-                    data=subset,
-                    x='volume_mm3',
-                    bins=30,
-                    element='step',   # outlines instead of bars (less clutter)
-                    fill=True,
-                    alpha=0.4,
-                    color=palette[j],
-                    label=pipeline,
-                    ax=ax,
-                    stat='count'      # <-- this makes it counts, not density
-                )
+                if len(subset) > 0:  # Only plot if data exists
+                    sns.histplot(
+                        data=subset,
+                        x='volume_mm3',
+                        bins=30,
+                        element='step',   # outlines instead of bars (less clutter)
+                        fill=True,
+                        alpha=0.4,
+                        color=palette[j],
+                        label=pipeline,
+                        ax=ax,
+                        stat='count'      # <-- this makes it counts, not density
+                    )
             
-            n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
-            ax.set_title(f"{structure}\n(n={n_points})")
-            ax.set_xlabel('Volume (mm³)')
-            ax.set_ylabel('Count')
-            ax.legend()
+            if len(structure_data) > 0:
+                n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+                ax.set_title(f"{structure}\n(n={n_points})")
+                ax.set_xlabel('Volume (mm³)')
+                ax.set_ylabel('Count')
+                ax.legend()
         
+        # Remove empty subplots
         total_plots = n_rows * n_cols
         for k in range(len(structures), total_plots):
             fig.delaxes(axes[k // n_cols, k % n_cols])
@@ -117,8 +133,15 @@ def create_distribution_figures(df_tidy, output_dir):
     plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
     
     structures = get_sorted_structures(plot_data['structure'].unique())
+    
+    if len(structures) == 0:
+        print("  No structures found for combined data, skipping...")
+        return
+        
     n_cols = 5
     n_rows = (len(structures) + n_cols - 1) // n_cols
+    n_rows = max(1, n_rows)
+    
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
     
     for i, structure in enumerate(structures):
@@ -127,24 +150,26 @@ def create_distribution_figures(df_tidy, output_dir):
         
         for j, pipeline in enumerate(pipeline_order):
             subset = structure_data[structure_data['pipeline_short'] == pipeline]
-            sns.histplot(
-                data=subset,
-                x='volume_mm3',
-                bins=30,
-                element='step',
-                fill=True,
-                alpha=0.4,
-                color=palette[j],
-                label=pipeline,
-                ax=ax,
-                stat='count'
-            )
+            if len(subset) > 0:  # Only plot if data exists
+                sns.histplot(
+                    data=subset,
+                    x='volume_mm3',
+                    bins=30,
+                    element='step',
+                    fill=True,
+                    alpha=0.4,
+                    color=palette[j],
+                    label=pipeline,
+                    ax=ax,
+                    stat='count'
+                )
         
-        n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
-        ax.set_title(f"{structure}\n(n={n_points})")
-        ax.set_xlabel('Volume (mm³)')
-        ax.set_ylabel('Count')
-        ax.legend()
+        if len(structure_data) > 0:
+            n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+            ax.set_title(f"{structure}\n(n={n_points})")
+            ax.set_xlabel('Volume (mm³)')
+            ax.set_ylabel('Count')
+            ax.legend()
     
     total_plots = n_rows * n_cols
     for k in range(len(structures), total_plots):
@@ -186,8 +211,14 @@ def create_correlation_figures(df_tidy, output_dir):
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
 
         structures = get_sorted_structures(plot_data['structure'].unique())
+        
+        if len(structures) == 0:
+            print(f"  No structures found for dataset {dataset}, skipping...")
+            continue
+            
         n_cols = 5
         n_rows = (len(structures) + n_cols - 1) // n_cols
+        n_rows = max(1, n_rows)
         
         # Create both Pearson and Spearman figures for this dataset
         for corr_method in ['pearson', 'spearman']:
@@ -204,28 +235,34 @@ def create_correlation_figures(df_tidy, output_dir):
                     values='volume_mm3'
                 )
 
-                # Compute correlation (Pearson or Spearman)
-                corr = pivot_df.corr(method=corr_method)
+                # Only compute correlation if we have data for all pipelines
+                if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+                    # Compute correlation (Pearson or Spearman)
+                    corr = pivot_df.corr(method=corr_method)
 
-                # Plot heatmap
-                sns.heatmap(
-                    corr,
-                    vmin=vmin, vmax=vmax, center=center,
-                    cmap=cmap,
-                    annot=True, fmt=".2f",
-                    square=True,
-                    cbar=False,
-                    ax=ax
-                )
+                    # Plot heatmap
+                    sns.heatmap(
+                        corr,
+                        vmin=vmin, vmax=vmax, center=center,
+                        cmap=cmap,
+                        annot=True, fmt=".2f",
+                        square=True,
+                        cbar=False,
+                        ax=ax
+                    )
 
-                # Improve label readability
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-                ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                ax.set_xlabel("")
-                ax.set_ylabel("")
+                    # Improve label readability
+                    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+                    ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+                    ax.set_xlabel("")
+                    ax.set_ylabel("")
 
-                n_points = pivot_df.shape[0]
-                ax.set_title(f"{structure}\n(n={n_points})")
+                    n_points = pivot_df.shape[0]
+                    ax.set_title(f"{structure}\n(n={n_points})")
+                else:
+                    ax.text(0.5, 0.5, "Insufficient data", 
+                           ha='center', va='center', transform=ax.transAxes)
+                    ax.set_title(f"{structure}\n(no data)")
 
             # Remove empty subplots
             total_plots = n_rows * n_cols
@@ -255,8 +292,14 @@ def create_correlation_figures(df_tidy, output_dir):
     plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
     
     structures = get_sorted_structures(plot_data['structure'].unique())
+    
+    if len(structures) == 0:
+        print("  No structures found for combined data, skipping...")
+        return
+        
     n_cols = 5
     n_rows = (len(structures) + n_cols - 1) // n_cols
+    n_rows = max(1, n_rows)
     
     # Create both Pearson and Spearman figures for combined data
     for corr_method in ['pearson', 'spearman']:
@@ -273,28 +316,34 @@ def create_correlation_figures(df_tidy, output_dir):
                 values='volume_mm3'
             )
 
-            # Compute correlation (Pearson or Spearman)
-            corr = pivot_df.corr(method=corr_method)
+            # Only compute correlation if we have data for all pipelines
+            if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+                # Compute correlation (Pearson or Spearman)
+                corr = pivot_df.corr(method=corr_method)
 
-            # Plot heatmap
-            sns.heatmap(
-                corr,
-                vmin=vmin, vmax=vmax, center=center,
-                cmap=cmap,
-                annot=True, fmt=".2f",
-                square=True,
-                cbar=False,
-                ax=ax
-            )
+                # Plot heatmap
+                sns.heatmap(
+                    corr,
+                    vmin=vmin, vmax=vmax, center=center,
+                    cmap=cmap,
+                    annot=True, fmt=".2f",
+                    square=True,
+                    cbar=False,
+                    ax=ax
+                )
 
-            # Improve label readability
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            ax.set_xlabel("")
-            ax.set_ylabel("")
+                # Improve label readability
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+                ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+                ax.set_xlabel("")
+                ax.set_ylabel("")
 
-            n_points = pivot_df.shape[0]
-            ax.set_title(f"{structure}\n(n={n_points})")
+                n_points = pivot_df.shape[0]
+                ax.set_title(f"{structure}\n(n={n_points})")
+            else:
+                ax.text(0.5, 0.5, "Insufficient data", 
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f"{structure}\n(no data)")
 
         # Remove empty subplots
         total_plots = n_rows * n_cols
