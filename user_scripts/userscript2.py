@@ -27,7 +27,23 @@ def filter_complete_pipelines(df_tidy):
     
     print(f"Filtered from {len(df_tidy)} → {len(df_filtered)} rows (only complete 4-pipeline cases).")
     return df_filtered
+
+def get_sorted_structures(structures):
+    """Sort structures: left-right pairs together, ordered by structure name."""
+    # Extract unique structure names (without hemisphere)
+    base_structures = sorted(set([s.replace('left-', '').replace('right-', '') for s in structures]))
     
+    # Create pairs: left then right for each base structure
+    sorted_structures = []
+    for base in base_structures:
+        left = f"left-{base}"
+        right = f"right-{base}"
+        if left in structures:
+            sorted_structures.append(left)
+        if right in structures:
+            sorted_structures.append(right)
+    
+    return sorted_structures
 
 def create_distribution_figures(df_tidy, output_dir):
     """Create overlapping histograms (counts) for all pipelines per structure."""
@@ -45,6 +61,7 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
+    # Individual dataset figures
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
         print(f"Creating count histograms for {dataset} with {len(dataset_data)} rows...")
@@ -52,7 +69,7 @@ def create_distribution_figures(df_tidy, output_dir):
         plot_data = dataset_data.copy()
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
-        structures = plot_data['structure'].unique()
+        structures = get_sorted_structures(plot_data['structure'].unique())
         n_cols = 5
         n_rows = (len(structures) + n_cols - 1) // n_cols
         fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
@@ -94,8 +111,55 @@ def create_distribution_figures(df_tidy, output_dir):
         plt.close()
         print(f"Saved: {output_path}")
 
+    # Combined dataset figure (pooled across all datasets)
+    print("Creating combined count histograms (all datasets pooled)...")
+    plot_data = df_tidy.copy()
+    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+    
+    structures = get_sorted_structures(plot_data['structure'].unique())
+    n_cols = 5
+    n_rows = (len(structures) + n_cols - 1) // n_cols
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
+    
+    for i, structure in enumerate(structures):
+        ax = axes[i // n_cols, i % n_cols]
+        structure_data = plot_data[plot_data['structure'] == structure]
+        
+        for j, pipeline in enumerate(pipeline_order):
+            subset = structure_data[structure_data['pipeline_short'] == pipeline]
+            sns.histplot(
+                data=subset,
+                x='volume_mm3',
+                bins=30,
+                element='step',
+                fill=True,
+                alpha=0.4,
+                color=palette[j],
+                label=pipeline,
+                ax=ax,
+                stat='count'
+            )
+        
+        n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+        ax.set_title(f"{structure}\n(n={n_points})")
+        ax.set_xlabel('Volume (mm³)')
+        ax.set_ylabel('Count')
+        ax.legend()
+    
+    total_plots = n_rows * n_cols
+    for k in range(len(structures), total_plots):
+        fig.delaxes(axes[k // n_cols, k % n_cols])
+    
+    fig.suptitle('Pipeline Distributions (Counts) - All Datasets Combined', fontsize=18)
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+    output_path = output_dir / f'distribution_comparison_counts_ALL_DATASETS.png'
+    plt.savefig(output_path, bbox_inches='tight', dpi=300)
+    plt.close()
+    print(f"Saved: {output_path}")
+
 def create_correlation_figures(df_tidy, output_dir):
-    """Create inter-pipeline Pearson correlation matrix plots for all brain structures per dataset."""
+    """Create inter-pipeline Pearson and Spearman correlation matrix plots for all brain structures per dataset."""
 
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
@@ -109,6 +173,11 @@ def create_correlation_figures(df_tidy, output_dir):
     }
     pipeline_order = list(pipeline_mapping.values())
 
+    # Define color scale and palette
+    vmin, vmax, center = -1, 1, 0
+    cmap = sns.color_palette("RdBu_r", as_cmap=True)
+
+    # Individual dataset figures
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
         print(f"Creating correlation matrices for {dataset} with {len(dataset_data)} rows...")
@@ -116,14 +185,82 @@ def create_correlation_figures(df_tidy, output_dir):
         plot_data = dataset_data.copy()
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
 
-        structures = plot_data['structure'].unique()
+        structures = get_sorted_structures(plot_data['structure'].unique())
         n_cols = 5
         n_rows = (len(structures) + n_cols - 1) // n_cols
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+        
+        # Create both Pearson and Spearman figures for this dataset
+        for corr_method in ['pearson', 'spearman']:
+            fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
 
-        # Define color scale and palette
-        vmin, vmax, center = -1, 1, 0
-        cmap = sns.color_palette("RdBu_r", as_cmap=True)
+            for i, structure in enumerate(structures):
+                ax = axes[i // n_cols, i % n_cols]
+                structure_data = plot_data[plot_data['structure'] == structure]
+
+                # Pivot: subjects as rows, pipelines as columns
+                pivot_df = structure_data.pivot_table(
+                    index='subject',
+                    columns='pipeline_short',
+                    values='volume_mm3'
+                )
+
+                # Compute correlation (Pearson or Spearman)
+                corr = pivot_df.corr(method=corr_method)
+
+                # Plot heatmap
+                sns.heatmap(
+                    corr,
+                    vmin=vmin, vmax=vmax, center=center,
+                    cmap=cmap,
+                    annot=True, fmt=".2f",
+                    square=True,
+                    cbar=False,
+                    ax=ax
+                )
+
+                # Improve label readability
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+                ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+                ax.set_xlabel("")
+                ax.set_ylabel("")
+
+                n_points = pivot_df.shape[0]
+                ax.set_title(f"{structure}\n(n={n_points})")
+
+            # Remove empty subplots
+            total_plots = n_rows * n_cols
+            for k in range(len(structures), total_plots):
+                fig.delaxes(axes[k // n_cols, k % n_cols])
+
+            # Shared colorbar
+            cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])  # [left, bottom, width, height]
+            norm = plt.Normalize(vmin=vmin, vmax=vmax)
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+            sm.set_array([])
+            cbar = fig.colorbar(sm, cax=cbar_ax)
+            cbar.set_label(f"{corr_method.capitalize()} correlation", rotation=270, labelpad=15)
+
+            # Overall title
+            fig.suptitle(f'Inter-Pipeline Correlations ({corr_method.capitalize()}) - {dataset}', fontsize=18)
+            fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])  # leave room for colorbar on the right
+
+            output_path = output_dir / f'correlation_comparison_{corr_method}_{dataset}.png'
+            plt.savefig(output_path, bbox_inches='tight', dpi=300)
+            plt.close()
+            print(f"Saved: {output_path}")
+
+    # Combined dataset figures (pooled across all datasets)
+    print("Creating combined correlation matrices (all datasets pooled)...")
+    plot_data = df_tidy.copy()
+    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+    
+    structures = get_sorted_structures(plot_data['structure'].unique())
+    n_cols = 5
+    n_rows = (len(structures) + n_cols - 1) // n_cols
+    
+    # Create both Pearson and Spearman figures for combined data
+    for corr_method in ['pearson', 'spearman']:
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
 
         for i, structure in enumerate(structures):
             ax = axes[i // n_cols, i % n_cols]
@@ -136,8 +273,8 @@ def create_correlation_figures(df_tidy, output_dir):
                 values='volume_mm3'
             )
 
-            # Compute Pearson correlation
-            corr = pivot_df.corr(method='pearson')
+            # Compute correlation (Pearson or Spearman)
+            corr = pivot_df.corr(method=corr_method)
 
             # Plot heatmap
             sns.heatmap(
@@ -170,13 +307,13 @@ def create_correlation_figures(df_tidy, output_dir):
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
         cbar = fig.colorbar(sm, cax=cbar_ax)
-        cbar.set_label("Pearson correlation", rotation=270, labelpad=15)
+        cbar.set_label(f"{corr_method.capitalize()} correlation", rotation=270, labelpad=15)
 
         # Overall title
-        fig.suptitle(f'Inter-Pipeline Correlations (Pearson) - {dataset}', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])  # leave room for colorbar on the right
+        fig.suptitle(f'Inter-Pipeline Correlations ({corr_method.capitalize()}) - All Datasets Combined', fontsize=18)
+        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
 
-        output_path = output_dir / f'correlation_comparison_{dataset}.png'
+        output_path = output_dir / f'correlation_comparison_{corr_method}_ALL_DATASETS.png'
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
         print(f"Saved: {output_path}")
@@ -205,9 +342,9 @@ if __name__ == "__main__":
         # Generate figures
         df_complete = filter_complete_pipelines(df_tidy) # Where all 4 pipelines have completed succesfully
         create_distribution_figures(df_complete, EXPERIMENT_STATE_ROOT)
-        print("✓ Boxen plots generated successfully!")
+        print("✓ Distribution plots generated successfully!")
         create_correlation_figures(df_complete, EXPERIMENT_STATE_ROOT)
-        print("✓ Volume Pearson correlation plots generated successfully!")
+        print("✓ Correlation plots (Pearson & Spearman) generated successfully!")
         
     else:
         print(f"✗ File not found: {tidy_path}")
