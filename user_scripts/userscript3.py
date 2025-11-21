@@ -50,6 +50,22 @@ def extract_demographics(dataset_name, dfs):
                 df_demo['age'] = np.nan
             if 'sex' not in df_demo.columns:
                 df_demo['sex'] = np.nan
+    
+    # Handle comma-separated multiple values by taking the first one
+    if df_demo is not None and not df_demo.empty:
+        # For age: take first value and convert to float
+        if 'age' in df_demo.columns:
+            df_demo['age'] = df_demo['age'].astype(str).str.split(',').str[0]
+            # Replace 'n/a' with NaN and convert to float
+            df_demo['age'] = df_demo['age'].replace('n/a', np.nan)
+            df_demo['age'] = pd.to_numeric(df_demo['age'], errors='coerce')
+        
+        # For sex: take first value
+        if 'sex' in df_demo.columns:
+            df_demo['sex'] = df_demo['sex'].astype(str).str.split(',').str[0]
+            # Replace 'n/a' with NaN
+            df_demo['sex'] = df_demo['sex'].replace('n/a', np.nan)
+    
     return df_demo
 
 # -----------------------------------------------------------------------------
