@@ -29,7 +29,7 @@ def filter_complete_pipelines(df_tidy):
     return df_filtered
 
 def get_sorted_structures(structures):
-    """Sort structures: left-right pairs together, ordered by structure name."""
+    """Sort structures: left-right pairs together, ordered by structure name, include non-bilateral structures."""
     if len(structures) == 0:
         return []
     
@@ -46,7 +46,18 @@ def get_sorted_structures(structures):
         if right in structures:
             sorted_structures.append(right)
     
+    # Add non-bilateral structures that don't follow the Left-/Right- pattern
+    bilateral_bases = [f"Left-{base}" for base in base_structures] + [f"Right-{base}" for base in base_structures]
+    non_bilateral_structures = [s for s in structures if s not in bilateral_bases]
+    
+    # Add non-bilateral structures at the end
+    sorted_structures.extend(sorted(non_bilateral_structures))
+    
     return sorted_structures
+
+def count_unique_subjects(structure_data):
+    """Count unique subject-dataset combinations to avoid double-counting same subject ID across datasets."""
+    return len(structure_data[['dataset', 'subject']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
     """Create overlapping histograms (counts) for all pipelines per structure."""
@@ -108,7 +119,8 @@ def create_distribution_figures(df_tidy, output_dir):
                     )
             
             if len(structure_data) > 0:
-                n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+                # For individual datasets, just count unique subjects
+                n_points = len(structure_data['subject'].unique())
                 ax.set_title(f"{structure}\n(n={n_points})")
                 ax.set_xlabel('Volume (mm³)')
                 ax.set_ylabel('Count')
@@ -165,7 +177,8 @@ def create_distribution_figures(df_tidy, output_dir):
                 )
         
         if len(structure_data) > 0:
-            n_points = len(structure_data[structure_data['pipeline_short'] == pipeline_order[0]]['subject'].unique())
+            # For combined data, count unique subject-dataset combinations
+            n_points = count_unique_subjects(structure_data)
             ax.set_title(f"{structure}\n(n={n_points})")
             ax.set_xlabel('Volume (mm³)')
             ax.set_ylabel('Count')
@@ -230,7 +243,7 @@ def create_correlation_figures(df_tidy, output_dir):
 
                 # Pivot: subjects as rows, pipelines as columns
                 pivot_df = structure_data.pivot_table(
-                    index='subject',
+                    index='subject',  # For individual datasets, subject ID alone is sufficient
                     columns='pipeline_short',
                     values='volume_mm3'
                 )
@@ -309,9 +322,13 @@ def create_correlation_figures(df_tidy, output_dir):
             ax = axes[i // n_cols, i % n_cols]
             structure_data = plot_data[plot_data['structure'] == structure]
 
-            # Pivot: subjects as rows, pipelines as columns
+            # For combined data, create unique subject IDs by combining dataset and subject
+            structure_data = structure_data.copy()
+            structure_data['subject_dataset'] = structure_data['dataset'] + '_' + structure_data['subject']
+
+            # Pivot: subject-dataset combinations as rows, pipelines as columns
             pivot_df = structure_data.pivot_table(
-                index='subject',
+                index='subject_dataset',  # Use unique subject-dataset combinations
                 columns='pipeline_short',
                 values='volume_mm3'
             )
