@@ -97,7 +97,7 @@ def get_structure_order():
     return ordered_structures
 
 def create_age_distribution_plot(df, output_dir):
-    """Create a histogram showing age distributions for each dataset."""
+    """Create a single histogram showing age distributions for all datasets overlaid."""
     # Get unique subjects with their ages and datasets
     subject_ages = df[['dataset', 'subject', 'age']].drop_duplicates().dropna(subset=['age'])
     
@@ -113,7 +113,7 @@ def create_age_distribution_plot(df, output_dir):
     # Create the plot
     plt.figure(figsize=(12, 8))
     
-    # Create overlapping histograms for each dataset
+    # Create overlapping histograms for all datasets on one plot
     datasets = subject_ages['dataset'].unique()
     palette = sns.color_palette("tab10", len(datasets))
     
