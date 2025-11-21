@@ -16,7 +16,7 @@ userscripts: # Python scripts stored in the user_scripts directory in the reposi
   script2: "userscript2.py" # Plot volume correlations and distributions
   script3: "userscript3.py" # Demographic analyses
 
-target_host: "ducky" # The target HPC host. Must be the name of a host that is specified in the SSH config file
+target_host: "ducky" # The target HPC host. Must be the name of a host that is specified in the SSH config file.
 prefix_cmd: "source /data/origami/jacob/neuroci_test/venv_pypi/bin/activate" # Prefix command (e.g. activating a virtual environment with Nipoppy installed in it)
 scheduler: "sge" # Scheduler to use (slurm and sge are currently functional)
 max_dl_size_per_dataset_tool_mb: 400 # The maximum size (in megabytes) that a tar file for a given dataset/pipeline derivatives can be for downloading onto the CI
