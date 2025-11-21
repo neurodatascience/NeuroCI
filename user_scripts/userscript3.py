@@ -96,6 +96,54 @@ def get_structure_order():
     
     return ordered_structures
 
+def create_age_distribution_plot(df, output_dir):
+    """Create a histogram showing age distributions for each dataset."""
+    # Get unique subjects with their ages and datasets
+    subject_ages = df[['dataset', 'subject', 'age']].drop_duplicates().dropna(subset=['age'])
+    
+    if subject_ages.empty:
+        print("No age data available for plotting.")
+        return
+    
+    # Set up the plot style
+    sns.set_style("whitegrid")
+    plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['font.size'] = 12
+    
+    # Create the plot
+    plt.figure(figsize=(12, 8))
+    
+    # Create overlapping histograms for each dataset
+    datasets = subject_ages['dataset'].unique()
+    palette = sns.color_palette("tab10", len(datasets))
+    
+    for i, dataset in enumerate(datasets):
+        dataset_ages = subject_ages[subject_ages['dataset'] == dataset]['age']
+        n_subjects = len(dataset_ages)
+        
+        sns.histplot(
+            data=dataset_ages,
+            bins=20,
+            element='step',
+            fill=True,
+            alpha=0.4,
+            color=palette[i],
+            label=f'{dataset} (n={n_subjects})',
+            stat='count'
+        )
+    
+    plt.xlabel('Age (years)')
+    plt.ylabel('Count')
+    plt.title('Age Distribution by Dataset')
+    plt.legend()
+    plt.tight_layout()
+    
+    # Save the plot
+    output_path = output_dir / 'age_distribution_by_dataset.png'
+    plt.savefig(output_path, bbox_inches='tight', dpi=300)
+    plt.close()
+    print(f"Saved age distribution plot: {output_path}")
+
 # -----------------------------------------------------------------------------
 # Main analysis
 # -----------------------------------------------------------------------------
@@ -121,6 +169,9 @@ def main():
         return
 
     df = pd.concat(df_all, ignore_index=True)
+
+    # Create age distribution plot
+    create_age_distribution_plot(df, EXPERIMENT_STATE_ROOT)
 
     # -------------------------------------------------------------------------
     # Compute pairwise pipeline differences (absolute values)
