@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import itertools
-from scipy.stats import pearsonr, ttest_ind
+from scipy.stats import spearmanr, ttest_ind # MODIFIED: Changed pearsonr to spearmanr
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -200,7 +200,7 @@ def main():
     df_diff = pd.concat(pairwise_diffs, ignore_index=True)
 
     # -------------------------------------------------------------------------
-    # Correlation with age per pipeline_pair × structure
+    # Correlation with age per pipeline_pair × structure (MODIFIED FOR SPEARMAN)
     # -------------------------------------------------------------------------
     df_age = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','age']].copy()
     df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
@@ -212,14 +212,21 @@ def main():
         n = g.groupby(['dataset','subject','session']).ngroups  # unique scans
         if n < 3:
             continue
-        r, p = pearsonr(g['volume_diff'], g['age'])
+        
+        # Use spearmanr instead of pearsonr
+        try:
+            r, p = spearmanr(g['volume_diff'], g['age'])
+        except ValueError:
+            # Handle case where one variable is constant
+            r, p = np.nan, np.nan
+        
         corr_results.append({'pipeline_pair': pair, 'structure': struct, 'r': r, 'p': p, 'n': n})
     
-    corr_df = pd.DataFrame(corr_results)
+    corr_df = pd.DataFrame(corr_results).dropna(subset=['r', 'p'])
     corr_df['p_adj'] = np.minimum(corr_df['p'] * len(corr_df), 1.0)
     
-    # Save summary CSV
-    corr_df.to_csv(EXPERIMENT_STATE_ROOT / 'age_correlation_summary.csv', index=False)
+    # Save summary CSV (updated filename)
+    corr_df.to_csv(EXPERIMENT_STATE_ROOT / 'age_correlation_summary_spearman.csv', index=False)
     
     # Prepare pivot tables with ordered structures
     structure_order = get_structure_order()
@@ -249,15 +256,15 @@ def main():
     
     plt.figure(figsize=(10, 8))
     sns.heatmap(corr_pivot, annot=annot_matrix, fmt='', cmap='coolwarm', center=0,
-                cbar_kws={'label': 'r'})
-    plt.title('Correlation of Volume Differences with Age (significant r values only)')
+                cbar_kws={'label': 'Spearman r'}) # Updated label
+    plt.title('Spearman Correlation of Volume Differences with Age (significant r values only)') # Updated title
     plt.tight_layout()
-    plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_heatmap.png', dpi=300)
+    plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_spearman_heatmap.png', dpi=300) # Updated filename
     plt.close()
 
 
     # -------------------------------------------------------------------------
-    # Sex effects per pipeline_pair × structure
+    # Sex effects per pipeline_pair × structure (No change here)
     # -------------------------------------------------------------------------
     df_sex = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','sex']].copy()
     df_sex['volume_diff'] = pd.to_numeric(df_sex['volume_diff'], errors='coerce')
@@ -281,6 +288,7 @@ def main():
     sex_df.to_csv(EXPERIMENT_STATE_ROOT / 'sex_effects_summary.csv', index=False)
 
     # Apply structure ordering to sex results
+    structure_order = get_structure_order()
     sex_df_ordered = sex_df[sex_df['structure'].isin(structure_order)].copy()
     sex_df_ordered['structure'] = pd.Categorical(
         sex_df_ordered['structure'], 
