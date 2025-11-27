@@ -28,30 +28,70 @@ def filter_complete_pipelines(df_tidy):
     print(f"Filtered from {len(df_tidy)} → {len(df_filtered)} rows (only complete 4-pipeline cases).")
     return df_filtered
 
+#def get_sorted_structures(structures):
+#    """Sort structures: left-right pairs together, ordered by structure name, include non-bilateral structures."""
+#    if len(structures) == 0:
+#        return []
+#    
+#    # Extract unique structure names (without hemisphere) - handle Title Case
+#    base_structures = sorted(set([s.replace('Left-', '').replace('Right-', '') for s in structures]))
+#    
+#    # Create pairs: left then right for each base structure
+#    sorted_structures = []
+#    for base in base_structures:
+#        left = f"Left-{base}"
+#        right = f"Right-{base}"
+#        if left in structures:
+#            sorted_structures.append(left)
+#        if right in structures:
+#            sorted_structures.append(right)
+#    
+#    # Add non-bilateral structures that don't follow the Left-/Right- pattern
+#    bilateral_bases = [f"Left-{base}" for base in base_structures] + [f"Right-{base}" for base in base_structures]
+#    non_bilateral_structures = [s for s in structures if s not in bilateral_bases]
+#    
+#    # Add non-bilateral structures at the end
+#    sorted_structures.extend(sorted(non_bilateral_structures))
+#    
+#    return sorted_structures
+
 def get_sorted_structures(structures):
-    """Sort structures: left-right pairs together, ordered by structure name, include non-bilateral structures."""
-    if len(structures) == 0:
-        return []
+    """Sort structures according to a specific, predefined order."""
     
-    # Extract unique structure names (without hemisphere) - handle Title Case
-    base_structures = sorted(set([s.replace('Left-', '').replace('Right-', '') for s in structures]))
+    # Define the exact target order
+    TARGET_ORDER = [
+        'Left-Thalamus',
+        'Right-Thalamus',
+        'Left-Caudate',
+        'Right-Caudate',
+        'Left-Putamen',
+        'Right-Putamen',
+        'Left-Pallidum',
+        'Right-Pallidum',
+        'Left-Hippocampus',
+        'Right-Hippocampus',
+        'Left-Amygdala',
+        'Right-Amygdala',
+        'Left-Accumbens-area',
+        'Right-Accumbens-area',
+        'Brainstem'
+    ]
+
+    # 1. Filter TARGET_ORDER to only include structures present in the current data
+    present_structures = set(structures)
     
-    # Create pairs: left then right for each base structure
-    sorted_structures = []
-    for base in base_structures:
-        left = f"Left-{base}"
-        right = f"Right-{base}"
-        if left in structures:
-            sorted_structures.append(left)
-        if right in structures:
-            sorted_structures.append(right)
+    # Structures that are present AND in the target order
+    sorted_structures = [s for s in TARGET_ORDER if s in present_structures]
     
-    # Add non-bilateral structures that don't follow the Left-/Right- pattern
-    bilateral_bases = [f"Left-{base}" for base in base_structures] + [f"Right-{base}" for base in base_structures]
-    non_bilateral_structures = [s for s in structures if s not in bilateral_bases]
+    # 2. Identify any structures present in the data but NOT in the target order
+    # These will be added at the end, sorted alphabetically, to ensure completeness
+    non_target_structures = sorted([
+        s for s in present_structures 
+        if s not in TARGET_ORDER
+    ])
     
-    # Add non-bilateral structures at the end
-    sorted_structures.extend(sorted(non_bilateral_structures))
+    # 3. Combine the two lists: target order first, then remaining structures
+    sorted_structures.extend(non_target_structures)
     
     return sorted_structures
 
