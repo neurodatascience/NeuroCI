@@ -280,8 +280,8 @@ def create_correlation_figures(df_tidy, output_dir):
                     # Improve label readability
                     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                    ax.set_xlabel("")
-                    ax.set_ylabel("")
+                    ax.set_xlabel("") 
+                    ax.set_ylabel("") 
 
                     n_points = pivot_df.shape[0]
                     ax.set_title(f"{structure}\n(n={n_points})")
@@ -365,8 +365,8 @@ def create_correlation_figures(df_tidy, output_dir):
                 # Improve label readability
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                ax.set_xlabel("")
-                ax.set_ylabel("")
+                ax.set_xlabel("") 
+                ax.set_ylabel("") 
 
                 n_points = pivot_df.shape[0]
                 ax.set_title(f"{structure}\n(n={n_points})")
@@ -398,7 +398,7 @@ def create_correlation_figures(df_tidy, output_dir):
         print(f"Saved: {output_path}")
 
 # -------------------------------------------------------------
-# New helper function for RVD calculation
+# Helper function for RVD calculation
 # -------------------------------------------------------------
 
 def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
@@ -427,7 +427,7 @@ def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
     return rvd_matrix.astype(float)
 
 # -------------------------------------------------------------
-# New function for RVD figures
+# Function for RVD figures (Axis labels and ADJUSTED Over/Under-estimation labels RE-ADDED)
 # -------------------------------------------------------------
 
 def create_rvd_figures(df_tidy, output_dir):
@@ -501,8 +501,9 @@ def create_rvd_figures(df_tidy, output_dir):
                 # Improve label readability
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                ax.set_xlabel("Comparison Pipeline")
-                ax.set_ylabel("Reference Pipeline")
+                # RE-ADDED: Axis labels for RVD
+                ax.set_xlabel("Comparison Pipeline") 
+                ax.set_ylabel("Reference Pipeline") 
 
                 n_points = pivot_df.shape[0]
                 ax.set_title(f"{structure}\n(n={n_points})")
@@ -524,9 +525,9 @@ def create_rvd_figures(df_tidy, output_dir):
         cbar = fig.colorbar(sm, cax=cbar_ax)
         cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
         
-        # Add labels to explain the RVD interpretation
-        cbar.ax.text(1.5, vmax, '+Overestimation', ha='center', va='top', fontsize=10)
-        cbar.ax.text(1.5, vmin, '-Underestimation', ha='center', va='bottom', fontsize=10)
+        # RE-ADDED and ADJUSTED: Overestimation/Underestimation labels
+        cbar.ax.text(1.5, vmax + 0.1, '+Overestimation', ha='center', va='top', fontsize=10) # Moved up
+        cbar.ax.text(1.5, vmin - 0.1, '-Underestimation', ha='center', va='bottom', fontsize=10) # Moved down
 
 
         # Overall title
@@ -589,7 +590,8 @@ def create_rvd_figures(df_tidy, output_dir):
             # Improve label readability
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
             ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            ax.set_xlabel("Comparison Pipeline")
+            # RE-ADDED: Axis labels for RVD
+            ax.set_xlabel("Comparison Pipeline") 
             ax.set_ylabel("Reference Pipeline")
 
             n_points = pivot_df.shape[0]
@@ -612,9 +614,9 @@ def create_rvd_figures(df_tidy, output_dir):
     cbar = fig.colorbar(sm, cax=cbar_ax)
     cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
     
-    # Add labels to explain the RVD interpretation
-    cbar.ax.text(1.5, vmax, '+Overestimation', ha='center', va='top', fontsize=10)
-    cbar.ax.text(1.5, vmin, '-Underestimation', ha='center', va='bottom', fontsize=10)
+    # RE-ADDED and ADJUSTED: Overestimation/Underestimation labels
+    cbar.ax.text(1.5, vmax + 0.1, '+Overestimation', ha='center', va='top', fontsize=10) # Moved up
+    cbar.ax.text(1.5, vmin - 0.1, '-Underestimation', ha='center', va='bottom', fontsize=10) # Moved down
 
 
     # Overall title
@@ -653,7 +655,7 @@ if __name__ == "__main__":
         print("✓ Distribution plots generated successfully!")
         create_correlation_figures(df_complete, EXPERIMENT_STATE_ROOT)
         print("✓ Correlation plots (Pearson & Spearman) generated successfully!")
-        # NEW FUNCTION CALL ADDED HERE
+        # RVD function call
         create_rvd_figures(df_complete, EXPERIMENT_STATE_ROOT)
         print("✓ Mean RVD plots generated successfully!")
         
