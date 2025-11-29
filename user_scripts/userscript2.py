@@ -25,35 +25,8 @@ def filter_complete_pipelines(df_tidy):
     # Merge back to original data to keep only valid rows
     df_filtered = df_tidy.merge(complete[['dataset', 'subject', 'structure']], on=['dataset', 'subject', 'structure'])
     
-    print(f"Filtered from {len(df_tidy)} → {len(df_filtered)} rows (only complete 4-pipeline cases).")
+    print(f"Filtered from {len(df_tidy)} -> {len(df_filtered)} rows (only complete 4-pipeline cases).")
     return df_filtered
-
-#def get_sorted_structures(structures):
-#    """Sort structures: left-right pairs together, ordered by structure name, include non-bilateral structures."""
-#    if len(structures) == 0:
-#        return []
-#    
-#    # Extract unique structure names (without hemisphere) - handle Title Case
-#    base_structures = sorted(set([s.replace('Left-', '').replace('Right-', '') for s in structures]))
-#    
-#    # Create pairs: left then right for each base structure
-#    sorted_structures = []
-#    for base in base_structures:
-#        left = f"Left-{base}"
-#        right = f"Right-{base}"
-#        if left in structures:
-#            sorted_structures.append(left)
-#        if right in structures:
-#            sorted_structures.append(right)
-#    
-#    # Add non-bilateral structures that don't follow the Left-/Right- pattern
-#    bilateral_bases = [f"Left-{base}" for base in base_structures] + [f"Right-{base}" for base in base_structures]
-#    non_bilateral_structures = [s for s in structures if s not in bilateral_bases]
-#    
-#    # Add non-bilateral structures at the end
-#    sorted_structures.extend(sorted(non_bilateral_structures))
-#    
-#    return sorted_structures
 
 def get_sorted_structures(structures):
     """Sort structures according to a specific, predefined order."""
@@ -424,6 +397,235 @@ def create_correlation_figures(df_tidy, output_dir):
         plt.close()
         print(f"Saved: {output_path}")
 
+# -------------------------------------------------------------
+# New helper function for RVD calculation
+# -------------------------------------------------------------
+
+def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
+    """
+    Calculates the mean Relative Volume Difference (RVD) matrix.
+    RVD of V_B relative to V_A is (V_B - V_A) / V_A
+    The matrix entry [A, B] is the mean RVD of B relative to A.
+    """
+    rvd_matrix = pd.DataFrame(index=pipeline_order, columns=pipeline_order)
+    
+    for ref_pipe in pipeline_order:
+        V_ref = pivot_df[ref_pipe]
+        for comp_pipe in pipeline_order:
+            if ref_pipe == comp_pipe:
+                # RVD of a volume relative to itself is 0
+                rvd_matrix.loc[ref_pipe, comp_pipe] = 0.0
+            else:
+                V_comp = pivot_df[comp_pipe]
+                # Calculate RVD for each subject: (V_comp - V_ref) / V_ref
+                rvd_values = (V_comp - V_ref) / V_ref
+                # Calculate the mean RVD across all subjects
+                mean_rvd = rvd_values.mean()
+                rvd_matrix.loc[ref_pipe, comp_pipe] = mean_rvd
+                
+    # Convert to float to ensure proper visualization
+    return rvd_matrix.astype(float)
+
+# -------------------------------------------------------------
+# New function for RVD figures
+# -------------------------------------------------------------
+
+def create_rvd_figures(df_tidy, output_dir):
+    """Create inter-pipeline mean Relative Volume Difference (RVD) matrix plots for all brain structures per dataset."""
+
+    sns.set_style("whitegrid")
+    plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['font.size'] = 12
+
+    pipeline_mapping = {
+        'fslanat6071ants243': 'FSL6071',
+        'freesurfer741ants243': 'FS741',
+        'freesurfer8001ants243': 'FS8001',
+        'samseg8001ants243': 'SAMSEG8'
+    }
+    pipeline_order = list(pipeline_mapping.values())
+
+    # Define color scale and palette: RVD can range widely, setting a safe symmetric scale
+    # Using -1.0 to 1.0 corresponds to -100% to +100% relative difference
+    vmin, vmax, center = -1.0, 1.0, 0.0 
+    cmap = sns.color_palette("RdBu_r", as_cmap=True) # Diverging map, centered at 0
+
+    # Individual dataset figures
+    for dataset in df_tidy['dataset'].unique():
+        dataset_data = df_tidy[df_tidy['dataset'] == dataset]
+        print(f"Creating mean RVD matrices for {dataset} with {len(dataset_data)} rows...")
+
+        plot_data = dataset_data.copy()
+        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+
+        structures = get_sorted_structures(plot_data['structure'].unique())
+        
+        if len(structures) == 0:
+            print(f"  No structures found for dataset {dataset}, skipping...")
+            continue
+            
+        n_cols = 5
+        n_rows = (len(structures) + n_cols - 1) // n_cols
+        n_rows = max(1, n_rows)
+        
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+
+        for i, structure in enumerate(structures):
+            ax = axes[i // n_cols, i % n_cols]
+            structure_data = plot_data[plot_data['structure'] == structure]
+
+            # Pivot: subjects as rows, pipelines as columns
+            pivot_df = structure_data.pivot_table(
+                index='subject',  # For individual datasets, subject ID alone is sufficient
+                columns='pipeline_short',
+                values='volume_mm3'
+            )
+
+            # Only compute RVD if we have data for all pipelines
+            if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+                # Compute mean RVD
+                rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
+
+                # Plot heatmap
+                sns.heatmap(
+                    rvd_matrix,
+                    vmin=vmin, vmax=vmax, center=center,
+                    cmap=cmap,
+                    annot=True, 
+                    fmt=".2f", # Display as fractional value (e.g., 0.10 means 10% relative difference)
+                    square=True,
+                    cbar=False,
+                    ax=ax
+                )
+
+                # Improve label readability
+                ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+                ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+                ax.set_xlabel("Comparison Pipeline")
+                ax.set_ylabel("Reference Pipeline")
+
+                n_points = pivot_df.shape[0]
+                ax.set_title(f"{structure}\n(n={n_points})")
+            else:
+                ax.text(0.5, 0.5, "Insufficient data", 
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f"{structure}\n(no data)")
+
+        # Remove empty subplots
+        total_plots = n_rows * n_cols
+        for k in range(len(structures), total_plots):
+            fig.delaxes(axes[k // n_cols, k % n_cols])
+
+        # Shared colorbar
+        cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])  # [left, bottom, width, height]
+        norm = plt.Normalize(vmin=vmin, vmax=vmax)
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([])
+        cbar = fig.colorbar(sm, cax=cbar_ax)
+        cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
+        
+        # Add labels to explain the RVD interpretation
+        cbar.ax.text(1.5, vmax, '+Overestimation', ha='center', va='top', fontsize=10)
+        cbar.ax.text(1.5, vmin, '-Underestimation', ha='center', va='bottom', fontsize=10)
+
+
+        # Overall title
+        fig.suptitle(f'Inter-Pipeline Mean Relative Volume Difference (RVD) - {dataset}', fontsize=18)
+        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])  # leave room for colorbar on the right
+
+        output_path = output_dir / f'rvd_comparison_mean_{dataset}.png'
+        plt.savefig(output_path, bbox_inches='tight', dpi=300)
+        plt.close()
+        print(f"Saved: {output_path}")
+
+    # Combined dataset figures (pooled across all datasets)
+    print("Creating combined mean RVD matrices (all datasets pooled)...")
+    plot_data = df_tidy.copy()
+    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+    
+    structures = get_sorted_structures(plot_data['structure'].unique())
+    
+    if len(structures) == 0:
+        print("  No structures found for combined data, skipping...")
+        return
+        
+    n_cols = 5
+    n_rows = (len(structures) + n_cols - 1) // n_cols
+    n_rows = max(1, n_rows)
+    
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+
+    for i, structure in enumerate(structures):
+        ax = axes[i // n_cols, i % n_cols]
+        structure_data = plot_data[plot_data['structure'] == structure]
+
+        # For combined data, create unique subject IDs by combining dataset and subject
+        structure_data = structure_data.copy()
+        structure_data['subject_dataset'] = structure_data['dataset'] + '_' + structure_data['subject']
+
+        # Pivot: subject-dataset combinations as rows, pipelines as columns
+        pivot_df = structure_data.pivot_table(
+            index='subject_dataset',  # Use unique subject-dataset combinations
+            columns='pipeline_short',
+            values='volume_mm3'
+        )
+
+        # Only compute RVD if we have data for all pipelines
+        if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+            # Compute mean RVD
+            rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
+
+            # Plot heatmap
+            sns.heatmap(
+                rvd_matrix,
+                vmin=vmin, vmax=vmax, center=center,
+                cmap=cmap,
+                annot=True, fmt=".2f",
+                square=True,
+                cbar=False,
+                ax=ax
+            )
+
+            # Improve label readability
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+            ax.set_xlabel("Comparison Pipeline")
+            ax.set_ylabel("Reference Pipeline")
+
+            n_points = pivot_df.shape[0]
+            ax.set_title(f"{structure}\n(n={n_points})")
+        else:
+            ax.text(0.5, 0.5, "Insufficient data", 
+                   ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(f"{structure}\n(no data)")
+
+    # Remove empty subplots
+    total_plots = n_rows * n_cols
+    for k in range(len(structures), total_plots):
+            fig.delaxes(axes[k // n_cols, k % n_cols])
+
+    # Shared colorbar
+    cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])  # [left, bottom, width, height]
+    norm = plt.Normalize(vmin=vmin, vmax=vmax)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, cax=cbar_ax)
+    cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
+    
+    # Add labels to explain the RVD interpretation
+    cbar.ax.text(1.5, vmax, '+Overestimation', ha='center', va='top', fontsize=10)
+    cbar.ax.text(1.5, vmin, '-Underestimation', ha='center', va='bottom', fontsize=10)
+
+
+    # Overall title
+    fig.suptitle(f'Inter-Pipeline Mean Relative Volume Difference (RVD) - All Datasets Combined', fontsize=18)
+    fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
+
+    output_path = output_dir / f'rvd_comparison_mean_ALL_DATASETS.png'
+    plt.savefig(output_path, bbox_inches='tight', dpi=300)
+    plt.close()
+    print(f"Saved: {output_path}")
+
 # ----------------------------
 # Main - using same config as data extraction script
 # ----------------------------
@@ -451,6 +653,9 @@ if __name__ == "__main__":
         print("✓ Distribution plots generated successfully!")
         create_correlation_figures(df_complete, EXPERIMENT_STATE_ROOT)
         print("✓ Correlation plots (Pearson & Spearman) generated successfully!")
+        # NEW FUNCTION CALL ADDED HERE
+        create_rvd_figures(df_complete, EXPERIMENT_STATE_ROOT)
+        print("✓ Mean RVD plots generated successfully!")
         
     else:
         print(f"✗ File not found: {tidy_path}")
