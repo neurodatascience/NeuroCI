@@ -4,7 +4,10 @@ import pandas as pd
 from pathlib import Path
 
 def filter_complete_pipelines(df_tidy):
-    """Return subset of df_tidy where all 4 pipelines are present per subject/structure/dataset."""
+    """
+    Return subset of df_tidy where all 4 pipelines are present per subject/structure/dataset.
+    This ensures that N is the same for all comparisons within a structure/dataset.
+    """
     required_pipelines = {
         'fslanat6071ants243',
         'freesurfer741ants243',
@@ -406,6 +409,9 @@ def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
     Calculates the mean Relative Volume Difference (RVD) matrix.
     RVD of V_B relative to V_A is (V_B - V_A) / V_A
     The matrix entry [A, B] is the mean RVD of B relative to A.
+    
+    CRITICAL FIX: Filters out infinite (division by zero) and NaN results before averaging
+    to prevent rare segmentation failures (V_Reference=0) from corrupting the overall mean.
     """
     rvd_matrix = pd.DataFrame(index=pipeline_order, columns=pipeline_order)
     
@@ -413,21 +419,29 @@ def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
         V_ref = pivot_df[ref_pipe]
         for comp_pipe in pipeline_order:
             if ref_pipe == comp_pipe:
-                # RVD of a volume relative to itself is 0
                 rvd_matrix.loc[ref_pipe, comp_pipe] = 0.0
             else:
                 V_comp = pivot_df[comp_pipe]
-                # Calculate RVD for each subject: (V_comp - V_ref) / V_ref
+                # Calculate RVD for each subject
                 rvd_values = (V_comp - V_ref) / V_ref
-                # Calculate the mean RVD across all subjects
-                mean_rvd = rvd_values.mean()
-                rvd_matrix.loc[ref_pipe, comp_pipe] = mean_rvd
                 
-    # Convert to float to ensure proper visualization
+                # FIX: Filter out Inf and NaN values before calculating the mean.
+                # This ensures a mean is calculated from the valid subjects.
+                # An infinite result means the reference volume V_ref was 0 for that subject.
+                finite_rvd_values = rvd_values[rvd_values.abs().isin([float('inf')]) == False].dropna()
+                
+                if len(finite_rvd_values) > 0:
+                    mean_rvd = finite_rvd_values.mean()
+                    rvd_matrix.loc[ref_pipe, comp_pipe] = mean_rvd
+                else:
+                    # If all values are Inf or NaN (meaning V_ref=0 for all subjects), set to NaN.
+                    rvd_matrix.loc[ref_pipe, comp_pipe] = float('nan')
+                
+    # Ensure the matrix contains floating point numbers
     return rvd_matrix.astype(float)
 
 # -------------------------------------------------------------
-# Function for RVD figures (Axis labels and ADJUSTED Over/Under-estimation labels RE-ADDED)
+# Function for RVD figures (Fix: Wider scale, explicit NaN/Inf handling for coloring/annotation)
 # -------------------------------------------------------------
 
 def create_rvd_figures(df_tidy, output_dir):
@@ -445,10 +459,10 @@ def create_rvd_figures(df_tidy, output_dir):
     }
     pipeline_order = list(pipeline_mapping.values())
 
-    # Define color scale and palette: RVD can range widely, setting a safe symmetric scale
-    # Using -1.0 to 1.0 corresponds to -100% to +100% relative difference
-    vmin, vmax, center = -1.0, 1.0, 0.0 
+    # Wider color scale: -3.0 to 3.0 (-300% to +300%)
+    vmin, vmax, center = -3.0, 3.0, 0.0 
     cmap = sns.color_palette("RdBu_r", as_cmap=True) # Diverging map, centered at 0
+    label_offset = 0.3
 
     # Individual dataset figures
     for dataset in df_tidy['dataset'].unique():
@@ -485,14 +499,26 @@ def create_rvd_figures(df_tidy, output_dir):
             if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
                 # Compute mean RVD
                 rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
-
+                
+                # --- Handle NaN values for annotation and coloring ---
+                nan_mask = rvd_matrix.isna()
+                
+                # Create annotation matrix: show RVD value (rounded), or 'Err' if NaN
+                annot_matrix = rvd_matrix.round(2).astype(str)
+                annot_matrix[nan_mask] = 'Err' # Use 'Err' for error/unplottable results (no valid subjects to average)
+                
+                # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
+                plot_rvd_matrix = rvd_matrix.clip(lower=vmin, upper=vmax) 
+                plot_rvd_matrix[nan_mask] = center # Set NaN to center color explicitly
+                # --- End NaN handling ---
+                
                 # Plot heatmap
                 sns.heatmap(
-                    rvd_matrix,
+                    plot_rvd_matrix, # Use the clipped/cleaned matrix for coloring
                     vmin=vmin, vmax=vmax, center=center,
                     cmap=cmap,
-                    annot=True, 
-                    fmt=".2f", # Display as fractional value (e.g., 0.10 means 10% relative difference)
+                    annot=annot_matrix, # Use the string annotation matrix for text
+                    fmt="s", # Format as string (because of 'Err' text)
                     square=True,
                     cbar=False,
                     ax=ax
@@ -501,7 +527,7 @@ def create_rvd_figures(df_tidy, output_dir):
                 # Improve label readability
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                # RE-ADDED: Axis labels for RVD
+                # Axis labels for RVD
                 ax.set_xlabel("Comparison Pipeline") 
                 ax.set_ylabel("Reference Pipeline") 
 
@@ -525,9 +551,9 @@ def create_rvd_figures(df_tidy, output_dir):
         cbar = fig.colorbar(sm, cax=cbar_ax)
         cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
         
-        # RE-ADDED and ADJUSTED: Overestimation/Underestimation labels
-        cbar.ax.text(1.5, vmax + 0.1, '+Overestimation', ha='center', va='top', fontsize=10) # Moved up
-        cbar.ax.text(1.5, vmin - 0.1, '-Underestimation', ha='center', va='bottom', fontsize=10) # Moved down
+        # ADJUSTED LABELS: Reflect the clipping range and moved for buffer
+        cbar.ax.text(1.5, vmax + label_offset, f'+Overestimation (≥ {vmax:.1f})', ha='center', va='top', fontsize=10) 
+        cbar.ax.text(1.5, vmin - label_offset, f'-Underestimation (≤ {vmin:.1f})', ha='center', va='bottom', fontsize=10)
 
 
         # Overall title
@@ -576,12 +602,25 @@ def create_rvd_figures(df_tidy, output_dir):
             # Compute mean RVD
             rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
 
+            # --- Handle NaN values for annotation and coloring ---
+            nan_mask = rvd_matrix.isna()
+            
+            # Create annotation matrix: show RVD value (rounded), or 'Err' if NaN
+            annot_matrix = rvd_matrix.round(2).astype(str)
+            annot_matrix[nan_mask] = 'Err' 
+            
+            # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
+            plot_rvd_matrix = rvd_matrix.clip(lower=vmin, upper=vmax) 
+            plot_rvd_matrix[nan_mask] = center 
+            # --- End NaN handling ---
+
             # Plot heatmap
             sns.heatmap(
-                rvd_matrix,
+                plot_rvd_matrix, # Use the clipped/cleaned matrix for coloring
                 vmin=vmin, vmax=vmax, center=center,
                 cmap=cmap,
-                annot=True, fmt=".2f",
+                annot=annot_matrix, # Use the string annotation matrix for text
+                fmt="s", # Format as string (because of 'Err' text)
                 square=True,
                 cbar=False,
                 ax=ax
@@ -590,7 +629,7 @@ def create_rvd_figures(df_tidy, output_dir):
             # Improve label readability
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
             ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            # RE-ADDED: Axis labels for RVD
+            # Axis labels for RVD
             ax.set_xlabel("Comparison Pipeline") 
             ax.set_ylabel("Reference Pipeline")
 
@@ -614,9 +653,9 @@ def create_rvd_figures(df_tidy, output_dir):
     cbar = fig.colorbar(sm, cax=cbar_ax)
     cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
     
-    # RE-ADDED and ADJUSTED: Overestimation/Underestimation labels
-    cbar.ax.text(1.5, vmax + 0.1, '+Overestimation', ha='center', va='top', fontsize=10) # Moved up
-    cbar.ax.text(1.5, vmin - 0.1, '-Underestimation', ha='center', va='bottom', fontsize=10) # Moved down
+    # ADJUSTED LABELS: Reflect the clipping range and moved for buffer
+    cbar.ax.text(1.5, vmax + label_offset, f'+Overestimation (≥ {vmax:.1f})', ha='center', va='top', fontsize=10) 
+    cbar.ax.text(1.5, vmin - label_offset, f'-Underestimation (≤ {vmin:.1f})', ha='center', va='bottom', fontsize=10)
 
 
     # Overall title
