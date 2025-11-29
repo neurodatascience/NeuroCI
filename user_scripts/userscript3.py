@@ -2,18 +2,18 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import itertools
-from scipy.stats import spearmanr, ttest_ind # MODIFIED: Changed pearsonr to spearmanr
+from scipy.stats import spearmanr, ttest_ind
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 # -----------------------------------------------------------------------------
-# Configuration
+# Configuration (kept as is)
 # -----------------------------------------------------------------------------
 EXPERIMENT_STATE_ROOT = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
 EXPERIMENT_STATE_ROOT.mkdir(parents=True, exist_ok=True)
 
 # -----------------------------------------------------------------------------
-# Helper functions
+# Helper functions (kept as is)
 # -----------------------------------------------------------------------------
 def load_tabular_data(dataset_path: Path):
     """Load all TSV files inside a dataset's 'tabular' directory into a dictionary."""
@@ -264,7 +264,7 @@ def main():
 
 
     # -------------------------------------------------------------------------
-    # Sex effects per pipeline_pair × structure (No change here)
+    # Sex effects per pipeline_pair × structure (MODIFIED)
     # -------------------------------------------------------------------------
     df_sex = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','sex']].copy()
     df_sex['volume_diff'] = pd.to_numeric(df_sex['volume_diff'], errors='coerce')
@@ -298,11 +298,22 @@ def main():
     sex_df_ordered = sex_df_ordered.sort_values('structure')
     
     sex_pivot = sex_df_ordered.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
+    p_pivot_sex = sex_df_ordered.pivot(index='structure', columns='pipeline_pair', values='p_adj') # NEW
+    
+    # Round Cohen's d values for display
+    sex_rounded = sex_pivot.round(2) # NEW
+    
+    # Mask annotations where p_adj >= 0.05
+    annot_matrix_sex = sex_rounded.astype(str) # NEW
+    annot_matrix_sex[p_pivot_sex >= 0.05] = ''  # NEW: empty string for non-significant
+    
     plt.figure(figsize=(10, 8))
-    sns.heatmap(sex_pivot, annot=True, cmap='vlag', center=0)
-    plt.title('Sex Effect (Cohen\'s d) on Volume Differences (n varies per pipeline_pair×structure)')
+    # MODIFIED: Use the masked annotation matrix and remove fmt
+    sns.heatmap(sex_pivot, annot=annot_matrix_sex, fmt='', cmap='vlag', center=0,
+                cbar_kws={'label': "Cohen's d"}) # Added cbar label for clarity
+    plt.title("Sex Effect (Cohen's d) on Volume Differences (significant d values only)") # MODIFIED Title
     plt.tight_layout()
-    plt.savefig(EXPERIMENT_STATE_ROOT / 'sex_effects_heatmap.png', dpi=300)
+    plt.savefig(EXPERIMENT_STATE_ROOT / 'sex_effects_heatmap_significant.png', dpi=300) # MODIFIED Filename
     plt.close()
 
 if __name__ == '__main__':
