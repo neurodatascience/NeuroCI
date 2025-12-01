@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from pathlib import Path
+import numpy as np # <-- Added numpy import
 
 def filter_complete_pipelines(df_tidy):
     """
@@ -401,51 +402,51 @@ def create_correlation_figures(df_tidy, output_dir):
         print(f"Saved: {output_path}")
 
 # -------------------------------------------------------------
-# Helper function for RVD calculation
+# Helper function for SVD calculation (Replaces RVD)
 # -------------------------------------------------------------
 
-def calculate_mean_rvd_matrix(pivot_df, pipeline_order):
+def calculate_mean_svd_matrix(pivot_df, pipeline_order):
     """
-    Calculates the mean Relative Volume Difference (RVD) matrix.
-    RVD of V_B relative to V_A is (V_B - V_A) / V_A
-    The matrix entry [A, B] is the mean RVD of B relative to A.
+    Calculates the mean Symmetric Volume Difference (SVD) matrix.
+    SVD = 2 * |V_A - V_B| / (V_A + V_B). Range [0, 2].
+    The matrix entry [A, B] is the mean SVD of the pair (A, B).
     
-    CRITICAL FIX: Filters out infinite (division by zero) and NaN results before averaging
-    to prevent rare segmentation failures (V_Reference=0) from corrupting the overall mean.
+    This metric is symmetric: SVD(A, B) = SVD(B, A).
+    It is also robust against division by zero (V_A + V_B = 0 only if both are 0).
     """
-    rvd_matrix = pd.DataFrame(index=pipeline_order, columns=pipeline_order)
+    svd_matrix = pd.DataFrame(index=pipeline_order, columns=pipeline_order)
     
-    for ref_pipe in pipeline_order:
-        V_ref = pivot_df[ref_pipe]
-        for comp_pipe in pipeline_order:
-            if ref_pipe == comp_pipe:
-                rvd_matrix.loc[ref_pipe, comp_pipe] = 0.0
+    for pipe_A in pipeline_order:
+        V_A = pivot_df[pipe_A]
+        for pipe_B in pipeline_order:
+            if pipe_A == pipe_B:
+                svd_matrix.loc[pipe_A, pipe_B] = 0.0
             else:
-                V_comp = pivot_df[comp_pipe]
-                # Calculate RVD for each subject
-                rvd_values = (V_comp - V_ref) / V_ref
+                V_B = pivot_df[pipe_B]
                 
-                # FIX: Filter out Inf and NaN values before calculating the mean.
-                # This ensures a mean is calculated from the valid subjects.
-                # An infinite result means the reference volume V_ref was 0 for that subject.
-                finite_rvd_values = rvd_values[rvd_values.abs().isin([float('inf')]) == False].dropna()
+                # Calculate SVD for each subject: 2 * |V_A - V_B| / (V_A + V_B)
+                denominator = V_A + V_B
+                svd_values = 2 * np.abs(V_A - V_B) / denominator
                 
-                if len(finite_rvd_values) > 0:
-                    mean_rvd = finite_rvd_values.mean()
-                    rvd_matrix.loc[ref_pipe, comp_pipe] = mean_rvd
+                # Filter out NaN/Inf values. This should only occur if 
+                # both V_A and V_B were exactly 0 (0/0 result)
+                finite_svd_values = svd_values[np.isfinite(svd_values)].dropna()
+                
+                if len(finite_svd_values) > 0:
+                    mean_svd = finite_svd_values.mean()
+                    svd_matrix.loc[pipe_A, pipe_B] = mean_svd
                 else:
-                    # If all values are Inf or NaN (meaning V_ref=0 for all subjects), set to NaN.
-                    rvd_matrix.loc[ref_pipe, comp_pipe] = float('nan')
+                    # If all subjects resulted in an error, set to NaN.
+                    svd_matrix.loc[pipe_A, pipe_B] = np.nan
                 
-    # Ensure the matrix contains floating point numbers
-    return rvd_matrix.astype(float)
+    return svd_matrix.astype(float)
 
 # -------------------------------------------------------------
-# Function for RVD figures (Fix: Wider scale, explicit NaN/Inf handling for coloring/annotation)
+# Function for SVD figures (Replaces RVD)
 # -------------------------------------------------------------
 
-def create_rvd_figures(df_tidy, output_dir):
-    """Create inter-pipeline mean Relative Volume Difference (RVD) matrix plots for all brain structures per dataset."""
+def create_svd_figures(df_tidy, output_dir):
+    """Create inter-pipeline mean Symmetric Volume Difference (SVD) matrix plots for all brain structures per dataset."""
 
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
@@ -459,15 +460,16 @@ def create_rvd_figures(df_tidy, output_dir):
     }
     pipeline_order = list(pipeline_mapping.values())
 
-    # Wider color scale: -3.0 to 3.0 (-300% to +300%)
-    vmin, vmax, center = -3.0, 3.0, 0.0 
-    cmap = sns.color_palette("RdBu_r", as_cmap=True) # Diverging map, centered at 0
-    label_offset = 0.3
+    # Sequential color scale: 0.0 to 0.5 (representing 0% to 50% difference relative to average volume)
+    vmin, vmax, center = 0.0, 0.5, 0.0 
+    # Use a sequential map where higher values (worse agreement) are darker/more intense
+    cmap = sns.color_palette("magma_r", as_cmap=True) 
+    label_offset = 0.03 # Smaller offset for sequential scale
 
     # Individual dataset figures
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
-        print(f"Creating mean RVD matrices for {dataset} with {len(dataset_data)} rows...")
+        print(f"Creating mean SVD matrices for {dataset} with {len(dataset_data)} rows...")
 
         plot_data = dataset_data.copy()
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
@@ -495,27 +497,28 @@ def create_rvd_figures(df_tidy, output_dir):
                 values='volume_mm3'
             )
 
-            # Only compute RVD if we have data for all pipelines
+            # Only compute SVD if we have data for all pipelines
             if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-                # Compute mean RVD
-                rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
+                # Compute mean SVD
+                svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
                 
                 # --- Handle NaN values for annotation and coloring ---
-                nan_mask = rvd_matrix.isna()
+                nan_mask = svd_matrix.isna()
                 
-                # Create annotation matrix: show RVD value (rounded), or 'Err' if NaN
-                annot_matrix = rvd_matrix.round(2).astype(str)
-                annot_matrix[nan_mask] = 'Err' # Use 'Err' for error/unplottable results (no valid subjects to average)
+                # Create annotation matrix: show SVD value (rounded), or 'Err' if NaN
+                annot_matrix = svd_matrix.round(2).astype(str)
+                annot_matrix[nan_mask] = 'Err' # Use 'Err' for unplottable results (no valid subjects to average)
                 
                 # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
-                plot_rvd_matrix = rvd_matrix.clip(lower=vmin, upper=vmax) 
-                plot_rvd_matrix[nan_mask] = center # Set NaN to center color explicitly
+                plot_svd_matrix = svd_matrix.clip(lower=vmin, upper=vmax) 
+                # Set NaN to vmin for neutral color plotting, relying on 'Err' annotation
+                plot_svd_matrix[nan_mask] = vmin 
                 # --- End NaN handling ---
                 
                 # Plot heatmap
                 sns.heatmap(
-                    plot_rvd_matrix, # Use the clipped/cleaned matrix for coloring
-                    vmin=vmin, vmax=vmax, center=center,
+                    plot_svd_matrix, # Use the clipped/cleaned matrix for coloring
+                    vmin=vmin, vmax=vmax, # Use non-diverging scale
                     cmap=cmap,
                     annot=annot_matrix, # Use the string annotation matrix for text
                     fmt="s", # Format as string (because of 'Err' text)
@@ -527,9 +530,9 @@ def create_rvd_figures(df_tidy, output_dir):
                 # Improve label readability
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                # Axis labels for RVD
-                ax.set_xlabel("Comparison Pipeline") 
-                ax.set_ylabel("Reference Pipeline") 
+                # Axis labels for SVD
+                ax.set_xlabel("Pipeline B") 
+                ax.set_ylabel("Pipeline A") 
 
                 n_points = pivot_df.shape[0]
                 ax.set_title(f"{structure}\n(n={n_points})")
@@ -549,24 +552,24 @@ def create_rvd_figures(df_tidy, output_dir):
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
         cbar = fig.colorbar(sm, cax=cbar_ax)
-        cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
+        cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
         
-        # ADJUSTED LABELS: Reflect the clipping range and moved for buffer
-        cbar.ax.text(1.5, vmax + label_offset, f'+Overestimation (≥ {vmax:.1f})', ha='center', va='top', fontsize=10) 
-        cbar.ax.text(1.5, vmin - label_offset, f'-Underestimation (≤ {vmin:.1f})', ha='center', va='bottom', fontsize=10)
+        # ADDED LABELS for sequential scale
+        cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
+        cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
 
 
         # Overall title
-        fig.suptitle(f'Inter-Pipeline Mean Relative Volume Difference (RVD) - {dataset}', fontsize=18)
+        fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {dataset}', fontsize=18)
         fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])  # leave room for colorbar on the right
 
-        output_path = output_dir / f'rvd_comparison_mean_{dataset}.png'
+        output_path = output_dir / f'svd_comparison_mean_{dataset}.png'
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
         print(f"Saved: {output_path}")
 
     # Combined dataset figures (pooled across all datasets)
-    print("Creating combined mean RVD matrices (all datasets pooled)...")
+    print("Creating combined mean SVD matrices (all datasets pooled)...")
     plot_data = df_tidy.copy()
     plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
     
@@ -597,27 +600,27 @@ def create_rvd_figures(df_tidy, output_dir):
             values='volume_mm3'
         )
 
-        # Only compute RVD if we have data for all pipelines
+        # Only compute SVD if we have data for all pipelines
         if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-            # Compute mean RVD
-            rvd_matrix = calculate_mean_rvd_matrix(pivot_df, pipeline_order)
+            # Compute mean SVD
+            svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
 
             # --- Handle NaN values for annotation and coloring ---
-            nan_mask = rvd_matrix.isna()
+            nan_mask = svd_matrix.isna()
             
-            # Create annotation matrix: show RVD value (rounded), or 'Err' if NaN
-            annot_matrix = rvd_matrix.round(2).astype(str)
+            # Create annotation matrix: show SVD value (rounded), or 'Err' if NaN
+            annot_matrix = svd_matrix.round(2).astype(str)
             annot_matrix[nan_mask] = 'Err' 
             
             # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
-            plot_rvd_matrix = rvd_matrix.clip(lower=vmin, upper=vmax) 
-            plot_rvd_matrix[nan_mask] = center 
+            plot_svd_matrix = svd_matrix.clip(lower=vmin, upper=vmax) 
+            plot_svd_matrix[nan_mask] = vmin 
             # --- End NaN handling ---
 
             # Plot heatmap
             sns.heatmap(
-                plot_rvd_matrix, # Use the clipped/cleaned matrix for coloring
-                vmin=vmin, vmax=vmax, center=center,
+                plot_svd_matrix, # Use the clipped/cleaned matrix for coloring
+                vmin=vmin, vmax=vmax, # Use non-diverging scale
                 cmap=cmap,
                 annot=annot_matrix, # Use the string annotation matrix for text
                 fmt="s", # Format as string (because of 'Err' text)
@@ -629,9 +632,9 @@ def create_rvd_figures(df_tidy, output_dir):
             # Improve label readability
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
             ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            # Axis labels for RVD
-            ax.set_xlabel("Comparison Pipeline") 
-            ax.set_ylabel("Reference Pipeline")
+            # Axis labels for SVD
+            ax.set_xlabel("Pipeline B") 
+            ax.set_ylabel("Pipeline A")
 
             n_points = pivot_df.shape[0]
             ax.set_title(f"{structure}\n(n={n_points})")
@@ -651,18 +654,18 @@ def create_rvd_figures(df_tidy, output_dir):
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = fig.colorbar(sm, cax=cbar_ax)
-    cbar.set_label("Mean RVD (Fractional)", rotation=270, labelpad=15)
+    cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
     
-    # ADJUSTED LABELS: Reflect the clipping range and moved for buffer
-    cbar.ax.text(1.5, vmax + label_offset, f'+Overestimation (≥ {vmax:.1f})', ha='center', va='top', fontsize=10) 
-    cbar.ax.text(1.5, vmin - label_offset, f'-Underestimation (≤ {vmin:.1f})', ha='center', va='bottom', fontsize=10)
+    # ADDED LABELS for sequential scale
+    cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
+    cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
 
 
     # Overall title
-    fig.suptitle(f'Inter-Pipeline Mean Relative Volume Difference (RVD) - All Datasets Combined', fontsize=18)
+    fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - All Datasets Combined', fontsize=18)
     fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
 
-    output_path = output_dir / f'rvd_comparison_mean_ALL_DATASETS.png'
+    output_path = output_dir / f'svd_comparison_mean_ALL_DATASETS.png'
     plt.savefig(output_path, bbox_inches='tight', dpi=300)
     plt.close()
     print(f"Saved: {output_path}")
@@ -694,9 +697,9 @@ if __name__ == "__main__":
         print("✓ Distribution plots generated successfully!")
         create_correlation_figures(df_complete, EXPERIMENT_STATE_ROOT)
         print("✓ Correlation plots (Pearson & Spearman) generated successfully!")
-        # RVD function call
-        create_rvd_figures(df_complete, EXPERIMENT_STATE_ROOT)
-        print("✓ Mean RVD plots generated successfully!")
+        # SVD function call (Renamed from create_rvd_figures)
+        create_svd_figures(df_complete, EXPERIMENT_STATE_ROOT)
+        print("✓ Mean SVD plots generated successfully!")
         
     else:
         print(f"✗ File not found: {tidy_path}")
