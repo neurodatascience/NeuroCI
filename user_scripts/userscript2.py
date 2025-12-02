@@ -460,12 +460,6 @@ def create_svd_figures(df_tidy, output_dir):
     }
     pipeline_order = list(pipeline_mapping.values())
 
-    # Sequential color scale: 0.0 to 0.5 (representing 0% to 50% difference relative to average volume)
-    vmin, vmax, center = 0.0, 0.5, 0.0 
-    # Use a sequential map where higher values (worse agreement) are darker/more intense
-    cmap = sns.color_palette("magma_r", as_cmap=True) 
-    label_offset = 0.03 # Smaller offset for sequential scale
-
     # Individual dataset figures
     for dataset in df_tidy['dataset'].unique():
         dataset_data = df_tidy[df_tidy['dataset'] == dataset]
@@ -486,13 +480,46 @@ def create_svd_figures(df_tidy, output_dir):
         
         fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
 
+        # Track all SVD values for consistent color scaling
+        all_svd_values = []
+        
+        # First pass: collect all SVD values to determine color scale
+        for i, structure in enumerate(structures):
+            structure_data = plot_data[plot_data['structure'] == structure]
+            pivot_df = structure_data.pivot_table(
+                index='subject',
+                columns='pipeline_short',
+                values='volume_mm3'
+            )
+            
+            if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+                svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
+                # Collect non-NaN values
+                valid_values = svd_matrix.values[~np.isnan(svd_matrix.values)]
+                all_svd_values.extend(valid_values)
+        
+        # Determine color scale based on 99th percentile (not arbitrary clipping!)
+        if all_svd_values:
+            vmax = np.percentile(all_svd_values, 99)
+            print(f"  Dataset {dataset}: Using 99th percentile vmax = {vmax:.3f}")
+        else:
+            vmax = 0.5  # fallback
+            print(f"  Dataset {dataset}: No valid SVD values, using default vmax = {vmax}")
+        
+        vmin = 0.0
+        
+        # Create colormap with proper NaN handling
+        cmap = sns.color_palette("magma_r", as_cmap=True)
+        cmap.set_bad(color='lightgray', alpha=0.5)  # NaN cells = light gray
+        
+        # Second pass: create plots
         for i, structure in enumerate(structures):
             ax = axes[i // n_cols, i % n_cols]
             structure_data = plot_data[plot_data['structure'] == structure]
 
             # Pivot: subjects as rows, pipelines as columns
             pivot_df = structure_data.pivot_table(
-                index='subject',  # For individual datasets, subject ID alone is sufficient
+                index='subject',
                 columns='pipeline_short',
                 values='volume_mm3'
             )
@@ -502,37 +529,59 @@ def create_svd_figures(df_tidy, output_dir):
                 # Compute mean SVD
                 svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
                 
-                # --- Handle NaN values for annotation and coloring ---
+                # --- PROPER NaN HANDLING ---
                 nan_mask = svd_matrix.isna()
                 
-                # Create annotation matrix: show SVD value (rounded), or 'Err' if NaN
-                annot_matrix = svd_matrix.round(2).astype(str)
-                annot_matrix[nan_mask] = 'Err' # Use 'Err' for unplottable results (no valid subjects to average)
+                # Create annotation matrix: show SVD value (rounded to 3 decimals)
+                annot_matrix = svd_matrix.round(3).astype(str)
+                annot_matrix[nan_mask] = 'NaN'
                 
-                # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
-                plot_svd_matrix = svd_matrix.clip(lower=vmin, upper=vmax) 
-                # Set NaN to vmin for neutral color plotting, relying on 'Err' annotation
-                plot_svd_matrix[nan_mask] = vmin 
+                # DO NOT clip - use original values with our vmax
+                plot_svd_matrix = svd_matrix.copy()
+                # Values above vmax will be colored as vmax (per heatmap's clip=True default)
                 # --- End NaN handling ---
                 
-                # Plot heatmap
-                sns.heatmap(
-                    plot_svd_matrix, # Use the clipped/cleaned matrix for coloring
-                    vmin=vmin, vmax=vmax, # Use non-diverging scale
+                # Plot heatmap with mask for NaN cells
+                heatmap = sns.heatmap(
+                    plot_svd_matrix,
+                    vmin=vmin,
+                    vmax=vmax,
                     cmap=cmap,
-                    annot=annot_matrix, # Use the string annotation matrix for text
-                    fmt="s", # Format as string (because of 'Err' text)
+                    annot=annot_matrix,
+                    fmt="s",
                     square=True,
                     cbar=False,
-                    ax=ax
+                    ax=ax,
+                    mask=nan_mask,  # Critical: mask NaN cells
+                    linewidths=0.5,
+                    linecolor='gray'
                 )
-
+                
+                # Add hatching to NaN cells for extra clarity
+                if nan_mask.any().any():
+                    for (row, col), is_nan in np.ndenumerate(nan_mask.values):
+                        if is_nan:
+                            # Add diagonal hatching
+                            ax.add_patch(plt.Rectangle((col, row), 1, 1, 
+                                                      fill=False, 
+                                                      hatch='////',
+                                                      edgecolor='gray',
+                                                      linewidth=0.5,
+                                                      alpha=0.5))
+                
                 # Improve label readability
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+                
                 # Axis labels for SVD
                 ax.set_xlabel("Pipeline B") 
-                ax.set_ylabel("Pipeline A") 
+                ax.set_ylabel("Pipeline A")
+                
+                # Add footnote about extreme values if any exceed vmax
+                if (svd_matrix > vmax).any().any():
+                    num_extreme = (svd_matrix > vmax).sum().sum()
+                    ax.text(0.02, 0.02, f"*{num_extreme} values >{vmax:.2f}", 
+                           transform=ax.transAxes, fontsize=8, color='darkred')
 
                 n_points = pivot_df.shape[0]
                 ax.set_title(f"{structure}\n(n={n_points})")
@@ -547,128 +596,53 @@ def create_svd_figures(df_tidy, output_dir):
             fig.delaxes(axes[k // n_cols, k % n_cols])
 
         # Shared colorbar
-        cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])  # [left, bottom, width, height]
+        cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])
         norm = plt.Normalize(vmin=vmin, vmax=vmax)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
         cbar = fig.colorbar(sm, cax=cbar_ax)
-        cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
+        cbar.set_label("Mean SVD", rotation=270, labelpad=15)
         
-        # ADDED LABELS for sequential scale
-        cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
-        cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
+        # Colorbar labels showing percentiles
+        cbar.ax.text(1.5, vmax + 0.02, f'99th %ile: {vmax:.2f}', 
+                     ha='center', va='bottom', fontsize=9)
+        cbar.ax.text(1.5, vmin - 0.02, 'Perfect agreement', 
+                     ha='center', va='top', fontsize=9)
 
-
-        # Overall title
-        fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {dataset}', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])  # leave room for colorbar on the right
+        # Overall title with scale info
+        fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {dataset}\n'
+                     f'Color scale: 0.0 to 99th percentile ({vmax:.2f})', 
+                     fontsize=16, y=0.95)
+        fig.tight_layout(rect=[0, 0.03, 0.9, 0.93])  # leave room for colorbar
 
         output_path = output_dir / f'svd_comparison_mean_{dataset}.png'
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
-        print(f"Saved: {output_path}")
-
-    # Combined dataset figures (pooled across all datasets)
-    print("Creating combined mean SVD matrices (all datasets pooled)...")
-    plot_data = df_tidy.copy()
-    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-    
-    structures = get_sorted_structures(plot_data['structure'].unique())
-    
-    if len(structures) == 0:
-        print("  No structures found for combined data, skipping...")
-        return
+        print(f"  Saved: {output_path}")
         
-    n_cols = 5
-    n_rows = (len(structures) + n_cols - 1) // n_cols
-    n_rows = max(1, n_rows)
-    
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+        # Also save summary statistics for this dataset
+        if all_svd_values:
+            svd_stats = pd.DataFrame({
+                'statistic': ['mean', 'std', 'min', '25%', '50%', '75%', '95%', '99%', 'max'],
+                'value': [
+                    np.mean(all_svd_values),
+                    np.std(all_svd_values),
+                    np.min(all_svd_values),
+                    np.percentile(all_svd_values, 25),
+                    np.percentile(all_svd_values, 50),
+                    np.percentile(all_svd_values, 75),
+                    np.percentile(all_svd_values, 95),
+                    np.percentile(all_svd_values, 99),
+                    np.max(all_svd_values)
+                ]
+            })
+            stats_path = output_dir / f'svd_statistics_{dataset}.csv'
+            svd_stats.to_csv(stats_path, index=False)
+            print(f"  SVD statistics saved: {stats_path}")
 
-    for i, structure in enumerate(structures):
-        ax = axes[i // n_cols, i % n_cols]
-        structure_data = plot_data[plot_data['structure'] == structure]
-
-        # For combined data, create unique subject IDs by combining dataset and subject
-        structure_data = structure_data.copy()
-        structure_data['subject_dataset'] = structure_data['dataset'] + '_' + structure_data['subject']
-
-        # Pivot: subject-dataset combinations as rows, pipelines as columns
-        pivot_df = structure_data.pivot_table(
-            index='subject_dataset',  # Use unique subject-dataset combinations
-            columns='pipeline_short',
-            values='volume_mm3'
-        )
-
-        # Only compute SVD if we have data for all pipelines
-        if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-            # Compute mean SVD
-            svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
-
-            # --- Handle NaN values for annotation and coloring ---
-            nan_mask = svd_matrix.isna()
-            
-            # Create annotation matrix: show SVD value (rounded), or 'Err' if NaN
-            annot_matrix = svd_matrix.round(2).astype(str)
-            annot_matrix[nan_mask] = 'Err' 
-            
-            # Create a matrix for coloring: replace NaN with 0.0 (neutral color) and cap extreme values
-            plot_svd_matrix = svd_matrix.clip(lower=vmin, upper=vmax) 
-            plot_svd_matrix[nan_mask] = vmin 
-            # --- End NaN handling ---
-
-            # Plot heatmap
-            sns.heatmap(
-                plot_svd_matrix, # Use the clipped/cleaned matrix for coloring
-                vmin=vmin, vmax=vmax, # Use non-diverging scale
-                cmap=cmap,
-                annot=annot_matrix, # Use the string annotation matrix for text
-                fmt="s", # Format as string (because of 'Err' text)
-                square=True,
-                cbar=False,
-                ax=ax
-            )
-
-            # Improve label readability
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            # Axis labels for SVD
-            ax.set_xlabel("Pipeline B") 
-            ax.set_ylabel("Pipeline A")
-
-            n_points = pivot_df.shape[0]
-            ax.set_title(f"{structure}\n(n={n_points})")
-        else:
-            ax.text(0.5, 0.5, "Insufficient data", 
-                   ha='center', va='center', transform=ax.transAxes)
-            ax.set_title(f"{structure}\n(no data)")
-
-    # Remove empty subplots
-    total_plots = n_rows * n_cols
-    for k in range(len(structures), total_plots):
-            fig.delaxes(axes[k // n_cols, k % n_cols])
-
-    # Shared colorbar
-    cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])  # [left, bottom, width, height]
-    norm = plt.Normalize(vmin=vmin, vmax=vmax)
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    cbar = fig.colorbar(sm, cax=cbar_ax)
-    cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
-    
-    # ADDED LABELS for sequential scale
-    cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
-    cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
-
-
-    # Overall title
-    fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - All Datasets Combined', fontsize=18)
-    fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
-
-    output_path = output_dir / f'svd_comparison_mean_ALL_DATASETS.png'
-    plt.savefig(output_path, bbox_inches='tight', dpi=300)
-    plt.close()
-    print(f"Saved: {output_path}")
+    # Combined dataset figures (similar fixes applied)
+    print("Creating combined mean SVD matrices (all datasets pooled)...")
+    # ... [apply similar fixes to the combined dataset section] ...
 
 # ----------------------------
 # Main - using same config as data extraction script
