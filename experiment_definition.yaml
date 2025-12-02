@@ -11,7 +11,7 @@ pipelines: # Use the *exact* same pipeline names and versions specified in the N
   freesurfer741ants243: "7.4.1"
   samseg8001ants243: "8.0.0.1"
 
-userscripts: # Python scripts stored in the user_scripts directory in the repository.
+userscripts: # Python scripts stored in the user_scripts directory in the repository
   script1: "userscript1.py" # Build table of volumetry
   script2: "userscript2.py" # Plot volume correlations and distributions
   script3: "userscript3.py" # Demographic analyses
