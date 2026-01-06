@@ -6,7 +6,7 @@ import numpy as np # <-- Added numpy import
 
 def filter_complete_pipelines(df_tidy):
     """
-    Return subset of df_tidy where all 4 pipelines are present per subject/structure/dataset.
+    Return subset of df_tidy where all 4 pipelines are present per subject/session/structure/dataset.
     This ensures that N is the same for all comparisons within a structure/dataset.
     """
     required_pipelines = {
@@ -16,9 +16,9 @@ def filter_complete_pipelines(df_tidy):
         'samseg8001ants243'
     }
 
-    # Count how many unique pipelines exist per subject/structure/dataset
+    # Count how many unique pipelines exist per subject/session/structure/dataset
     counts = (
-        df_tidy.groupby(['dataset', 'subject', 'structure'])['pipeline']
+        df_tidy.groupby(['dataset', 'subject', 'session', 'structure'])['pipeline']
         .nunique()
         .reset_index(name='n_pipelines')
     )
@@ -27,7 +27,8 @@ def filter_complete_pipelines(df_tidy):
     complete = counts[counts['n_pipelines'] == len(required_pipelines)]
 
     # Merge back to original data to keep only valid rows
-    df_filtered = df_tidy.merge(complete[['dataset', 'subject', 'structure']], on=['dataset', 'subject', 'structure'])
+    df_filtered = df_tidy.merge(complete[['dataset', 'subject', 'session', 'structure']], 
+                                on=['dataset', 'subject', 'session', 'structure'])
     
     print(f"Filtered from {len(df_tidy)} -> {len(df_filtered)} rows (only complete 4-pipeline cases).")
     return df_filtered
@@ -72,9 +73,9 @@ def get_sorted_structures(structures):
     
     return sorted_structures
 
-def count_unique_subjects(structure_data):
-    """Count unique subject-dataset combinations to avoid double-counting same subject ID across datasets."""
-    return len(structure_data[['dataset', 'subject']].drop_duplicates())
+def count_unique_scans(structure_data):
+    """Count unique dataset-subject-session combinations."""
+    return len(structure_data[['dataset', 'subject', 'session']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
     """Create overlapping histograms (counts) for all pipelines per structure."""
@@ -136,8 +137,8 @@ def create_distribution_figures(df_tidy, output_dir):
                     )
             
             if len(structure_data) > 0:
-                # For individual datasets, just count unique subjects
-                n_points = len(structure_data['subject'].unique())
+                # For individual datasets, count unique subject-session pairs
+                n_points = len(structure_data[['subject', 'session']].drop_duplicates())
                 ax.set_title(f"{structure}\n(n={n_points})")
                 ax.set_xlabel('Volume (mm³)')
                 ax.set_ylabel('Count')
@@ -194,8 +195,8 @@ def create_distribution_figures(df_tidy, output_dir):
                 )
         
         if len(structure_data) > 0:
-            # For combined data, count unique subject-dataset combinations
-            n_points = count_unique_subjects(structure_data)
+            # For combined data, count unique dataset-subject-session combinations
+            n_points = count_unique_scans(structure_data)
             ax.set_title(f"{structure}\n(n={n_points})")
             ax.set_xlabel('Volume (mm³)')
             ax.set_ylabel('Count')
@@ -258,9 +259,13 @@ def create_correlation_figures(df_tidy, output_dir):
                 ax = axes[i // n_cols, i % n_cols]
                 structure_data = plot_data[plot_data['structure'] == structure]
 
-                # Pivot: subjects as rows, pipelines as columns
+                # Create unique identifier for pivoting (subject + session)
+                structure_data = structure_data.copy()
+                structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
+
+                # Pivot: scans as rows, pipelines as columns
                 pivot_df = structure_data.pivot_table(
-                    index='subject',  # For individual datasets, subject ID alone is sufficient
+                    index='scan_id', 
                     columns='pipeline_short',
                     values='volume_mm3'
                 )
@@ -339,13 +344,13 @@ def create_correlation_figures(df_tidy, output_dir):
             ax = axes[i // n_cols, i % n_cols]
             structure_data = plot_data[plot_data['structure'] == structure]
 
-            # For combined data, create unique subject IDs by combining dataset and subject
+            # For combined data, create unique IDs by combining dataset, subject, and session
             structure_data = structure_data.copy()
-            structure_data['subject_dataset'] = structure_data['dataset'] + '_' + structure_data['subject']
+            structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
 
-            # Pivot: subject-dataset combinations as rows, pipelines as columns
+            # Pivot: scan combinations as rows, pipelines as columns
             pivot_df = structure_data.pivot_table(
-                index='subject_dataset',  # Use unique subject-dataset combinations
+                index='scan_id',  # Use unique scan combinations
                 columns='pipeline_short',
                 values='volume_mm3'
             )
@@ -490,9 +495,13 @@ def create_svd_figures(df_tidy, output_dir):
             ax = axes[i // n_cols, i % n_cols]
             structure_data = plot_data[plot_data['structure'] == structure]
 
-            # Pivot: subjects as rows, pipelines as columns
+            # Create unique identifier for pivoting (subject + session)
+            structure_data = structure_data.copy()
+            structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
+
+            # Pivot: scans as rows, pipelines as columns
             pivot_df = structure_data.pivot_table(
-                index='subject',  # For individual datasets, subject ID alone is sufficient
+                index='scan_id', 
                 columns='pipeline_short',
                 values='volume_mm3'
             )
@@ -589,13 +598,13 @@ def create_svd_figures(df_tidy, output_dir):
         ax = axes[i // n_cols, i % n_cols]
         structure_data = plot_data[plot_data['structure'] == structure]
 
-        # For combined data, create unique subject IDs by combining dataset and subject
+        # For combined data, create unique IDs by combining dataset, subject, and session
         structure_data = structure_data.copy()
-        structure_data['subject_dataset'] = structure_data['dataset'] + '_' + structure_data['subject']
+        structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
 
-        # Pivot: subject-dataset combinations as rows, pipelines as columns
+        # Pivot: scan combinations as rows, pipelines as columns
         pivot_df = structure_data.pivot_table(
-            index='subject_dataset',  # Use unique subject-dataset combinations
+            index='scan_id',  # Use unique scan combinations
             columns='pipeline_short',
             values='volume_mm3'
         )
