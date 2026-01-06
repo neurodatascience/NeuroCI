@@ -4,6 +4,7 @@ datasets:
   ds005752: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds005752_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds005752/versions/2.1.0
   ds003592: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds003592_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds003592/versions/1.0.13
   ds002345: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds002345_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds002345/versions/1.1.4
+  Rockland: "/data/origami/jacob/neuroci_test/nipoppy_datasets/NKI_nipoppy" # NKI Rockland Sample - https://github.com/ReproBrainChart/NKI_BIDS / https://reprobrainchart.github.io/docs/datasets/
 
 pipelines: # Use the *exact* same pipeline names and versions specified in the Nipoppy datasets above
   fslanat6071ants243: "6.0.7.1"
