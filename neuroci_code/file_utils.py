@@ -5,6 +5,7 @@ import json
 import csv
 import os
 import shlex
+import io
 from pathlib import Path
 
 class FileOperations:
@@ -154,14 +155,17 @@ class FileOperations:
             logging.info(f"Creating tarball on remote: {remote_tar_name} with selected files")
 
             # --- Create remote file list safely ---
-            filelist_name = f"{remote_tar_name}.list"
-            conn.run(f"rm -f {shlex.quote(filelist_name)}", hide=True)
-
-            # Build the file list remotely, avoiding local expansion
-            # Note: this still goes through the remote shell, so extremely long path lists may need chunking,
-            # but it avoids local ARG_MAX issues entirely.
-            escaped_paths = " ".join(shlex.quote(p) for p in tar_paths)
-            conn.run(f"printf '%s\\n' {escaped_paths} > {shlex.quote(filelist_name)}", hide=True)
+            # --- Create remote file list safely (Solution 2) ---
+                    # Instead of using 'printf' in the shell (which hits ARG_MAX limits),
+                    # we construct the file content in Python memory and stream it via SFTP.
+                    filelist_name = f"{remote_tar_name}.list"
+                    
+                    # Join paths with newlines to create the file content string
+                    file_content = "\n".join(tar_paths)
+                    
+                    # Upload directly to the remote path using an in-memory file object
+                    # This bypasses the shell argument buffer entirely.
+                    conn.put(io.StringIO(file_content), remote=filelist_name)
 
             # --- Create the tarball from the file list ---
             tar_cmd = (
