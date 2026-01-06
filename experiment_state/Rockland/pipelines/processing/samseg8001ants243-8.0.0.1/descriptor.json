@@ -1,0 +1,100 @@
+{
+  "name": "samseg8001ants243",
+  "schema-version": "0.5",
+  "tool-version": "8.0.0.1",
+  "description": "Runs SAMSEG for segmentation of brain structures from MRI volumes and registers the segmentation to MNI space.",
+  "command-line": "[[NIPOPPY_CONTAINER_COMMAND]] [[NIPOPPY_FPATH_CONTAINER]] bash [SCRIPT] [LICENSE_FILE] [INPUTS] [OUTPUT_DIR] [THREADS] [PALLIDUM_SEPARATE] [STD_SPACE]",
+  "inputs": [
+    {
+      "name": "License file",
+      "value-key": "[LICENSE_FILE]",
+      "optional": false,
+      "description": "Valid license file needed to run FreeSurfer.",
+      "id": "license",
+      "type": "File"
+    },	  
+    {
+      "name": "Input MRI volume(s)",
+      "id": "inputs",
+      "type": "File",
+      "list": true,
+      "optional": false,
+      "value-key": "[INPUTS]",
+      "description": "List of input NIFTI (.nii/.nii.gz) or MGZ volumes (e.g., T1w, T2w) that are co-registered and have same grid/voxel dimensions."
+    },
+    {
+      "name": "Output directory",
+      "id": "output_dir",
+      "type": "String",
+      "optional": false,
+      "value-key": "[OUTPUT_DIR]",
+      "description": "Path to the directory where SAMSEG and registration outputs will be stored."
+    },
+    {
+      "name": "Threads",
+      "id": "threads",
+      "type": "Number",
+      "optional": true,
+      "value-key": "[THREADS]",
+      "command-line-flag": "--threads",
+      "description": "Number of threads to use for processing."
+    },
+    {
+      "name": "Separate Pallidum",
+      "id": "pallidum_separate_flag",
+      "type": "Flag",
+      "optional": true,
+      "value-key": "[PALLIDUM_SEPARATE]",
+      "command-line-flag": "--pallidum-separate",
+      "description": "Separate the pallidum from white matter (useful if input includes T2w or FLAIR)."
+    },
+    {
+      "name": "Standard Space Template",
+      "id": "std_space",
+      "type": "File",
+      "optional": false,
+      "value-key": "[STD_SPACE]",
+      "description": "Path to the standard space (e.g., MNI152) template used as the fixed image in registration."
+    },
+    {
+      "id": "script",
+      "name": "Pipeline script",
+      "type": "File",
+      "description": "Bash script that runs run_samseg, mri_convert, antsRegistration",
+      "optional": false,
+      "value-key": "[SCRIPT]"
+    }
+  ],
+  "output-files": [
+    {
+      "name": "Segmentation Output (SAMSEG native space)",
+      "id": "seg_output",
+      "optional": false,
+      "path-template": "[OUTPUT_DIR]",
+      "description": "Directory containing SAMSEG segmentation outputs (including seg.mgz and seg.nii.gz)."
+    },
+    {
+      "name": "Segmentation in MNI space",
+      "id": "seg_mni",
+      "optional": false,
+      "path-template": "[OUTPUT_DIR]/seg_MNI_Warped.nii.gz",
+      "description": "SAMSEG segmentation resampled into standard (MNI) space."
+    }
+  ],
+  "error-codes": [
+    {
+      "code": 1,
+      "description": "SAMSEG failed to run."
+    },
+    {
+      "code": 2,
+      "description": "ANTs registration failed to run."
+    }
+  ],
+  "custom": {
+        "nipoppy": {
+            "CONTAINER_SUBCOMMAND": "exec"
+        }
+   }
+}
+
