@@ -43,6 +43,20 @@ def extract_demographics(dataset_name, dfs):
         df = dfs.get('participants', pd.DataFrame())
         if not df.empty:
             df_demo = df[['participant_id', 'age', 'sex']].rename(columns={'participant_id': 'subject'})
+    elif dataset_name.lower() == 'rockland':
+        # Look for any participants file (e.g. study-NKI_desc-participants)
+        # Using a list comprehension to find key 'participants' or similar if dict key varies, 
+        # but relying on file stem from load_tabular_data. 
+        # The prompt mentions: "study-NKI_desc-participants.tsv" -> stem "study-NKI_desc-participants"
+        key = next((k for k in dfs.keys() if 'participants' in k), None)
+        if key:
+            df = dfs[key]
+            if 'participant_id' in df.columns and 'session_id' in df.columns:
+                df_demo = df[['participant_id', 'session_id', 'age', 'sex']].rename(
+                    columns={'participant_id': 'subject', 'session_id': 'session'}
+                )
+                # Normalize session to BIDS format (ses-BAS1) to match df_tidy if needed
+                df_demo['session'] = df_demo['session'].apply(lambda x: f"ses-{x}" if not str(x).startswith('ses-') else x)
     else:
         if 'participants' in dfs:
             df_demo = dfs['participants'].rename(columns={'participant_id': 'subject'})
@@ -98,8 +112,9 @@ def get_structure_order():
 
 def create_age_distribution_plot(df, output_dir):
     """Create a single histogram showing age distributions for all datasets overlaid."""
-    # Get unique subjects with their ages and datasets
-    subject_ages = df[['dataset', 'subject', 'age']].drop_duplicates().dropna(subset=['age'])
+    # Get unique scans (subject+session) with their ages and datasets
+    # Added 'session' to drop_duplicates to ensure we count scans, not just subjects
+    subject_ages = df[['dataset', 'subject', 'session', 'age']].drop_duplicates().dropna(subset=['age'])
     
     if subject_ages.empty:
         print("No age data available for plotting.")
@@ -119,7 +134,7 @@ def create_age_distribution_plot(df, output_dir):
     
     for i, dataset in enumerate(datasets):
         dataset_ages = subject_ages[subject_ages['dataset'] == dataset]['age']
-        n_subjects = len(dataset_ages)
+        n_scans = len(dataset_ages) # Renamed variable for clarity, logic is same
         
         sns.histplot(
             data=dataset_ages,
@@ -128,13 +143,13 @@ def create_age_distribution_plot(df, output_dir):
             fill=True,
             alpha=0.4,
             color=palette[i],
-            label=f'{dataset} (n={n_subjects})',
+            label=f'{dataset} (n={n_scans})',
             stat='count'
         )
     
     plt.xlabel('Age (years)')
     plt.ylabel('Count')
-    plt.title('Age Distribution by Dataset')
+    plt.title('Age Distribution by Dataset (Unique Scans)')
     plt.legend()
     plt.tight_layout()
     
@@ -161,7 +176,14 @@ def main():
         if df_demo is None or df_demo.empty:
             continue
         df_dataset = df_tidy[df_tidy['dataset'] == dataset_dir.name].copy()
-        df_dataset = df_dataset.merge(df_demo, how='left', on='subject')
+        
+        # Smart merge: if 'session' is available in demographics (e.g. Rockland), merge on it too.
+        # This prevents cartesian product duplication for multi-session subjects.
+        merge_on = ['subject']
+        if 'session' in df_demo.columns and 'session' in df_dataset.columns:
+            merge_on = ['subject', 'session']
+            
+        df_dataset = df_dataset.merge(df_demo, how='left', on=merge_on)
         df_all.append(df_dataset)
 
     if not df_all:
