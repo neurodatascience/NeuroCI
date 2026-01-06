@@ -45,9 +45,6 @@ def extract_demographics(dataset_name, dfs):
             df_demo = df[['participant_id', 'age', 'sex']].rename(columns={'participant_id': 'subject'})
     elif dataset_name.lower() == 'rockland':
         # Look for any participants file (e.g. study-NKI_desc-participants)
-        # Using a list comprehension to find key 'participants' or similar if dict key varies, 
-        # but relying on file stem from load_tabular_data. 
-        # The prompt mentions: "study-NKI_desc-participants.tsv" -> stem "study-NKI_desc-participants"
         key = next((k for k in dfs.keys() if 'participants' in k), None)
         if key:
             df = dfs[key]
@@ -55,8 +52,16 @@ def extract_demographics(dataset_name, dfs):
                 df_demo = df[['participant_id', 'session_id', 'age', 'sex']].rename(
                     columns={'participant_id': 'subject', 'session_id': 'session'}
                 )
-                # Normalize session to BIDS format (ses-BAS1) to match df_tidy if needed
-                df_demo['session'] = df_demo['session'].apply(lambda x: f"ses-{x}" if not str(x).startswith('ses-') else x)
+                
+                # Normalize Subject ID: Add 'sub-' prefix if missing to match df_tidy
+                df_demo['subject'] = df_demo['subject'].astype(str).apply(
+                    lambda x: f"sub-{x}" if not x.startswith('sub-') else x
+                )
+                
+                # Normalize Session ID: Add 'ses-' prefix if missing to match df_tidy
+                df_demo['session'] = df_demo['session'].astype(str).apply(
+                    lambda x: f"ses-{x}" if not x.startswith('ses-') else x
+                )
     else:
         if 'participants' in dfs:
             df_demo = dfs['participants'].rename(columns={'participant_id': 'subject'})
@@ -134,7 +139,7 @@ def create_age_distribution_plot(df, output_dir):
     
     for i, dataset in enumerate(datasets):
         dataset_ages = subject_ages[subject_ages['dataset'] == dataset]['age']
-        n_scans = len(dataset_ages) # Renamed variable for clarity, logic is same
+        n_scans = len(dataset_ages) # Renamed variable for clarity
         
         sns.histplot(
             data=dataset_ages,
@@ -178,7 +183,6 @@ def main():
         df_dataset = df_tidy[df_tidy['dataset'] == dataset_dir.name].copy()
         
         # Smart merge: if 'session' is available in demographics (e.g. Rockland), merge on it too.
-        # This prevents cartesian product duplication for multi-session subjects.
         merge_on = ['subject']
         if 'session' in df_demo.columns and 'session' in df_dataset.columns:
             merge_on = ['subject', 'session']
