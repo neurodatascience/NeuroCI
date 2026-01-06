@@ -8,8 +8,8 @@ def main(experiment_definition):
 
     this_experiment = Experiment(experiment_definition)
 
-    for dataset, dataset_path in this_experiment.datasets.items():
-        for pipeline, pipeline_version in this_experiment.pipelines.items():
+ #   for dataset, dataset_path in this_experiment.datasets.items():
+ #       for pipeline, pipeline_version in this_experiment.pipelines.items():
             #this_experiment.update_tracker_info(dataset, dataset_path, pipeline, pipeline_version)
             #this_experiment.run_pipeline(dataset, dataset_path, pipeline, pipeline_version)
     
