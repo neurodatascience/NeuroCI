@@ -197,41 +197,35 @@ def main():
     df = pd.concat(df_all, ignore_index=True)
 
     # -------------------------------------------------------------------------
-    # GLOBAL CLEANING: Enforce strict Listwise Deletion across ALL analysis
+    # GLOBAL FILTER: GRAND INTERSECTION
     # -------------------------------------------------------------------------
-    # We only care about the 15 structures defined in get_structure_order()
+    # Drop any scan that is missing ANY of the 15 structures in ANY pipeline.
+    # This guarantees the N count is identical across ALL pipeline pairs.
+    # -------------------------------------------------------------------------
     required_structures = get_structure_order()
-    n_required = len(required_structures)
+    unique_pipelines = df['pipeline'].unique()
     
-    # 1. Filter the entire dataframe to only include the required structures.
-    # This prevents 'extra' structures (like ventricles) from confusing the count.
+    # 1. Filter to relevant structures only
     df = df[df['structure'].isin(required_structures)].copy()
     
-    # 2. Check each pipeline run for completeness.
-    # Group by scan (dataset, subject, session) AND pipeline.
-    # We want to know: For a given run of a pipeline, did it produce all 15 structures?
-    run_counts = df.groupby(['dataset', 'subject', 'session', 'pipeline'])['structure'].count()
-    
-    # 3. Identify "Bad Runs" (incomplete data)
-    bad_runs = run_counts[run_counts < n_required]
-    
-    if not bad_runs.empty:
-        # 4. Identify the subjects/scans associated with these bad runs.
-        # If a subject has a bad run in ANY pipeline, we flag them.
-        bad_scans = bad_runs.index.droplevel('pipeline').unique()
+    # 2. Ensure volume data is present
+    if 'volume_mm3' in df.columns:
+        df = df.dropna(subset=['volume_mm3'])
         
-        # 5. Drop these subjects globally from the dataframe.
-        # This ensures that if Subject X failed in FS, they are removed from ALL comparisons.
-        print(f"Dropping {len(bad_scans)} scans due to incomplete structure data in one or more pipelines.")
-        
-        # Set index for efficient dropping
-        df = df.set_index(['dataset', 'subject', 'session'])
-        df = df.drop(bad_scans)
-        df = df.reset_index()
-    else:
-        print("No incomplete scans found. All subjects have full structure sets.")
+    # 3. Identify scans (dataset, subject, session) that have complete data
+    # A complete scan must have: (Number of Pipelines) * (15 Structures) rows.
+    completeness = df.groupby(['dataset', 'subject', 'session']).size()
+    expected_rows = len(unique_pipelines) * len(required_structures)
+    
+    valid_scans = completeness[completeness == expected_rows].index
+    
+    # 4. Apply filter globally
+    df = df.set_index(['dataset', 'subject', 'session'])
+    df = df.loc[valid_scans].reset_index()
+    
+    print(f"Global Filter: Retained {len(valid_scans)} scans common to all {len(unique_pipelines)} pipelines.")
 
-    # Create age distribution plot (now using the clean, consistent cohort)
+    # Create age distribution plot
     create_age_distribution_plot(df, EXPERIMENT_STATE_ROOT)
 
     # -------------------------------------------------------------------------
@@ -269,8 +263,8 @@ def main():
     
     corr_results = []
     for (pair, struct), g in df_age.groupby(['pipeline_pair','structure']):
-        # Note: We still dropna here for safety (e.g. missing Age), but the structure counts
-        # should now be identical because we pre-cleaned the subjects.
+        # Note: Scans are already pre-filtered for completeness.
+        # We dropna here only to handle missing Age data, which is consistent per subject.
         g = g.dropna(subset=['volume_diff','age'])
         n = g.groupby(['dataset','subject','session']).ngroups  # unique scans
         if n < 3:
