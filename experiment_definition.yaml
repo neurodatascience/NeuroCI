@@ -1,6 +1,6 @@
 datasets: 
 #  FastSurfer: "/data/origami/jacob/neuroci_test/nipoppy_datasets/FastSurferAnonBIDS_nipoppy" # Small FastSurfer train/test/validation set, sampled from many datasets.
-#  PreventAD: "/data/origami/jacob/neuroci_test/nipoppy_datasets/preventAD" # https://douglas.research.mcgill.ca/prevent-alzheimer-program/, only the T1s.
+  PreventAD: "/data/origami/jacob/neuroci_test/nipoppy_datasets/preventAD" # https://github.com/conpdatasets/preventad-registered
   Rockland: "/data/origami/jacob/neuroci_test/nipoppy_datasets/NKI_nipoppy" # NKI Rockland Sample - https://github.com/ReproBrainChart/NKI_BIDS / https://reprobrainchart.github.io/docs/datasets/
   ds005752: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds005752_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds005752/versions/2.1.0
   ds003592: "/data/origami/jacob/neuroci_test/nipoppy_datasets/ds003592_nipoppy" # OpenNeuro - https://openneuro.org/datasets/ds003592/versions/1.0.13
