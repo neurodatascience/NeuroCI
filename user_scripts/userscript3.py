@@ -24,44 +24,168 @@ def load_tabular_data(dataset_path: Path):
         dfs[tsv.stem] = df
     return dfs
 
-def extract_demographics(dataset_name, dfs):
-    """Extract demographic information (age, sex) from dataset-specific tabular data."""
+def extract_demographics(dataset_name: str, dfs: dict):
+    """Dataset-specific logic to extract age and sex information."""
     df_demo = None
-    if dataset_name.lower() == 'preventad':
-        if 'participants' in dfs and 'ad8' in dfs:
-            part = dfs['participants']
-            ad8 = dfs['ad8']
-            ad8 = ad8.rename(columns={'participant_id': 'subject', 'Candidate_Age': 'age_months'})
-            ad8['age'] = ad8['age_months'] / 12.0
-            df_demo = ad8.merge(part, left_on='subject', right_on='participant_id', how='left')
-            df_demo = df_demo[['subject', 'visit_id', 'age', 'sex']]
-    elif dataset_name.lower() == 'ds005752':
+    dataset_lower = dataset_name.lower()
+
+    # PREVENT-AD logic (UPDATED: Dual Age Sources + Sex)
+    if dataset_lower == 'preventad':
+        # --- 1. Extract Sex (Subject-Level) ---
+        df_sex = pd.DataFrame(columns=['subject', 'sex'])
+        if 'demographics' in dfs:
+            d = dfs['demographics'].copy()
+            if 'participant_id' in d.columns and 'Sex' in d.columns:
+                # Normalize ID
+                d['participant_id'] = d['participant_id'].astype(str).str.strip().apply(
+                    lambda x: f"sub-{x}" if not x.startswith('sub-') else x
+                )
+                df_sex = d[['participant_id', 'Sex']].rename(columns={'participant_id': 'subject', 'Sex': 'sex'})
+
+        # --- 2. Extract Age (Session-Level) ---
+        age_dfs = []
+
+        # Source A: mci_status.tsv
+        if 'mci_status' in dfs:
+            mci = dfs['mci_status'].copy()
+            
+            # Normalize ID
+            if 'participant_id' in mci.columns:
+                mci['subject'] = mci['participant_id'].astype(str).str.strip().apply(
+                    lambda x: f"sub-{x}" if not x.startswith('sub-') else x
+                )
+            
+            # Calculate Age (Candidate_Age in Months -> Years)
+            age_col = None
+            if 'Candidate_Age' in mci.columns: age_col = 'Candidate_Age'
+            elif 'Age' in mci.columns: age_col = 'Age'
+            elif 'age_months' in mci.columns: age_col = 'age_months'
+            elif len(mci.columns) > 3 and mci.iloc[:, 3].dtype.kind in 'fi':
+                 if 'Unnamed: 3' in mci.columns: age_col = 'Unnamed: 3'
+            
+            if age_col and 'subject' in mci.columns and 'visit_id' in mci.columns:
+                mci['age'] = pd.to_numeric(mci[age_col], errors='coerce') / 12.0
+                
+                # Generate Session Variations
+                # V1: Strict (NAPFU12 -> ses-NAPFU12)
+                v1 = mci[['subject', 'visit_id', 'age']].copy()
+                v1['session'] = v1['visit_id'].astype(str).str.strip().apply(
+                    lambda x: f"ses-{x}" if not x.startswith('ses-') else x
+                )
+                
+                # V2: PRE->FU (PREFU12 -> ses-FU12)
+                v2 = mci[['subject', 'visit_id', 'age']].copy()
+                v2['session'] = v2['visit_id'].astype(str).str.strip().apply(
+                    lambda x: x.replace('PREFU', 'FU')
+                ).apply(lambda x: f"ses-{x}" if not x.startswith('ses-') else x)
+                
+                # V3: NAP->FU (NAPFU12 -> ses-FU12)
+                v3 = mci[['subject', 'visit_id', 'age']].copy()
+                v3['session'] = v3['visit_id'].astype(str).str.strip().apply(
+                    lambda x: x.replace('NAPFU', 'FU')
+                ).apply(lambda x: f"ses-{x}" if not x.startswith('ses-') else x)
+
+                age_dfs.extend([v1[['subject', 'session', 'age']], 
+                                v2[['subject', 'session', 'age']], 
+                                v3[['subject', 'session', 'age']]])
+
+        # Source B: mri_sessions-phase1.tsv
+        if 'mri_sessions-phase1' in dfs:
+            mri = dfs['mri_sessions-phase1'].copy()
+            
+            # Normalize ID
+            if 'participant_id' in mri.columns:
+                mri['subject'] = mri['participant_id'].astype(str).str.strip().apply(
+                    lambda x: f"sub-{x}" if not x.startswith('sub-') else x
+                )
+            
+            # Calculate Age (Column 'age' is in Months -> Years)
+            if 'age' in mri.columns and 'subject' in mri.columns and 'session_id' in mri.columns:
+                mri['age_years'] = pd.to_numeric(mri['age'], errors='coerce') / 12.0
+                
+                # Generate Session Variations
+                # V1: Strict
+                v1 = mri[['subject', 'session_id', 'age_years']].copy()
+                v1['session'] = v1['session_id'].astype(str).str.strip().apply(
+                    lambda x: f"ses-{x}" if not x.startswith('ses-') else x
+                )
+                
+                # V2: PRE->FU
+                v2 = mri[['subject', 'session_id', 'age_years']].copy()
+                v2['session'] = v2['session_id'].astype(str).str.strip().apply(
+                    lambda x: x.replace('PREFU', 'FU')
+                ).apply(lambda x: f"ses-{x}" if not x.startswith('ses-') else x)
+                
+                # V3: NAP->FU
+                v3 = mri[['subject', 'session_id', 'age_years']].copy()
+                v3['session'] = v3['session_id'].astype(str).str.strip().apply(
+                    lambda x: x.replace('NAPFU', 'FU')
+                ).apply(lambda x: f"ses-{x}" if not x.startswith('ses-') else x)
+                
+                age_dfs.extend([v1[['subject', 'session', 'age_years']].rename(columns={'age_years':'age'}), 
+                                v2[['subject', 'session', 'age_years']].rename(columns={'age_years':'age'}), 
+                                v3[['subject', 'session', 'age_years']].rename(columns={'age_years':'age'})])
+
+        # --- 3. Combine & Finalize ---
+        if age_dfs:
+            # Concat all age records
+            df_combined_ages = pd.concat(age_dfs, ignore_index=True)
+            # Deduplicate: If same session in both files, keep first (mci_status)
+            df_combined_ages = df_combined_ages.drop_duplicates(subset=['subject', 'session'], keep='first')
+            
+            # Merge with Sex
+            if not df_sex.empty:
+                df_demo = df_combined_ages.merge(df_sex, on='subject', how='left')
+            else:
+                df_demo = df_combined_ages
+                df_demo['sex'] = np.nan
+        else:
+            # Fallback if no age data found
+            df_demo = pd.DataFrame(columns=['subject', 'session', 'age', 'sex'])
+
+        # Final Cleanup
+        for col in ['subject', 'session', 'age', 'sex']:
+            if col not in df_demo.columns:
+                df_demo[col] = np.nan
+        df_demo = df_demo[['subject', 'session', 'age', 'sex']]
+
+    elif dataset_lower == 'ds005752':
         df = dfs.get('participants', pd.DataFrame())
         if not df.empty:
             df_demo = df[['participant_id', 'age', 'sex']].rename(columns={'participant_id': 'subject'})
-    elif dataset_name.lower() == 'ds003592':
+    elif dataset_lower == 'ds003592':
         df = dfs.get('participants', pd.DataFrame())
         if not df.empty:
             df_demo = df[['participant_id', 'age', 'sex']].rename(columns={'participant_id': 'subject'})
-    elif dataset_name.lower() == 'rockland':
-        # Look for any participants file (e.g. study-NKI_desc-participants)
+    
+    # Rockland / NKI logic
+    elif 'rockland' in dataset_lower or 'nki' in dataset_lower:
         key = next((k for k in dfs.keys() if 'participants' in k), None)
         if key:
             df = dfs[key]
-            if 'participant_id' in df.columns and 'session_id' in df.columns:
-                df_demo = df[['participant_id', 'session_id', 'age', 'sex']].rename(
-                    columns={'participant_id': 'subject', 'session_id': 'session'}
-                )
+            if 'participant_id' in df.columns:
+                df_demo = df.rename(columns={'participant_id': 'subject'})
                 
-                # Normalize Subject ID: Add 'sub-' prefix if missing to match df_tidy
-                df_demo['subject'] = df_demo['subject'].astype(str).apply(
-                    lambda x: f"sub-{x}" if not x.startswith('sub-') else x
-                )
+                # Normalize Subject ID
+                if 'subject' in df_demo.columns:
+                    df_demo['subject'] = df_demo['subject'].astype(str).apply(
+                        lambda x: f"sub-{x}" if not x.startswith('sub-') else x
+                    )
+
+                # Capture Session ID if available and normalize
+                if 'session_id' in df_demo.columns:
+                    df_demo = df_demo.rename(columns={'session_id': 'session'})
+                    df_demo['session'] = df_demo['session'].astype(str).apply(
+                        lambda x: f"ses-{x}" if not x.startswith('ses-') else x
+                    )
                 
-                # Normalize Session ID: Add 'ses-' prefix if missing to match df_tidy
-                df_demo['session'] = df_demo['session'].astype(str).apply(
-                    lambda x: f"ses-{x}" if not x.startswith('ses-') else x
-                )
+                # Select available columns
+                cols = ['subject']
+                if 'session' in df_demo.columns: cols.append('session')
+                if 'age' in df_demo.columns: cols.append('age')
+                if 'sex' in df_demo.columns: cols.append('sex')
+                df_demo = df_demo[cols]
+
     else:
         if 'participants' in dfs:
             df_demo = dfs['participants'].rename(columns={'participant_id': 'subject'})
@@ -70,22 +194,34 @@ def extract_demographics(dataset_name, dfs):
             if 'sex' not in df_demo.columns:
                 df_demo['sex'] = np.nan
     
-    # Handle comma-separated multiple values by taking the first one
+    # Data Cleaning: Handle comma-separated values
     if df_demo is not None and not df_demo.empty:
-        # For age: take first value and convert to float
         if 'age' in df_demo.columns:
             df_demo['age'] = df_demo['age'].astype(str).str.split(',').str[0]
-            # Replace 'n/a' with NaN and convert to float
             df_demo['age'] = df_demo['age'].replace('n/a', np.nan)
             df_demo['age'] = pd.to_numeric(df_demo['age'], errors='coerce')
         
-        # For sex: take first value
         if 'sex' in df_demo.columns:
             df_demo['sex'] = df_demo['sex'].astype(str).str.split(',').str[0]
-            # Replace 'n/a' with NaN
             df_demo['sex'] = df_demo['sex'].replace('n/a', np.nan)
+
+            # Standardization logic
+            non_nan_mask = df_demo['sex'].notna()
+            df_demo.loc[non_nan_mask, 'sex'] = (
+                df_demo.loc[non_nan_mask, 'sex'].astype(str).str.upper()
+            )
+            standardization_map = {'MALE': 'M', 'FEMALE': 'F'}
+            df_demo.loc[non_nan_mask, 'sex'] = (
+                df_demo.loc[non_nan_mask, 'sex'].replace(standardization_map)
+            )
     
-    return df_demo
+    # Final Return: Ensure 'session' column exists (fill NaN if missing)
+    if df_demo is not None and not df_demo.empty:
+        if 'session' not in df_demo.columns:
+            df_demo['session'] = np.nan
+        return df_demo[['subject', 'session', 'age', 'sex']]
+    else:
+        return pd.DataFrame(columns=['subject', 'session', 'age', 'sex'])
 
 def shorten_pipeline_name(pipeline_name):
     """Shorten pipeline names for display in figures."""
