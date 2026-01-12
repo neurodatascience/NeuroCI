@@ -196,7 +196,42 @@ def main():
 
     df = pd.concat(df_all, ignore_index=True)
 
-    # Create age distribution plot
+    # -------------------------------------------------------------------------
+    # GLOBAL CLEANING: Enforce strict Listwise Deletion across ALL analysis
+    # -------------------------------------------------------------------------
+    # We only care about the 15 structures defined in get_structure_order()
+    required_structures = get_structure_order()
+    n_required = len(required_structures)
+    
+    # 1. Filter the entire dataframe to only include the required structures.
+    # This prevents 'extra' structures (like ventricles) from confusing the count.
+    df = df[df['structure'].isin(required_structures)].copy()
+    
+    # 2. Check each pipeline run for completeness.
+    # Group by scan (dataset, subject, session) AND pipeline.
+    # We want to know: For a given run of a pipeline, did it produce all 15 structures?
+    run_counts = df.groupby(['dataset', 'subject', 'session', 'pipeline'])['structure'].count()
+    
+    # 3. Identify "Bad Runs" (incomplete data)
+    bad_runs = run_counts[run_counts < n_required]
+    
+    if not bad_runs.empty:
+        # 4. Identify the subjects/scans associated with these bad runs.
+        # If a subject has a bad run in ANY pipeline, we flag them.
+        bad_scans = bad_runs.index.droplevel('pipeline').unique()
+        
+        # 5. Drop these subjects globally from the dataframe.
+        # This ensures that if Subject X failed in FS, they are removed from ALL comparisons.
+        print(f"Dropping {len(bad_scans)} scans due to incomplete structure data in one or more pipelines.")
+        
+        # Set index for efficient dropping
+        df = df.set_index(['dataset', 'subject', 'session'])
+        df = df.drop(bad_scans)
+        df = df.reset_index()
+    else:
+        print("No incomplete scans found. All subjects have full structure sets.")
+
+    # Create age distribution plot (now using the clean, consistent cohort)
     create_age_distribution_plot(df, EXPERIMENT_STATE_ROOT)
 
     # -------------------------------------------------------------------------
@@ -204,10 +239,6 @@ def main():
     # -------------------------------------------------------------------------
     pairwise_diffs = []
     pipelines = df['pipeline'].unique()
-    
-    # Get the strict list of structures we require for the analysis
-    required_structures = get_structure_order()
-    n_required = len(required_structures)
 
     for (pipe1, pipe2) in itertools.combinations(pipelines, 2):
         df1 = df[df['pipeline'] == pipe1]
@@ -222,33 +253,6 @@ def main():
         short_pipe2 = shorten_pipeline_name(pipe2)
         merged['pipeline_pair'] = f"{short_pipe1}_vs_{short_pipe2}"
         
-        # ---------------------------------------------------------------------
-        # NEW: Listwise deletion logic
-        # If a subject/scan is missing ANY of the required structures, drop the scan entirely.
-        # ---------------------------------------------------------------------
-        
-        # 1. Filter to only look at the structures we care about
-        # (This avoids confusion if there are extra structures like 'Ventricles' in the dataframe)
-        merged_subset = merged[merged['structure'].isin(required_structures)].copy()
-        
-        # 2. Ensure we only count valid rows (non-NaN diffs)
-        merged_subset = merged_subset.dropna(subset=['volume_diff'])
-        
-        # 3. Count valid structures per scan (dataset, subject, session)
-        scan_counts = merged_subset.groupby(['dataset', 'subject', 'session'])['structure'].count()
-        
-        # 4. Identify scans that have the FULL set of required structures
-        complete_scans_idx = scan_counts[scan_counts == n_required].index
-        
-        # 5. Filter the main 'merged' dataframe to strictly include only these complete scans
-        # We set index to match 'complete_scans_idx' for filtering, then reset
-        merged = merged.set_index(['dataset', 'subject', 'session'])
-        merged = merged.loc[merged.index.isin(complete_scans_idx)].reset_index()
-        
-        # ---------------------------------------------------------------------
-        # End of new logic
-        # ---------------------------------------------------------------------
-
         merged['age'] = merged['age_' + pipe1].combine_first(merged['age_' + pipe2])
         merged['sex'] = merged['sex_' + pipe1].combine_first(merged['sex_' + pipe2])
 
@@ -265,6 +269,8 @@ def main():
     
     corr_results = []
     for (pair, struct), g in df_age.groupby(['pipeline_pair','structure']):
+        # Note: We still dropna here for safety (e.g. missing Age), but the structure counts
+        # should now be identical because we pre-cleaned the subjects.
         g = g.dropna(subset=['volume_diff','age'])
         n = g.groupby(['dataset','subject','session']).ngroups  # unique scans
         if n < 3:
@@ -338,7 +344,8 @@ def main():
         cohen_d = (males.mean() - females.mean()) / np.sqrt(((males.std() ** 2 + females.std() ** 2) / 2))
         sex_results.append({'pipeline_pair': pair, 'structure': struct, 't': t, 'p': p, 'cohen_d': cohen_d, 'n': n})
 
-    sex_df = pd.DataFrame(sex_results)
+    # FIXED: Drop NaNs from failed t-tests before computing p_adj and plotting
+    sex_df = pd.DataFrame(sex_results).dropna(subset=['t', 'p'])
     sex_df['p_adj'] = np.minimum(sex_df['p'] * len(sex_df), 1.0)
 
     # Save summary CSV of t-tests
