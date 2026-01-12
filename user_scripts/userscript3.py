@@ -204,6 +204,10 @@ def main():
     # -------------------------------------------------------------------------
     pairwise_diffs = []
     pipelines = df['pipeline'].unique()
+    
+    # Get the strict list of structures we require for the analysis
+    required_structures = get_structure_order()
+    n_required = len(required_structures)
 
     for (pipe1, pipe2) in itertools.combinations(pipelines, 2):
         df1 = df[df['pipeline'] == pipe1]
@@ -218,6 +222,33 @@ def main():
         short_pipe2 = shorten_pipeline_name(pipe2)
         merged['pipeline_pair'] = f"{short_pipe1}_vs_{short_pipe2}"
         
+        # ---------------------------------------------------------------------
+        # NEW: Listwise deletion logic
+        # If a subject/scan is missing ANY of the required structures, drop the scan entirely.
+        # ---------------------------------------------------------------------
+        
+        # 1. Filter to only look at the structures we care about
+        # (This avoids confusion if there are extra structures like 'Ventricles' in the dataframe)
+        merged_subset = merged[merged['structure'].isin(required_structures)].copy()
+        
+        # 2. Ensure we only count valid rows (non-NaN diffs)
+        merged_subset = merged_subset.dropna(subset=['volume_diff'])
+        
+        # 3. Count valid structures per scan (dataset, subject, session)
+        scan_counts = merged_subset.groupby(['dataset', 'subject', 'session'])['structure'].count()
+        
+        # 4. Identify scans that have the FULL set of required structures
+        complete_scans_idx = scan_counts[scan_counts == n_required].index
+        
+        # 5. Filter the main 'merged' dataframe to strictly include only these complete scans
+        # We set index to match 'complete_scans_idx' for filtering, then reset
+        merged = merged.set_index(['dataset', 'subject', 'session'])
+        merged = merged.loc[merged.index.isin(complete_scans_idx)].reset_index()
+        
+        # ---------------------------------------------------------------------
+        # End of new logic
+        # ---------------------------------------------------------------------
+
         merged['age'] = merged['age_' + pipe1].combine_first(merged['age_' + pipe2])
         merged['sex'] = merged['sex_' + pipe1].combine_first(merged['sex_' + pipe2])
 
