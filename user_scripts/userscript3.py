@@ -318,9 +318,13 @@ def main():
             continue
         df_dataset = df_tidy[df_tidy['dataset'] == dataset_dir.name].copy()
         
-        # Smart merge: if 'session' is available in demographics (e.g. Rockland), merge on it too.
+        # Smart merge setup
         merge_on = ['subject']
         if 'session' in df_demo.columns and 'session' in df_dataset.columns:
+            # FIX: Ensure type consistency (Object vs Float) to prevent ValueError
+            if df_dataset['session'].dtype == 'object' and df_demo['session'].dtype != 'object':
+                df_demo['session'] = df_demo['session'].astype(str)
+            
             merge_on = ['subject', 'session']
             
         df_dataset = df_dataset.merge(df_demo, how='left', on=merge_on)
