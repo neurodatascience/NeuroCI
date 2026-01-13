@@ -452,8 +452,8 @@ def create_svd_figures(df_tidy, output_dir):
                 )
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                ax.set_xlabel("Pipeline B") 
-                ax.set_ylabel("Pipeline A") 
+                ax.set_xlabel("") 
+                ax.set_ylabel("") 
                 n_points = pivot_df.shape[0]
                 ax.set_title(f"{structure}")
             else:
@@ -528,8 +528,8 @@ def create_svd_figures(df_tidy, output_dir):
             )
             ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
             ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            ax.set_xlabel("Pipeline B") 
-            ax.set_ylabel("Pipeline A") 
+            ax.set_xlabel("") 
+            ax.set_ylabel("") 
             n_points = pivot_df.shape[0]
             ax.set_title(f"{structure}")
         else:
