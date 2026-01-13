@@ -7,12 +7,6 @@ import numpy as np
 def filter_complete_pipelines(df_tidy):
     """
     Return subset of df_tidy using STRICT Session-Level Complete Case Analysis.
-    
-    Logic:
-    1. Check every structure for every session.
-    2. If ANY structure in a session has fewer than 4 pipelines (missing/zero/nan),
-       DROP THE ENTIRE SESSION (all structures for that subject/session).
-    3. This ensures that the N reported is the number of fully successful sessions.
     """
     required_pipelines = {
         'fslanat6071ants243',
@@ -39,7 +33,6 @@ def filter_complete_pipelines(df_tidy):
         print(f"Found {len(bad_sessions)} sessions with at least one incomplete structure.")
         
         # 3. Perform Anti-Join to drop these bad sessions entirely
-        # We merge with indicator=True, then keep only rows that DID NOT match the bad list.
         merged = df_tidy.merge(bad_sessions, 
                                on=['dataset', 'subject', 'session'], 
                                how='left', 
@@ -50,17 +43,16 @@ def filter_complete_pipelines(df_tidy):
         print("No incomplete sessions found.")
         df_filtered = df_tidy.copy()
 
-    # 4. Final Sanity Check: Ensure remaining rows are strictly complete (should be guaranteed by above)
-    # We can do a quick check to see if any stragglers remain (unlikely logic-wise, but good for safety)
+    # 4. Final Sanity Check
     final_counts = (
         df_filtered.groupby(['dataset', 'subject', 'session', 'structure'])['pipeline']
         .nunique()
         .reset_index(name='n_pipelines')
     )
-    assert final_counts['n_pipelines'].min() == len(required_pipelines), "Logic Error: Incomplete pipelines remain!"
+    if not final_counts.empty:
+        assert final_counts['n_pipelines'].min() == len(required_pipelines), "Logic Error: Incomplete pipelines remain!"
 
     print(f"Filtered from {len(df_tidy)} -> {len(df_filtered)} rows.")
-    print(f"Dropped {len(df_tidy) - len(df_filtered)} rows belonging to incomplete sessions.")
     
     return df_filtered
 
@@ -112,19 +104,14 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
-    # Individual dataset figures
-    for dataset in df_tidy['dataset'].unique():
-        dataset_data = df_tidy[df_tidy['dataset'] == dataset]
-        print(f"Creating count histograms for {dataset} with {len(dataset_data)} rows...")
-        
-        plot_data = dataset_data.copy()
-        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-        
-        structures = get_sorted_structures(plot_data['structure'].unique())
-        
-        if len(structures) == 0:
-            continue
-            
+    # Helper for layout logic
+    def plot_distributions(data_subset, title_suffix, filename):
+        structures = get_sorted_structures(data_subset['structure'].unique())
+        if len(structures) == 0: return
+
+        # Calculate N once
+        n_points = count_unique_scans(data_subset)
+
         n_cols = 5
         n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
         
@@ -132,7 +119,9 @@ def create_distribution_figures(df_tidy, output_dir):
         
         for i, structure in enumerate(structures):
             ax = axes[i // n_cols, i % n_cols]
-            structure_data = plot_data[plot_data['structure'] == structure]
+            structure_data = data_subset[data_subset['structure'] == structure]
+            structure_data = structure_data.copy()
+            structure_data['pipeline_short'] = structure_data['pipeline'].map(pipeline_mapping)
             
             for j, pipeline in enumerate(pipeline_order):
                 subset = structure_data[structure_data['pipeline_short'] == pipeline]
@@ -150,78 +139,39 @@ def create_distribution_figures(df_tidy, output_dir):
                         stat='count'
                     )
             
-            if len(structure_data) > 0:
-                n_points = len(structure_data[['subject', 'session']].drop_duplicates())
-                ax.set_title(f"{structure}\n(n={n_points})")
-                ax.set_xlabel('Volume (mm³)')
-                ax.set_ylabel('Count')
-                ax.legend()
+            # Simplified Title (removed n)
+            ax.set_title(f"{structure}")
+            ax.set_xlabel('Volume (mm³)')
+            ax.set_ylabel('Count')
+            # Keeping legend on all plots as per original script
+            ax.legend()
         
         total_plots = n_rows * n_cols
         for k in range(len(structures), total_plots):
             fig.delaxes(axes[k // n_cols, k % n_cols])
         
-        fig.suptitle(f'Pipeline Distributions (Counts) - {dataset}', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+        fig.suptitle(f'Pipeline Distributions (Counts) - {title_suffix}', fontsize=18)
         
-        output_path = output_dir / f'distribution_comparison_counts_{dataset}.png'
+        # N Summary at bottom
+        fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
+
+        # Adjusted margin for bottom text
+        fig.tight_layout(rect=[0, 0.05, 1, 0.95])
+        
+        output_path = output_dir / filename
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
         print(f"Saved: {output_path}")
 
+    # Individual dataset figures
+    for dataset in df_tidy['dataset'].unique():
+        dataset_data = df_tidy[df_tidy['dataset'] == dataset].copy()
+        print(f"Creating count histograms for {dataset}...")
+        plot_distributions(dataset_data, dataset, f'distribution_comparison_counts_{dataset}.png')
+
     # Combined dataset figure
-    print("Creating combined count histograms (all datasets pooled)...")
-    plot_data = df_tidy.copy()
-    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-    
-    structures = get_sorted_structures(plot_data['structure'].unique())
-    
-    if len(structures) == 0:
-        return
-        
-    n_cols = 5
-    n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
-    
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
-    
-    for i, structure in enumerate(structures):
-        ax = axes[i // n_cols, i % n_cols]
-        structure_data = plot_data[plot_data['structure'] == structure]
-        
-        for j, pipeline in enumerate(pipeline_order):
-            subset = structure_data[structure_data['pipeline_short'] == pipeline]
-            if len(subset) > 0:
-                sns.histplot(
-                    data=subset,
-                    x='volume_mm3',
-                    bins=30,
-                    element='step',
-                    fill=True,
-                    alpha=0.4,
-                    color=palette[j],
-                    label=pipeline,
-                    ax=ax,
-                    stat='count'
-                )
-        
-        if len(structure_data) > 0:
-            n_points = count_unique_scans(structure_data)
-            ax.set_title(f"{structure}\n(n={n_points})")
-            ax.set_xlabel('Volume (mm³)')
-            ax.set_ylabel('Count')
-            ax.legend()
-    
-    total_plots = n_rows * n_cols
-    for k in range(len(structures), total_plots):
-        fig.delaxes(axes[k // n_cols, k % n_cols])
-    
-    fig.suptitle('Pipeline Distributions (Counts) - All Datasets Combined', fontsize=18)
-    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    
-    output_path = output_dir / f'distribution_comparison_counts_ALL_DATASETS.png'
-    plt.savefig(output_path, bbox_inches='tight', dpi=300)
-    plt.close()
-    print(f"Saved: {output_path}")
+    print("Creating combined count histograms...")
+    plot_distributions(df_tidy.copy(), "All Datasets Combined", 'distribution_comparison_counts_ALL_DATASETS.png')
 
 def create_correlation_figures(df_tidy, output_dir):
     """Create inter-pipeline Pearson and Spearman correlation matrix plots."""
@@ -236,32 +186,32 @@ def create_correlation_figures(df_tidy, output_dir):
         'freesurfer8001ants243': 'FS8001',
         'samseg8001ants243': 'SAMSEG8'
     }
-    pipeline_order = list(pipeline_mapping.values())
+    # Correlation uses alphabetical order from pivot_table columns
     vmin, vmax, center = -1, 1, 0
     cmap = sns.color_palette("RdBu_r", as_cmap=True)
 
-    for dataset in df_tidy['dataset'].unique():
-        dataset_data = df_tidy[df_tidy['dataset'] == dataset]
-        print(f"Creating correlation matrices for {dataset} with {len(dataset_data)} rows...")
-
-        plot_data = dataset_data.copy()
-        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-        structures = get_sorted_structures(plot_data['structure'].unique())
+    def plot_correlations(data_subset, title_suffix, filename_prefix):
+        structures = get_sorted_structures(data_subset['structure'].unique())
+        if len(structures) == 0: return
         
-        if len(structures) == 0:
-            continue
-            
+        n_points = count_unique_scans(data_subset)
+        data_subset = data_subset.copy()
+        data_subset['pipeline_short'] = data_subset['pipeline'].map(pipeline_mapping)
+
         n_cols = 5
         n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
         
         for corr_method in ['pearson', 'spearman']:
             fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
-
+            
             for i, structure in enumerate(structures):
                 ax = axes[i // n_cols, i % n_cols]
-                structure_data = plot_data[plot_data['structure'] == structure]
-                structure_data = structure_data.copy()
-                structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
+                structure_data = data_subset[data_subset['structure'] == structure].copy()
+                
+                if 'dataset' in data_subset.columns and data_subset['dataset'].nunique() > 1:
+                     structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
+                else:
+                     structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
 
                 pivot_df = structure_data.pivot_table(
                     index='scan_id', 
@@ -269,15 +219,15 @@ def create_correlation_figures(df_tidy, output_dir):
                     values='volume_mm3'
                 )
 
-                if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
+                if len(pivot_df.columns) >= 2 and len(pivot_df) > 1:
                     corr = pivot_df.corr(method=corr_method)
                     sns.heatmap(corr, vmin=vmin, vmax=vmax, center=center, cmap=cmap, annot=True, fmt=".2f", square=True, cbar=False, ax=ax)
                     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
                     ax.set_xlabel("") 
                     ax.set_ylabel("") 
-                    n_points = pivot_df.shape[0]
-                    ax.set_title(f"{structure}\n(n={n_points})")
+                    # Simplified Title (removed n)
+                    ax.set_title(f"{structure}")
                 else:
                     ax.text(0.5, 0.5, "Insufficient data", ha='center', va='center', transform=ax.transAxes)
                     ax.set_title(f"{structure}\n(no data)")
@@ -293,72 +243,30 @@ def create_correlation_figures(df_tidy, output_dir):
             cbar = fig.colorbar(sm, cax=cbar_ax)
             cbar.set_label(f"{corr_method.capitalize()} correlation", rotation=270, labelpad=15)
 
-            fig.suptitle(f'Inter-Pipeline Correlations ({corr_method.capitalize()}) - {dataset}', fontsize=18)
-            fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
+            fig.suptitle(f'Inter-Pipeline Correlations ({corr_method.capitalize()}) - {title_suffix}', fontsize=18)
             
-            output_path = output_dir / f'correlation_comparison_{corr_method}_{dataset}.png'
+            # N Summary at bottom
+            fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
+
+            # Adjusted margin for bottom text
+            fig.tight_layout(rect=[0, 0.05, 0.9, 0.95])
+            
+            if title_suffix == "All Datasets Combined":
+                 output_path = output_dir / f'{filename_prefix}_{corr_method}_ALL_DATASETS.png'
+            else:
+                 output_path = output_dir / f'{filename_prefix}_{corr_method}_{title_suffix}.png'
+
             plt.savefig(output_path, bbox_inches='tight', dpi=300)
             plt.close()
             print(f"Saved: {output_path}")
 
-    # Combined dataset figures
-    print("Creating combined correlation matrices (all datasets pooled)...")
-    plot_data = df_tidy.copy()
-    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-    structures = get_sorted_structures(plot_data['structure'].unique())
-    
-    if len(structures) == 0:
-        return
-        
-    n_cols = 5
-    n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
-    
-    for corr_method in ['pearson', 'spearman']:
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+    for dataset in df_tidy['dataset'].unique():
+        dataset_data = df_tidy[df_tidy['dataset'] == dataset].copy()
+        print(f"Creating correlation matrices for {dataset}...")
+        plot_correlations(dataset_data, dataset, 'correlation_comparison')
 
-        for i, structure in enumerate(structures):
-            ax = axes[i // n_cols, i % n_cols]
-            structure_data = plot_data[plot_data['structure'] == structure]
-            structure_data = structure_data.copy()
-            structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
-
-            pivot_df = structure_data.pivot_table(
-                index='scan_id', 
-                columns='pipeline_short',
-                values='volume_mm3'
-            )
-
-            if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-                corr = pivot_df.corr(method=corr_method)
-                sns.heatmap(corr, vmin=vmin, vmax=vmax, center=center, cmap=cmap, annot=True, fmt=".2f", square=True, cbar=False, ax=ax)
-                ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-                ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-                ax.set_xlabel("") 
-                ax.set_ylabel("") 
-                n_points = pivot_df.shape[0]
-                ax.set_title(f"{structure}\n(n={n_points})")
-            else:
-                ax.text(0.5, 0.5, "Insufficient data", ha='center', va='center', transform=ax.transAxes)
-                ax.set_title(f"{structure}\n(no data)")
-
-        total_plots = n_rows * n_cols
-        for k in range(len(structures), total_plots):
-            fig.delaxes(axes[k // n_cols, k % n_cols])
-
-        cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])
-        norm = plt.Normalize(vmin=vmin, vmax=vmax)
-        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        sm.set_array([])
-        cbar = fig.colorbar(sm, cax=cbar_ax)
-        cbar.set_label(f"{corr_method.capitalize()} correlation", rotation=270, labelpad=15)
-
-        fig.suptitle(f'Inter-Pipeline Correlations ({corr_method.capitalize()}) - All Datasets Combined', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
-
-        output_path = output_dir / f'correlation_comparison_{corr_method}_ALL_DATASETS.png'
-        plt.savefig(output_path, bbox_inches='tight', dpi=300)
-        plt.close()
-        print(f"Saved: {output_path}")
+    print("Creating combined correlation matrices...")
+    plot_correlations(df_tidy.copy(), "All Datasets Combined", 'correlation_comparison')
 
 def calculate_mean_svd_matrix(pivot_df, pipeline_order):
     svd_matrix = pd.DataFrame(index=pipeline_order, columns=pipeline_order)
@@ -391,22 +299,19 @@ def create_svd_figures(df_tidy, output_dir):
         'freesurfer8001ants243': 'FS8001',
         'samseg8001ants243': 'SAMSEG8'
     }
-    pipeline_order = list(pipeline_mapping.values())
+    
     vmin, vmax = 0.0, 0.5
     cmap = sns.color_palette("magma_r", as_cmap=True) 
     label_offset = 0.03
 
-    for dataset in df_tidy['dataset'].unique():
-        dataset_data = df_tidy[df_tidy['dataset'] == dataset]
-        print(f"Creating mean SVD matrices for {dataset} with {len(dataset_data)} rows...")
+    def plot_svd(data_subset, title_suffix, filename):
+        structures = get_sorted_structures(data_subset['structure'].unique())
+        if len(structures) == 0: return
 
-        plot_data = dataset_data.copy()
-        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-        structures = get_sorted_structures(plot_data['structure'].unique())
+        n_points = count_unique_scans(data_subset)
+        data_subset = data_subset.copy()
+        data_subset['pipeline_short'] = data_subset['pipeline'].map(pipeline_mapping)
         
-        if len(structures) == 0:
-            continue
-            
         n_cols = 5
         n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
         
@@ -414,9 +319,12 @@ def create_svd_figures(df_tidy, output_dir):
 
         for i, structure in enumerate(structures):
             ax = axes[i // n_cols, i % n_cols]
-            structure_data = plot_data[plot_data['structure'] == structure]
-            structure_data = structure_data.copy()
-            structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
+            structure_data = data_subset[data_subset['structure'] == structure].copy()
+            
+            if 'dataset' in data_subset.columns and data_subset['dataset'].nunique() > 1:
+                     structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
+            else:
+                     structure_data['scan_id'] = structure_data['subject'].astype(str) + '_' + structure_data['session'].astype(str)
 
             pivot_df = structure_data.pivot_table(
                 index='scan_id', 
@@ -424,8 +332,12 @@ def create_svd_figures(df_tidy, output_dir):
                 values='volume_mm3'
             )
 
-            if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-                svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
+            # --- SVD ORDER FIX ---
+            # Using pivot_df.columns forces the order to be identical to the Correlation figures (Alphabetical)
+            current_order = pivot_df.columns.tolist()
+
+            if len(pivot_df.columns) >= 2 and len(pivot_df) > 1:
+                svd_matrix = calculate_mean_svd_matrix(pivot_df, current_order)
                 nan_mask = svd_matrix.isna()
                 annot_matrix = svd_matrix.round(2).astype(str)
                 annot_matrix[nan_mask] = 'Err'
@@ -442,8 +354,8 @@ def create_svd_figures(df_tidy, output_dir):
                 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
                 ax.set_xlabel("Pipeline B") 
                 ax.set_ylabel("Pipeline A") 
-                n_points = pivot_df.shape[0]
-                ax.set_title(f"{structure}\n(n={n_points})")
+                # Simplified Title (removed n)
+                ax.set_title(f"{structure}")
             else:
                 ax.text(0.5, 0.5, "Insufficient data", ha='center', va='center', transform=ax.transAxes)
                 ax.set_title(f"{structure}\n(no data)")
@@ -461,84 +373,26 @@ def create_svd_figures(df_tidy, output_dir):
         cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
         cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
 
-        fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {dataset}', fontsize=18)
-        fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
+        fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {title_suffix}', fontsize=18)
+        
+        # N Summary at bottom
+        fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
 
-        output_path = output_dir / f'svd_comparison_mean_{dataset}.png'
+        # Adjusted margin for bottom text
+        fig.tight_layout(rect=[0, 0.05, 0.9, 0.95])
+
+        output_path = output_dir / filename
         plt.savefig(output_path, bbox_inches='tight', dpi=300)
         plt.close()
         print(f"Saved: {output_path}")
 
-    # Combined dataset figures
-    print("Creating combined mean SVD matrices (all datasets pooled)...")
-    plot_data = df_tidy.copy()
-    plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-    structures = get_sorted_structures(plot_data['structure'].unique())
-    
-    if len(structures) == 0:
-        return
-        
-    n_cols = 5
-    n_rows = max(1, (len(structures) + n_cols - 1) // n_cols)
-    
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4.5*n_rows), squeeze=False)
+    for dataset in df_tidy['dataset'].unique():
+        dataset_data = df_tidy[df_tidy['dataset'] == dataset].copy()
+        print(f"Creating mean SVD matrices for {dataset}...")
+        plot_svd(dataset_data, dataset, f'svd_comparison_mean_{dataset}.png')
 
-    for i, structure in enumerate(structures):
-        ax = axes[i // n_cols, i % n_cols]
-        structure_data = plot_data[plot_data['structure'] == structure]
-        structure_data = structure_data.copy()
-        structure_data['scan_id'] = structure_data['dataset'] + '_' + structure_data['subject'] + '_' + structure_data['session']
-
-        pivot_df = structure_data.pivot_table(
-            index='scan_id', 
-            columns='pipeline_short',
-            values='volume_mm3'
-        )
-
-        if len(pivot_df.columns) == len(pipeline_order) and len(pivot_df) > 1:
-            svd_matrix = calculate_mean_svd_matrix(pivot_df, pipeline_order)
-            nan_mask = svd_matrix.isna()
-            annot_matrix = svd_matrix.round(2).astype(str)
-            annot_matrix[nan_mask] = 'Err'
-            plot_svd_matrix = svd_matrix.clip(lower=vmin, upper=vmax) 
-            plot_svd_matrix[nan_mask] = vmin 
-            
-            sns.heatmap(
-                plot_svd_matrix,
-                vmin=vmin, vmax=vmax,
-                cmap=cmap, annot=annot_matrix, fmt="s",
-                square=True, cbar=False, ax=ax
-            )
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
-            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-            ax.set_xlabel("Pipeline B") 
-            ax.set_ylabel("Pipeline A") 
-            n_points = pivot_df.shape[0]
-            ax.set_title(f"{structure}\n(n={n_points})")
-        else:
-            ax.text(0.5, 0.5, "Insufficient data", ha='center', va='center', transform=ax.transAxes)
-            ax.set_title(f"{structure}\n(no data)")
-
-    total_plots = n_rows * n_cols
-    for k in range(len(structures), total_plots):
-        fig.delaxes(axes[k // n_cols, k % n_cols])
-
-    cbar_ax = fig.add_axes([0.92, 0.25, 0.015, 0.5])
-    norm = plt.Normalize(vmin=vmin, vmax=vmax)
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    cbar = fig.colorbar(sm, cax=cbar_ax)
-    cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
-    cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
-    cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
-
-    fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - All Datasets Combined', fontsize=18)
-    fig.tight_layout(rect=[0, 0.03, 0.9, 0.95])
-
-    output_path = output_dir / f'svd_comparison_mean_ALL_DATASETS.png'
-    plt.savefig(output_path, bbox_inches='tight', dpi=300)
-    plt.close()
-    print(f"Saved: {output_path}")
+    print("Creating combined mean SVD matrices...")
+    plot_svd(df_tidy.copy(), "All Datasets Combined", f'svd_comparison_mean_ALL_DATASETS.png')
 
 if __name__ == "__main__":
     EXPERIMENT_STATE_ROOT = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
@@ -549,7 +403,6 @@ if __name__ == "__main__":
     if tidy_path.exists():
         df_tidy = pd.read_csv(tidy_path)
         print(f"✓ Loaded df_tidy.csv")
-        print(f"  Shape: {df_tidy.shape}")
         
         print(f"  Sanitizing data (Removing rows with volume <= 0 or NaN)...")
         df_tidy['volume_mm3'] = pd.to_numeric(df_tidy['volume_mm3'], errors='coerce')
