@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 # -----------------------------------------------------------------------------
 EXPERIMENT_STATE_ROOT = Path(__file__).resolve().parents[1] / "experiment_state" / "figures"
 EXPERIMENT_STATE_ROOT.mkdir(parents=True, exist_ok=True)
-ROOT = Path('/tmp/neuroci_output_state') # Adjust if necessary for your env
+ROOT = Path('/tmp/neuroci_output_state') 
 
 # -----------------------------------------------------------------------------
 # Helper functions
 # -----------------------------------------------------------------------------
 def load_tabular_data(dataset_path: Path):
-    """Load all TSV files inside a dataset's 'tabular' directory into a dictionary."""
+    """Load all TSV files inside a dataset's 'tabular' directory."""
     tabular_path = dataset_path / "tabular"
     dfs = {}
     if tabular_path.exists():
@@ -34,7 +34,7 @@ def extract_demographics(dataset_name: str, dfs: dict):
     df_demo = None
     dataset_lower = dataset_name.lower()
 
-    # PREVENT-AD logic (User Provided)
+    # PREVENT-AD logic
     if dataset_lower == 'preventad':
         # --- 1. Extract Sex (Subject-Level) ---
         df_sex = pd.DataFrame(columns=['subject', 'sex'])
@@ -185,6 +185,12 @@ def filter_complete_pipelines(df_tidy):
     }
 
     print(f"Applying Strict Filtering... Initial: {len(df_tidy)}")
+    
+    # 0. Sanitize: Drop rows with volume <= 0 (Critical step matching userscript2.py)
+    # If a pipeline failed and reported 0, we must drop that ROW so the counts update correctly.
+    if 'volume_mm3' in df_tidy.columns:
+        df_tidy = df_tidy[df_tidy['volume_mm3'] > 0]
+
     # 1. Filter to required pipelines ONLY first
     df_tidy = df_tidy[df_tidy['pipeline'].isin(required_pipelines)].copy()
 
@@ -206,6 +212,7 @@ def filter_complete_pipelines(df_tidy):
                                how='left', 
                                indicator=True)
         df_filtered = merged[merged['_merge'] == 'left_only'].drop(columns=['_merge'])
+        print(f"Dropped {len(bad_sessions)} incomplete sessions.")
     else:
         df_filtered = df_tidy.copy()
     
@@ -246,19 +253,22 @@ def main():
     df = pd.read_csv(df_tidy_path)
 
     # -------------------------------------------------------------------------
-    # 1. APPLY GRAND INTERSECTION FILTER (Identical to userscript2.py)
+    # 1. APPLY GRAND INTERSECTION FILTER (Strictly Match userscript2.py)
     # -------------------------------------------------------------------------
-    # Pre-filter structures
-    required_structures = get_structure_order()
-    df = df[df['structure'].isin(required_structures)].copy()
+    # Ensure volume is numeric and valid first
     if 'volume_mm3' in df.columns:
+        df['volume_mm3'] = pd.to_numeric(df['volume_mm3'], errors='coerce')
         df = df.dropna(subset=['volume_mm3'])
     
-    # Apply Strict Filter
+    # CRITICAL: Filter complete cases (which includes the > 0 check)
     df = filter_complete_pipelines(df)
 
+    # NOW filter to relevant structures for plotting
+    required_structures = get_structure_order()
+    df = df[df['structure'].isin(required_structures)].copy()
+
     # -------------------------------------------------------------------------
-    # 2. MAP DEMOGRAPHICS (Dictionary Lookup Method from 02_ml_age_sex.py)
+    # 2. MAP DEMOGRAPHICS
     # -------------------------------------------------------------------------
     print("Building Demographics Mapping...")
     age_mapping = {}
@@ -279,15 +289,9 @@ def main():
                 subj = str(row["subject"]).strip()
                 sess = str(row["session"]).strip() if pd.notna(row["session"]) else np.nan
                 
-                # Normalize ID for mapping key (ensure no sub- prefix in key if df_tidy doesn't have it, or vice versa)
-                # Ideally, we store the ID exactly as extracted.
-                # Since df_tidy usually has 'sub-X', and our extract function adds 'sub-', we should be good.
-                
                 if pd.notna(sess) and sess != 'nan':
                     age_mapping[(dataset_name, subj, sess)] = row["age"]
                     sex_mapping[(dataset_name, subj, sess)] = row["sex"]
-                    
-                    # Fallback for subject-level sex (constant)
                     sex_mapping[(dataset_name, subj)] = row["sex"]
                 else:
                     age_mapping[(dataset_name, subj)] = row["age"]
@@ -296,9 +300,7 @@ def main():
     # Apply Mapping
     print("Applying Age/Sex Mapping...")
     def get_age(row):
-        # 1. Try exact session match
         val = age_mapping.get((row["dataset"], row["subject"], row["session"]), np.nan)
-        # 2. If not found, try fallback (dataset, subject)
         if pd.isna(val):
             val = age_mapping.get((row["dataset"], row["subject"]), np.nan)
         return val
@@ -313,13 +315,11 @@ def main():
     df["sex"] = df.apply(get_sex, axis=1)
     
     print(f"Final Data with Demographics: {len(df)}")
-    print(f"Rows with Age: {df['age'].notna().sum()}")
-    print(f"Rows with Sex: {df['sex'].notna().sum()}")
 
     create_age_distribution_plot(df, EXPERIMENT_STATE_ROOT)
 
     # -------------------------------------------------------------------------
-    # 3. ANALYSIS (Spearman & T-Test)
+    # 3. ANALYSIS
     # -------------------------------------------------------------------------
     pairwise_diffs = []
     pipelines = df['pipeline'].unique()
