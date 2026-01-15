@@ -470,8 +470,6 @@ def create_svd_figures(df_tidy, output_dir):
         sm.set_array([])
         cbar = fig.colorbar(sm, cax=cbar_ax)
         cbar.set_label("Mean SVD (Fractional Difference)", rotation=270, labelpad=15)
-        cbar.ax.text(1.5, vmax + label_offset, f'High Difference (≥ {vmax:.1f})', ha='center', va='bottom', fontsize=10) 
-        cbar.ax.text(1.5, vmin - label_offset, f'Low Difference (0.0)', ha='center', va='top', fontsize=10)
 
         fig.suptitle(f'Inter-Pipeline Mean Symmetric Volume Difference (SVD) - {dataset}', fontsize=18)
         fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
