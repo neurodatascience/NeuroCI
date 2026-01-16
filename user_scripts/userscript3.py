@@ -175,7 +175,6 @@ def get_structure_order():
 def filter_complete_pipelines(df_tidy):
     """
     Return subset of df_tidy using STRICT Session-Level Complete Case Analysis.
-    (Logic copied from userscript2.py to ensure identical filtering)
     """
     required_pipelines = {
         'fslanat6071ants243',
@@ -186,8 +185,7 @@ def filter_complete_pipelines(df_tidy):
 
     print(f"Applying Strict Filtering... Initial: {len(df_tidy)}")
     
-    # 0. Sanitize: Drop rows with volume <= 0 (Critical step matching userscript2.py)
-    # If a pipeline failed and reported 0, we must drop that ROW so the counts update correctly.
+    # 0. Sanitize: Drop rows with volume <= 0
     if 'volume_mm3' in df_tidy.columns:
         df_tidy = df_tidy[df_tidy['volume_mm3'] > 0]
 
@@ -253,7 +251,7 @@ def main():
     df = pd.read_csv(df_tidy_path)
 
     # -------------------------------------------------------------------------
-    # 1. APPLY GRAND INTERSECTION FILTER (Strictly Match userscript2.py)
+    # 1. APPLY GRAND INTERSECTION FILTER
     # -------------------------------------------------------------------------
     # Ensure volume is numeric and valid first
     if 'volume_mm3' in df.columns:
@@ -319,7 +317,7 @@ def main():
     create_age_distribution_plot(df, EXPERIMENT_STATE_ROOT)
 
     # -------------------------------------------------------------------------
-    # 3. ANALYSIS
+    # 3. ANALYSIS (Corrected for Head Size Confound)
     # -------------------------------------------------------------------------
     pairwise_diffs = []
     pipelines = df['pipeline'].unique()
@@ -329,7 +327,13 @@ def main():
         df2 = df[df['pipeline'] == pipe2]
         merged = df1.merge(df2, on=['dataset', 'subject', 'session', 'structure'], suffixes=(f'_{pipe1}', f'_{pipe2}'))
 
-        merged['volume_diff'] = (merged['volume_mm3_' + pipe1] - merged['volume_mm3_' + pipe2]).abs()
+        # --- CHANGED: Relative Difference Calculation (Normalized by Mean Volume) ---
+        mean_vol = (merged['volume_mm3_' + pipe1] + merged['volume_mm3_' + pipe2]) / 2.0
+        abs_diff = (merged['volume_mm3_' + pipe1] - merged['volume_mm3_' + pipe2]).abs()
+        
+        # Avoid division by zero, though complete case filter should prevent 0 volumes
+        merged['volume_diff'] = abs_diff / mean_vol.replace(0, np.nan)
+        # ---------------------------------------------------------------------------
         
         short_pipe1 = shorten_pipeline_name(pipe1)
         short_pipe2 = shorten_pipeline_name(pipe2)
@@ -381,7 +385,7 @@ def main():
         
         plt.figure(figsize=(10, 8))
         sns.heatmap(corr_pivot, annot=annot_matrix, fmt='', cmap='coolwarm', center=0, cbar_kws={'label': 'Spearman r'})
-        plt.title('Spearman Correlation of Volume Differences with Age')
+        plt.title('Spearman Correlation of Relative Volume Differences with Age')
         plt.tight_layout()
         plt.savefig(EXPERIMENT_STATE_ROOT / 'corr_age_spearman_heatmap.png', dpi=300)
         plt.close()
@@ -420,7 +424,7 @@ def main():
         
         plt.figure(figsize=(10, 8))
         sns.heatmap(sex_pivot, annot=annot_matrix_sex, fmt='', cmap='vlag', center=0, cbar_kws={'label': "Cohen's d"})
-        plt.title("Sex Effect (Cohen's d) on Volume Differences")
+        plt.title("Sex Effect (Cohen's d) on Relative Volume Differences")
         plt.tight_layout()
         plt.savefig(EXPERIMENT_STATE_ROOT / 'sex_effects_heatmap_significant.png', dpi=300)
         plt.close()
