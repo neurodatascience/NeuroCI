@@ -429,5 +429,31 @@ def main():
         plt.savefig(EXPERIMENT_STATE_ROOT / 'sex_effects_heatmap_significant.png', dpi=300)
         plt.close()
 
+    # -------------------------------------------------------------------------
+    # NEW: Mean Volume Difference Heatmap
+    # -------------------------------------------------------------------------
+    mean_diff_results = df_diff.groupby(['pipeline_pair', 'structure'])['volume_diff'].mean().reset_index()
+    
+    if not mean_diff_results.empty:
+        mean_diff_results.to_csv(EXPERIMENT_STATE_ROOT / 'mean_vol_diff_summary.csv', index=False)
+
+        structure_order = get_structure_order()
+        mean_diff_ordered = mean_diff_results[mean_diff_results['structure'].isin(structure_order)].copy()
+        mean_diff_ordered['structure'] = pd.Categorical(mean_diff_ordered['structure'], categories=structure_order, ordered=True)
+        mean_diff_ordered = mean_diff_ordered.sort_values('structure')
+
+        mean_diff_pivot = mean_diff_ordered.pivot(index='structure', columns='pipeline_pair', values='volume_diff')
+        
+        # Round for annotation
+        mean_diff_rounded = mean_diff_pivot.round(3)
+        annot_matrix_mean = mean_diff_rounded.astype(str)
+
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(mean_diff_pivot, annot=annot_matrix_mean, fmt='', cmap='viridis', cbar_kws={'label': 'Mean Relative Volume Diff'})
+        plt.title('Mean Relative Volume Difference by Structure')
+        plt.tight_layout()
+        plt.savefig(EXPERIMENT_STATE_ROOT / 'mean_vol_diff_heatmap.png', dpi=300)
+        plt.close()
+
 if __name__ == '__main__':
     main()
