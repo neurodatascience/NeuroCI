@@ -291,15 +291,18 @@ def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
         return '{:.2f}'.format(x) if pd.notnull(x) else ''
 
     # Annot 1: Mean Diff - Show ALL values
-    annot_md = md_pivot.applymap(strict_fmt)
+    # CHANGE: Replaced .applymap() with .map() for Pandas 2.1+ compatibility
+    annot_md = md_pivot.map(strict_fmt)
 
     # Annot 2: Age - Show ONLY significant (p < 0.05)
-    annot_corr = corr_pivot.applymap(strict_fmt)
+    # CHANGE: Replaced .applymap() with .map()
+    annot_corr = corr_pivot.map(strict_fmt)
     mask_corr = (p_corr_pivot >= 0.05) | (p_corr_pivot.isna())
     annot_corr = annot_corr.mask(mask_corr, '')
 
     # Annot 3: Sex - Show ONLY significant (p < 0.05)
-    annot_sex = sex_pivot.applymap(strict_fmt)
+    # CHANGE: Replaced .applymap() with .map()
+    annot_sex = sex_pivot.map(strict_fmt)
     mask_sex = (p_sex_pivot >= 0.05) | (p_sex_pivot.isna())
     annot_sex = annot_sex.mask(mask_sex, '')
 
