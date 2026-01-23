@@ -245,9 +245,9 @@ def create_age_distribution_plot(df, output_dir):
 def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
     """
     Create a composite figure with 3 vertically stacked heatmaps sharing the X axis.
-    1. Mean Relative Volume Difference
-    2. Age Correlation (Spearman r)
-    3. Sex Effect (Cohen's d)
+    1. Mean Relative Volume Difference (All values shown, 2 decimals)
+    2. Age Correlation (Only significant values shown, 2 decimals)
+    3. Sex Effect (Only significant values shown, 2 decimals)
     """
     print("Generating Composite MICCAI Figure...")
     
@@ -255,49 +255,72 @@ def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
     
     # --- Prepare Matrices ---
     
-    # 1. Mean Diff
+    # 1. Mean Diff (No Significance Test available in current logic, show all)
     md_sub = mean_diff_df[mean_diff_df['structure'].isin(structure_order)].copy()
     md_sub['structure'] = pd.Categorical(md_sub['structure'], categories=structure_order, ordered=True)
     md_sub = md_sub.sort_values('structure')
     md_pivot = md_sub.pivot(index='structure', columns='pipeline_pair', values='volume_diff')
     
-    # 2. Age Correlation
+    # 2. Age Correlation (Values AND P-values)
     c_sub = corr_df[corr_df['structure'].isin(structure_order)].copy()
     c_sub['structure'] = pd.Categorical(c_sub['structure'], categories=structure_order, ordered=True)
     c_sub = c_sub.sort_values('structure')
     corr_pivot = c_sub.pivot(index='structure', columns='pipeline_pair', values='r')
+    p_corr_pivot = c_sub.pivot(index='structure', columns='pipeline_pair', values='p_adj')
     
-    # 3. Sex Effect
+    # 3. Sex Effect (Values AND P-values)
     s_sub = sex_df[sex_df['structure'].isin(structure_order)].copy()
     s_sub['structure'] = pd.Categorical(s_sub['structure'], categories=structure_order, ordered=True)
     s_sub = s_sub.sort_values('structure')
     sex_pivot = s_sub.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
+    p_sex_pivot = s_sub.pivot(index='structure', columns='pipeline_pair', values='p_adj')
 
     # Ensure consistent column ordering (sorted alphabetically for alignment)
     all_cols = sorted(list(set(md_pivot.columns) | set(corr_pivot.columns) | set(sex_pivot.columns)))
     
-    # Reindex to ensure strict alignment
+    # Reindex ALL matrices to ensure strict alignment
     md_pivot = md_pivot.reindex(columns=all_cols)
     corr_pivot = corr_pivot.reindex(columns=all_cols)
+    p_corr_pivot = p_corr_pivot.reindex(columns=all_cols)
     sex_pivot = sex_pivot.reindex(columns=all_cols)
+    p_sex_pivot = p_sex_pivot.reindex(columns=all_cols)
+
+    # --- Create Custom Annotation Matrices (The Fix) ---
+    
+    # Annot 1: Mean Diff - Show ALL values, rounded to 2
+    annot_md = md_pivot.round(2).astype(str)
+    # Replace 'nan' string with empty if any missing data
+    annot_md = annot_md.replace('nan', '')
+
+    # Annot 2: Age - Show ONLY significant (p < 0.05), rounded to 2
+    annot_corr = corr_pivot.round(2).astype(str)
+    mask_corr = (p_corr_pivot >= 0.05) | (p_corr_pivot.isna())
+    annot_corr = annot_corr.mask(mask_corr, '')
+    annot_corr = annot_corr.replace('nan', '')
+
+    # Annot 3: Sex - Show ONLY significant (p < 0.05), rounded to 2
+    annot_sex = sex_pivot.round(2).astype(str)
+    mask_sex = (p_sex_pivot >= 0.05) | (p_sex_pivot.isna())
+    annot_sex = annot_sex.mask(mask_sex, '')
+    annot_sex = annot_sex.replace('nan', '')
 
     # --- Plotting ---
     fig, axes = plt.subplots(3, 1, figsize=(10, 18), sharex=True, constrained_layout=True)
     
     # Plot 1: Mean Diff
-    sns.heatmap(md_pivot, ax=axes[0], annot=True, fmt='.2f', cmap='viridis', 
+    sns.heatmap(md_pivot, ax=axes[0], annot=annot_md, fmt='', cmap='viridis', 
                 cbar_kws={'label': 'Mean Rel. Diff'})
     axes[0].set_title('Mean Relative Volume Difference')
     axes[0].set_xlabel('')
     
     # Plot 2: Age Correlation
-    sns.heatmap(corr_pivot, ax=axes[1], annot=True, fmt='.2f', cmap='coolwarm', center=0, 
+    sns.heatmap(corr_pivot, ax=axes[1], annot=annot_corr, fmt='', cmap='coolwarm', center=0, 
                 cbar_kws={'label': 'Spearman r'})
     axes[1].set_title('Age Correlation (Spearman r)')
     axes[1].set_xlabel('')
     
     # Plot 3: Sex Effect
-    sns.heatmap(sex_pivot, ax=axes[2], annot=True, fmt='.2f', cmap='vlag', center=0, 
+    sns.heatmap(sex_pivot, ax=axes[2], annot=annot_sex, fmt='', cmap='vlag', center=0, 
                 cbar_kws={'label': "Cohen's d"})
     axes[2].set_title("Sex Effect (Cohen's d)")
     axes[2].set_xlabel('Pipeline Pair')
