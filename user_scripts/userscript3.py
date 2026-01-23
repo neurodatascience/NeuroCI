@@ -244,98 +244,116 @@ def create_age_distribution_plot(df, output_dir):
 
 def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
     """
-    Create a composite figure with 3 vertically stacked heatmaps sharing the X axis.
-    1. Mean Relative Volume Difference (All values shown, 2 decimals)
-    2. Age Correlation (Only significant values shown, 2 decimals)
-    3. Sex Effect (Only significant values shown, 2 decimals)
+    Create a composite figure with 3 VERTICALLY arranged heatmaps.
+    
+    OPTIMIZED FOR MICCAI (LNCS Format):
+    - Strict vertical stacking (3 rows, 1 col).
+    - Shared X-axis (labels only on bottom).
+    - Zero vertical whitespace (hspace=0.05).
+    - Compact Figure Size (approx 8x9 inches) to fit half-page.
     """
-    print("Generating Composite MICCAI Figure...")
+    print("Generating Composite MICCAI Figure (Vertical Compact)...")
     
     structure_order = get_structure_order()
     
-    # --- Prepare Matrices ---
-    
-    # 1. Mean Diff (No Significance Test available in current logic, show all)
+    # --- Prepare Matrices (Standard Logic) ---
+    # 1. Mean Diff
     md_sub = mean_diff_df[mean_diff_df['structure'].isin(structure_order)].copy()
     md_sub['structure'] = pd.Categorical(md_sub['structure'], categories=structure_order, ordered=True)
     md_sub = md_sub.sort_values('structure')
     md_pivot = md_sub.pivot(index='structure', columns='pipeline_pair', values='volume_diff')
     
-    # 2. Age Correlation (Values AND P-values)
+    # 2. Age Correlation
     c_sub = corr_df[corr_df['structure'].isin(structure_order)].copy()
     c_sub['structure'] = pd.Categorical(c_sub['structure'], categories=structure_order, ordered=True)
     c_sub = c_sub.sort_values('structure')
     corr_pivot = c_sub.pivot(index='structure', columns='pipeline_pair', values='r')
     p_corr_pivot = c_sub.pivot(index='structure', columns='pipeline_pair', values='p_adj')
     
-    # 3. Sex Effect (Values AND P-values)
+    # 3. Sex Effect
     s_sub = sex_df[sex_df['structure'].isin(structure_order)].copy()
     s_sub['structure'] = pd.Categorical(s_sub['structure'], categories=structure_order, ordered=True)
     s_sub = s_sub.sort_values('structure')
     sex_pivot = s_sub.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
     p_sex_pivot = s_sub.pivot(index='structure', columns='pipeline_pair', values='p_adj')
 
-    # Ensure consistent column ordering (sorted alphabetically for alignment)
+    # Align columns
     all_cols = sorted(list(set(md_pivot.columns) | set(corr_pivot.columns) | set(sex_pivot.columns)))
-    
-    # Reindex ALL matrices to ensure strict alignment
     md_pivot = md_pivot.reindex(columns=all_cols)
     corr_pivot = corr_pivot.reindex(columns=all_cols)
     p_corr_pivot = p_corr_pivot.reindex(columns=all_cols)
     sex_pivot = sex_pivot.reindex(columns=all_cols)
     p_sex_pivot = p_sex_pivot.reindex(columns=all_cols)
 
-    # --- Create Custom Annotation Matrices ---
-    # Helper to enforce ".2f" including trailing zeros (0.40 not 0.4)
+    # --- Annotation Logic ---
     def strict_fmt(x):
         return '{:.2f}'.format(x) if pd.notnull(x) else ''
 
-    # Annot 1: Mean Diff - Show ALL values
-    # CHANGE: Replaced .applymap() with .map() for Pandas 2.1+ compatibility
     annot_md = md_pivot.map(strict_fmt)
-
-    # Annot 2: Age - Show ONLY significant (p < 0.05)
-    # CHANGE: Replaced .applymap() with .map()
+    
     annot_corr = corr_pivot.map(strict_fmt)
     mask_corr = (p_corr_pivot >= 0.05) | (p_corr_pivot.isna())
     annot_corr = annot_corr.mask(mask_corr, '')
 
-    # Annot 3: Sex - Show ONLY significant (p < 0.05)
-    # CHANGE: Replaced .applymap() with .map()
     annot_sex = sex_pivot.map(strict_fmt)
     mask_sex = (p_sex_pivot >= 0.05) | (p_sex_pivot.isna())
     annot_sex = annot_sex.mask(mask_sex, '')
 
-    # --- Plotting ---
-    fig, axes = plt.subplots(3, 1, figsize=(10, 18), sharex=True, constrained_layout=True)
+    # --- Plotting (Vertical Compact) ---
+    # Dimensions: 9 width, 10 height. This is roughly half the height of the previous 10x18.
+    fig, axes = plt.subplots(3, 1, figsize=(9, 10), sharex=True)
     
+    # Reduce space between subplots aggressively
+    plt.subplots_adjust(hspace=0.1)
+
+    # Common heatmap args
+    # cbar_kws 'aspect': 30 makes the bar thinner/more elegant
+    heatmap_args = {
+        'fmt': '',
+        'annot_kws': {"size": 8},
+        'cbar_kws': {'pad': 0.02, 'aspect': 30} 
+    }
+
     # Plot 1: Mean Diff
-    sns.heatmap(md_pivot, ax=axes[0], annot=annot_md, fmt='', cmap='viridis', 
-                cbar_kws={'label': 'Mean Rel. Diff'})
-    axes[0].set_title('Mean Relative Volume Difference by Structure')
-    axes[0].set_xlabel('')
+    sns.heatmap(md_pivot, ax=axes[0], annot=annot_md, cmap='viridis', 
+                cbar_kws={'label': 'Mean Rel. Diff', 'pad': 0.02, 'aspect': 30}, 
+                fmt='', annot_kws={"size": 8})
+    axes[0].set_ylabel('') # Save width by removing repetitive Y label if obvious
+    axes[0].set_title('A. Mean Relative Volume Difference', fontsize=10, loc='left', fontweight='bold')
     
     # Plot 2: Age Correlation
-    sns.heatmap(corr_pivot, ax=axes[1], annot=annot_corr, fmt='', cmap='coolwarm', center=0, 
-                cbar_kws={'label': 'Spearman r'})
-    axes[1].set_title('Spearman Correlation of Relative Volume Differences with Age')
-    axes[1].set_xlabel('')
+    sns.heatmap(corr_pivot, ax=axes[1], annot=annot_corr, cmap='coolwarm', center=0, 
+                cbar_kws={'label': 'Spearman r', 'pad': 0.02, 'aspect': 30},
+                fmt='', annot_kws={"size": 8})
+    axes[1].set_ylabel('Structure', fontsize=10, fontweight='bold') # Keep middle label only? Or all?
+    axes[1].set_title('B. Age Correlation (Significant only)', fontsize=10, loc='left', fontweight='bold')
     
     # Plot 3: Sex Effect
-    sns.heatmap(sex_pivot, ax=axes[2], annot=annot_sex, fmt='', cmap='vlag', center=0, 
-                cbar_kws={'label': "Cohen's d"})
-    axes[2].set_title("Sex Effect (Cohen's d) on Relative Volume Differences")
-    axes[2].set_xlabel('Pipeline Pair')
+    sns.heatmap(sex_pivot, ax=axes[2], annot=annot_sex, cmap='vlag', center=0, 
+                cbar_kws={'label': "Cohen's d", 'pad': 0.02, 'aspect': 30},
+                fmt='', annot_kws={"size": 8})
+    axes[2].set_ylabel('')
+    axes[2].set_title("C. Sex Effect (Significant only)", fontsize=10, loc='left', fontweight='bold')
+    axes[2].set_xlabel('Pipeline Pair', fontsize=10, fontweight='bold')
 
-    # Ensure Y-labels are on every plot
-    for ax in axes:
-        ax.set_ylabel('Structure')
-        plt.setp(ax.get_yticklabels(), rotation=0)
+    # --- Global Formatting ---
+    for i, ax in enumerate(axes):
+        # Y-ticks on all plots
+        plt.setp(ax.get_yticklabels(), rotation=0, fontsize=9)
+        
+        # X-ticks only on bottom plot (handled by sharex=True, but we enforce rotation)
+        if i == 2:
+            plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=9)
+        else:
+            ax.set_xlabel('')
+            
+        # Optional: Add gridlines for readability
+        ax.set_xticks(np.arange(len(all_cols)) + 0.5, minor=False)
+        ax.set_yticks(np.arange(len(structure_order)) + 0.5, minor=False)
+        ax.grid(which="major", color="w", linestyle='-', linewidth=0.5)
+        ax.tick_params(which="major", bottom=False, left=False)
 
-    # Rotate X-labels on the bottom plot only
-    plt.setp(axes[2].get_xticklabels(), rotation=45, ha='right')
-
-    plt.savefig(output_dir / 'composite_summary_figure.png', dpi=300)
+    plt.savefig(output_dir / 'composite_summary_figure.png', bbox_inches='tight', dpi=300)
     plt.close()
 
 # -----------------------------------------------------------------------------
