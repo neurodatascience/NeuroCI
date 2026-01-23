@@ -242,6 +242,77 @@ def create_age_distribution_plot(df, output_dir):
     plt.savefig(output_dir / 'age_distribution_by_dataset.png', bbox_inches='tight', dpi=300)
     plt.close()
 
+def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
+    """
+    Create a composite figure with 3 vertically stacked heatmaps sharing the X axis.
+    1. Mean Relative Volume Difference
+    2. Age Correlation (Spearman r)
+    3. Sex Effect (Cohen's d)
+    """
+    print("Generating Composite MICCAI Figure...")
+    
+    structure_order = get_structure_order()
+    
+    # --- Prepare Matrices ---
+    
+    # 1. Mean Diff
+    md_sub = mean_diff_df[mean_diff_df['structure'].isin(structure_order)].copy()
+    md_sub['structure'] = pd.Categorical(md_sub['structure'], categories=structure_order, ordered=True)
+    md_sub = md_sub.sort_values('structure')
+    md_pivot = md_sub.pivot(index='structure', columns='pipeline_pair', values='volume_diff')
+    
+    # 2. Age Correlation
+    c_sub = corr_df[corr_df['structure'].isin(structure_order)].copy()
+    c_sub['structure'] = pd.Categorical(c_sub['structure'], categories=structure_order, ordered=True)
+    c_sub = c_sub.sort_values('structure')
+    corr_pivot = c_sub.pivot(index='structure', columns='pipeline_pair', values='r')
+    
+    # 3. Sex Effect
+    s_sub = sex_df[sex_df['structure'].isin(structure_order)].copy()
+    s_sub['structure'] = pd.Categorical(s_sub['structure'], categories=structure_order, ordered=True)
+    s_sub = s_sub.sort_values('structure')
+    sex_pivot = s_sub.pivot(index='structure', columns='pipeline_pair', values='cohen_d')
+
+    # Ensure consistent column ordering (sorted alphabetically for alignment)
+    all_cols = sorted(list(set(md_pivot.columns) | set(corr_pivot.columns) | set(sex_pivot.columns)))
+    
+    # Reindex to ensure strict alignment
+    md_pivot = md_pivot.reindex(columns=all_cols)
+    corr_pivot = corr_pivot.reindex(columns=all_cols)
+    sex_pivot = sex_pivot.reindex(columns=all_cols)
+
+    # --- Plotting ---
+    fig, axes = plt.subplots(3, 1, figsize=(10, 18), sharex=True, constrained_layout=True)
+    
+    # Plot 1: Mean Diff
+    sns.heatmap(md_pivot, ax=axes[0], annot=True, fmt='.2f', cmap='viridis', 
+                cbar_kws={'label': 'Mean Rel. Diff'})
+    axes[0].set_title('Mean Relative Volume Difference')
+    axes[0].set_xlabel('')
+    
+    # Plot 2: Age Correlation
+    sns.heatmap(corr_pivot, ax=axes[1], annot=True, fmt='.2f', cmap='coolwarm', center=0, 
+                cbar_kws={'label': 'Spearman r'})
+    axes[1].set_title('Age Correlation (Spearman r)')
+    axes[1].set_xlabel('')
+    
+    # Plot 3: Sex Effect
+    sns.heatmap(sex_pivot, ax=axes[2], annot=True, fmt='.2f', cmap='vlag', center=0, 
+                cbar_kws={'label': "Cohen's d"})
+    axes[2].set_title("Sex Effect (Cohen's d)")
+    axes[2].set_xlabel('Pipeline Pair')
+
+    # Ensure Y-labels are on every plot
+    for ax in axes:
+        ax.set_ylabel('Structure')
+        plt.setp(ax.get_yticklabels(), rotation=0)
+
+    # Rotate X-labels on the bottom plot only
+    plt.setp(axes[2].get_xticklabels(), rotation=45, ha='right')
+
+    plt.savefig(output_dir / 'composite_summary_figure.png', dpi=300)
+    plt.close()
+
 # -----------------------------------------------------------------------------
 # Main analysis
 # -----------------------------------------------------------------------------
@@ -350,6 +421,11 @@ def main():
 
     df_diff = pd.concat(pairwise_diffs, ignore_index=True)
 
+    # Initialize storage variables for the final composite plot
+    final_corr_df = pd.DataFrame()
+    final_sex_df = pd.DataFrame()
+    final_mean_diff_df = pd.DataFrame()
+
     # Correlation
     df_age = df_diff[['dataset','subject','session','pipeline_pair','structure','volume_diff','age']].copy()
     df_age['volume_diff'] = pd.to_numeric(df_age['volume_diff'], errors='coerce')
@@ -370,6 +446,7 @@ def main():
     if not corr_df.empty:
         corr_df['p_adj'] = np.minimum(corr_df['p'] * len(corr_df), 1.0)
         corr_df.to_csv(EXPERIMENT_STATE_ROOT / 'age_correlation_summary_spearman.csv', index=False)
+        final_corr_df = corr_df.copy() # Store for composite
         
         structure_order = get_structure_order()
         corr_df_ordered = corr_df[corr_df['structure'].isin(structure_order)].copy()
@@ -409,6 +486,7 @@ def main():
     if not sex_df.empty:
         sex_df['p_adj'] = np.minimum(sex_df['p'] * len(sex_df), 1.0)
         sex_df.to_csv(EXPERIMENT_STATE_ROOT / 'sex_effects_summary.csv', index=False)
+        final_sex_df = sex_df.copy() # Store for composite
         
         structure_order = get_structure_order()
         sex_df_ordered = sex_df[sex_df['structure'].isin(structure_order)].copy()
@@ -436,6 +514,7 @@ def main():
     
     if not mean_diff_results.empty:
         mean_diff_results.to_csv(EXPERIMENT_STATE_ROOT / 'mean_vol_diff_summary.csv', index=False)
+        final_mean_diff_df = mean_diff_results.copy() # Store for composite
 
         structure_order = get_structure_order()
         mean_diff_ordered = mean_diff_results[mean_diff_results['structure'].isin(structure_order)].copy()
@@ -454,6 +533,14 @@ def main():
         plt.tight_layout()
         plt.savefig(EXPERIMENT_STATE_ROOT / 'mean_vol_diff_heatmap.png', dpi=300)
         plt.close()
+
+    # -------------------------------------------------------------------------
+    # 4. GENERATE COMPOSITE FIGURE (MICCAI)
+    # -------------------------------------------------------------------------
+    if not final_mean_diff_df.empty and not final_corr_df.empty and not final_sex_df.empty:
+        create_composite_figure(final_mean_diff_df, final_corr_df, final_sex_df, EXPERIMENT_STATE_ROOT)
+    else:
+        print("Skipping composite figure: Insufficient data in one of the 3 metrics.")
 
 if __name__ == '__main__':
     main()
