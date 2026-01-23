@@ -249,14 +249,15 @@ def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
     OPTIMIZED FOR MICCAI (LNCS Format):
     - Strict vertical stacking (3 rows, 1 col).
     - Shared X-axis (labels only on bottom).
-    - Zero vertical whitespace (hspace=0.05).
-    - Compact Figure Size (approx 8x9 inches) to fit half-page.
+    - Compact Height (approx 11 inches).
+    - Includes 'A.', 'B.', 'C.' panel labels with ORIGINAL descriptive text.
+    - REDUCED FONT SIZES to maximize whitespace.
     """
-    print("Generating Composite MICCAI Figure (Vertical Compact)...")
+    print("Generating Composite MICCAI Figure (Vertical Compact + Small Fonts)...")
     
     structure_order = get_structure_order()
     
-    # --- Prepare Matrices (Standard Logic) ---
+    # --- Prepare Matrices (Standard) ---
     # 1. Mean Diff
     md_sub = mean_diff_df[mean_diff_df['structure'].isin(structure_order)].copy()
     md_sub['structure'] = pd.Categorical(md_sub['structure'], categories=structure_order, ordered=True)
@@ -299,55 +300,54 @@ def create_composite_figure(mean_diff_df, corr_df, sex_df, output_dir):
     mask_sex = (p_sex_pivot >= 0.05) | (p_sex_pivot.isna())
     annot_sex = annot_sex.mask(mask_sex, '')
 
-    # --- Plotting (Vertical Compact) ---
-    # Dimensions: 9 width, 10 height. This is roughly half the height of the previous 10x18.
-    fig, axes = plt.subplots(3, 1, figsize=(9, 10), sharex=True)
+    # --- Plotting ---
+    fig, axes = plt.subplots(3, 1, figsize=(10, 11), sharex=True)
     
-    # Reduce space between subplots aggressively
-    plt.subplots_adjust(hspace=0.1)
+    # Tight spacing between panels
+    plt.subplots_adjust(hspace=0.15)
 
     # Common heatmap args
-    # cbar_kws 'aspect': 30 makes the bar thinner/more elegant
     heatmap_args = {
         'fmt': '',
-        'annot_kws': {"size": 8},
-        'cbar_kws': {'pad': 0.02, 'aspect': 30} 
+        'annot_kws': {"size": 8},  # <--- CHANGED: Reduced from 9 to 8
+        'cbar_kws': {'pad': 0.02, 'aspect': 30}
     }
 
-    # Plot 1: Mean Diff
+    # Plot A: Mean Diff
     sns.heatmap(md_pivot, ax=axes[0], annot=annot_md, cmap='viridis', 
                 cbar_kws={'label': 'Mean Rel. Diff', 'pad': 0.02, 'aspect': 30}, 
                 fmt='', annot_kws={"size": 8})
-    axes[0].set_ylabel('') # Save width by removing repetitive Y label if obvious
-    axes[0].set_title('A. Mean Relative Volume Difference', fontsize=10, loc='left', fontweight='bold')
+    # <--- CHANGED: Title size 11 -> 10
+    axes[0].set_title('A. Mean Relative Volume Difference by Structure', fontsize=10, loc='left', fontweight='bold')
+    axes[0].set_ylabel('') 
     
-    # Plot 2: Age Correlation
+    # Plot B: Age Correlation
     sns.heatmap(corr_pivot, ax=axes[1], annot=annot_corr, cmap='coolwarm', center=0, 
                 cbar_kws={'label': 'Spearman r', 'pad': 0.02, 'aspect': 30},
                 fmt='', annot_kws={"size": 8})
-    axes[1].set_ylabel('Structure', fontsize=10, fontweight='bold') # Keep middle label only? Or all?
-    axes[1].set_title('B. Age Correlation (Significant only)', fontsize=10, loc='left', fontweight='bold')
+    # <--- CHANGED: Title size 11 -> 10, Y-label size 11 -> 10
+    axes[1].set_title('B. Spearman Correlation of Relative Volume Differences with Age (significant only)', fontsize=10, loc='left', fontweight='bold')
+    axes[1].set_ylabel('Structure', fontsize=10, fontweight='bold')
     
-    # Plot 3: Sex Effect
+    # Plot C: Sex Effect
     sns.heatmap(sex_pivot, ax=axes[2], annot=annot_sex, cmap='vlag', center=0, 
                 cbar_kws={'label': "Cohen's d", 'pad': 0.02, 'aspect': 30},
                 fmt='', annot_kws={"size": 8})
+    # <--- CHANGED: Title size 11 -> 10, Label size 11 -> 10
+    axes[2].set_title("C. Sex Effect (Cohen's d) on Relative Volume Differences (significant only)", fontsize=10, loc='left', fontweight='bold')
+    axes[2].set_xlabel('Pipeline Pair', fontsize=10)
     axes[2].set_ylabel('')
-    axes[2].set_title("C. Sex Effect (Significant only)", fontsize=10, loc='left', fontweight='bold')
-    axes[2].set_xlabel('Pipeline Pair', fontsize=10, fontweight='bold')
 
     # --- Global Formatting ---
     for i, ax in enumerate(axes):
-        # Y-ticks on all plots
-        plt.setp(ax.get_yticklabels(), rotation=0, fontsize=9)
+        # Y-ticks <--- CHANGED: Reduced from 10 to 8
+        plt.setp(ax.get_yticklabels(), rotation=0, fontsize=8)
         
-        # X-ticks only on bottom plot (handled by sharex=True, but we enforce rotation)
+        # X-ticks (only visible on bottom plot due to sharex) <--- CHANGED: Reduced from 10 to 8
         if i == 2:
-            plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=9)
-        else:
-            ax.set_xlabel('')
+            plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=8)
             
-        # Optional: Add gridlines for readability
+        # Gridlines for clarity
         ax.set_xticks(np.arange(len(all_cols)) + 0.5, minor=False)
         ax.set_yticks(np.arange(len(structure_order)) + 0.5, minor=False)
         ax.grid(which="major", color="w", linestyle='-', linewidth=0.5)
