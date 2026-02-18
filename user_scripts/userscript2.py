@@ -97,15 +97,11 @@ def count_unique_scans(structure_data):
     return len(structure_data[['dataset', 'subject', 'session']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
-    """
-    Create space-efficient histograms for a paper with 2 columns.
-    Pairs L/R structures side-by-side and centers the Brainstem.
-    Ensures consistent bin alignment across all pipelines.
-    """
+    """Create overlapping histograms (counts) for all pipelines per structure with 2-column layout."""
     import matplotlib.gridspec as gridspec
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['font.size'] = 10  # Standard for paper figures
+    plt.rcParams['font.size'] = 12
 
     pipeline_mapping = {
         'fslanat6071ants243': 'FSL6071',
@@ -116,7 +112,7 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
-    # 1. Group structures into L/R pairs from sorted list
+    # 1. Organize structures into L/R pairs for the 2-column layout
     all_structures = get_sorted_structures(df_tidy['structure'].unique())
     paired_rows = []
     i = 0
@@ -124,7 +120,6 @@ def create_distribution_figures(df_tidy, output_dir):
         s1 = all_structures[i]
         if i + 1 < len(all_structures):
             s2 = all_structures[i+1]
-            # Check if they form a Left/Right pair
             if s1.replace('Left-', '') == s2.replace('Right-', ''):
                 paired_rows.append([s1, s2])
                 i += 2
@@ -143,14 +138,15 @@ def create_distribution_figures(df_tidy, output_dir):
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
         n_rows = len(paired_rows)
-        # 4 virtual columns allow centering the single plot in the middle 2 slots
-        fig = plt.figure(figsize=(10, 3.5 * n_rows))
-        gs = gridspec.GridSpec(n_rows, 4, figure=fig, hspace=0.4, wspace=0.6)
+        # Tighter figure height to reduce blank space
+        fig = plt.figure(figsize=(10, 3.2 * n_rows))
+        
+        # GridSpec with 4 columns to allow centering (1:3) and bilateral (0:2, 2:4)
+        gs = gridspec.GridSpec(n_rows, 4, figure=fig, hspace=0.35, wspace=0.5)
         
         n_points = 0 
         for row_idx, pair in enumerate(paired_rows):
             if len(pair) == 2:
-                # Bilateral Structures: Left (0:2) and Right (2:4)
                 for col_idx, struct in enumerate(pair):
                     col_span = slice(0, 2) if col_idx == 0 else slice(2, 4)
                     ax = fig.add_subplot(gs[row_idx, col_span])
@@ -163,12 +159,12 @@ def create_distribution_figures(df_tidy, output_dir):
                             common_norm=False, element='step', fill=True, alpha=0.4, 
                             palette=palette, ax=ax, stat='count'
                         )
-                        ax.set_title(struct, fontweight='bold')
-                        ax.set_xlabel('Volume ($mm^3$)')
+                        ax.set_title(f"{struct}")
+                        ax.set_xlabel('Volume (mm³)')
                         ax.set_ylabel('Count')
                         n_points = count_unique_scans(structure_data)
             else:
-                # Solitary Structure (Brainstem): Center in middle 2 slots (1:3)
+                # Centering Brainstem in the middle two columns
                 ax = fig.add_subplot(gs[row_idx, 1:3])
                 struct = pair[0]
                 structure_data = plot_data[plot_data['structure'] == struct]
@@ -180,15 +176,20 @@ def create_distribution_figures(df_tidy, output_dir):
                         common_norm=False, element='step', fill=True, alpha=0.4, 
                         palette=palette, ax=ax, stat='count'
                     )
-                    ax.set_title(struct, fontweight='bold')
-                    ax.set_xlabel('Volume ($mm^3$)')
+                    ax.set_title(f"{struct}")
+                    ax.set_xlabel('Volume (mm³)')
                     ax.set_ylabel('Count')
                     n_points = count_unique_scans(structure_data)
 
-        fig.suptitle(f'Pipeline Distributions (Counts) - {dataset}', fontsize=16, y=0.98)
-        fig.text(0.5, 0.01, f"N = {n_points} Scans | Bin Width = 50$mm^3$", ha='center', fontsize=12, fontweight='bold')
+        # Restore original title strings exactly
+        title_str = 'Pipeline Distributions (Counts) - All Datasets Combined' if is_combined else f'Pipeline Distributions (Counts) - {dataset}'
+        fig.suptitle(title_str, fontsize=18)
         
-        plt.tight_layout(rect=[0, 0.03, 1, 0.97])
+        # Position N text closer to the bottom plot
+        fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
+        
+        # rect=[left, bottom, right, top] - values adjusted to tighten vertical margins
+        plt.tight_layout(rect=[0, 0.04, 1, 0.97])
         
         suffix = "_ALL_DATASETS" if is_combined else f"_{dataset}"
         plt.savefig(output_dir / f'distribution_comparison_counts{suffix}.png', bbox_inches='tight', dpi=300)
