@@ -97,7 +97,7 @@ def count_unique_scans(structure_data):
     return len(structure_data[['dataset', 'subject', 'session']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
-    """Create histograms with no vertical gaps, 2-column pairing, and centered Brainstem."""
+    """Create histograms for Slides (5-col) and Paper (2-col) with fixed bins and no legend titles."""
     import matplotlib.gridspec as gridspec
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
@@ -112,86 +112,86 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
-    # 1. Organize structures into L/R pairs
-    all_structures = get_sorted_structures(df_tidy['structure'].unique())
-    paired_rows = []
-    i = 0
-    while i < len(all_structures):
-        s1 = all_structures[i]
-        if i + 1 < len(all_structures):
-            s2 = all_structures[i+1]
-            if s1.replace('Left-', '') == s2.replace('Right-', ''):
-                paired_rows.append([s1, s2])
-                i += 2
-            else:
-                paired_rows.append([s1])
-                i += 1
-        else:
-            paired_rows.append([s1])
-            i += 1
+    # Define the two layouts
+    layouts = [
+        {'cols': 5, 'suffix': ''},      # Original "Slides" 5-column naming
+        {'cols': 2, 'suffix': '_paper'} # New 2-column Paper naming
+    ]
 
-    datasets = list(df_tidy['dataset'].unique()) + ['ALL_DATASETS']
-    
-    for dataset in datasets:
-        is_combined = (dataset == 'ALL_DATASETS')
-        plot_data = df_tidy.copy() if is_combined else df_tidy[df_tidy['dataset'] == dataset].copy()
-        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-        
-        n_rows = len(paired_rows)
-        # Tighten height to 3.0 per row to pull rows together
-        fig = plt.figure(figsize=(10, 3.0 * n_rows))
-        
-        # 4-column GridSpec for flexible centering
-        gs = gridspec.GridSpec(n_rows, 4, figure=fig)
-        
-        n_points = 0 
-        for row_idx, pair in enumerate(paired_rows):
-            if len(pair) == 2:
-                for col_idx, struct in enumerate(pair):
-                    col_span = slice(0, 2) if col_idx == 0 else slice(2, 4)
-                    ax = fig.add_subplot(gs[row_idx, col_span])
-                    structure_data = plot_data[plot_data['structure'] == struct]
-                    if not structure_data.empty:
-                        sns.histplot(data=structure_data, x='volume_mm3', hue='pipeline_short', 
-                                     hue_order=pipeline_order, binwidth=50, common_bins=True, 
-                                     common_norm=False, element='step', fill=True, alpha=0.4, 
-                                     palette=palette, ax=ax, stat='count')
-                        ax.get_legend().set_title(None)
+    for layout in layouts:
+        n_cols = layout['cols']
+        suffix = layout['suffix']
+
+        for dataset in list(df_tidy['dataset'].unique()) + ['ALL_DATASETS']:
+            is_combined = (dataset == 'ALL_DATASETS')
+            plot_data = df_tidy.copy() if is_combined else df_tidy[df_tidy['dataset'] == dataset].copy()
+            plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+            
+            # Organize structures
+            all_structs = get_sorted_structures(plot_data['structure'].unique())
+            if not all_structs: continue
+
+            # For the 2-column paper version, we pair L/R
+            if n_cols == 2:
+                rows_to_plot = []
+                i = 0
+                while i < len(all_structs):
+                    s1 = all_structs[i]
+                    if i + 1 < len(all_structs) and s1.replace('Left-', '') == all_structs[i+1].replace('Right-', ''):
+                        rows_to_plot.append([s1, all_structs[i+1]])
+                        i += 2
+                    else:
+                        rows_to_plot.append([s1])
+                        i += 1
+                n_rows = len(rows_to_plot)
+            else:
+                n_rows = (len(all_structs) + n_cols - 1) // n_cols
+
+            fig = plt.figure(figsize=(5*n_cols, 3.0 * n_rows))
+            # GridSpec with 4 columns for centering logic if n_cols is 2
+            gs_cols = 4 if n_cols == 2 else n_cols
+            gs = gridspec.GridSpec(n_rows, gs_cols, figure=fig)
+            
+            n_points = 0 
+            for row_idx, items in enumerate(rows_to_plot if n_cols == 2 else range(n_rows)):
+                if n_cols == 2:
+                    # PAPER VERSION (2-column paired/centered)
+                    for col_idx, struct in enumerate(items):
+                        ax_idx = slice(0, 2) if (col_idx == 0 and len(items) == 2) else (slice(2, 4) if col_idx == 1 else slice(1, 3))
+                        ax = fig.add_subplot(gs[row_idx, ax_idx])
+                        structure_data = plot_data[plot_data['structure'] == struct]
+                        sns.histplot(data=structure_data, x='volume_mm3', hue='pipeline_short', hue_order=pipeline_order, 
+                                     binwidth=50, common_bins=True, common_norm=False, element='step', fill=True, 
+                                     alpha=0.4, palette=palette, ax=ax, stat='count')
+                        if ax.get_legend(): ax.get_legend().set_title(None)
                         ax.set_title(f"{struct}")
                         ax.set_xlabel('Volume (mm³)')
                         ax.set_ylabel('Count')
                         n_points = count_unique_scans(structure_data)
-            else:
-                # Center Brainstem (single structure) in middle 2 of 4 columns
-                ax = fig.add_subplot(gs[row_idx, 1:3])
-                struct = pair[0]
-                structure_data = plot_data[plot_data['structure'] == struct]
-                if not structure_data.empty:
-                    sns.histplot(data=structure_data, x='volume_mm3', hue='pipeline_short', 
-                                 hue_order=pipeline_order, binwidth=50, common_bins=True, 
-                                 common_norm=False, element='step', fill=True, alpha=0.4, 
-                                 palette=palette, ax=ax, stat='count')
-                    ax.get_legend().set_title(None)
-                    ax.set_title(f"{struct}")
-                    ax.set_xlabel('Volume (mm³)')
-                    ax.set_ylabel('Count')
-                    n_points = count_unique_scans(structure_data)
+                else:
+                    # SLIDES VERSION (Standard 5-column)
+                    for c in range(n_cols):
+                        idx = row_idx * n_cols + c
+                        if idx < len(all_structs):
+                            ax = fig.add_subplot(gs[row_idx, c])
+                            struct = all_structs[idx]
+                            structure_data = plot_data[plot_data['structure'] == struct]
+                            sns.histplot(data=structure_data, x='volume_mm3', hue='pipeline_short', hue_order=pipeline_order, 
+                                         binwidth=50, common_bins=True, common_norm=False, element='step', fill=True, 
+                                         alpha=0.4, palette=palette, ax=ax, stat='count')
+                            if ax.get_legend(): ax.get_legend().set_title(None)
+                            ax.set_title(f"{struct}")
+                            ax.set_xlabel('Volume (mm³)')
+                            ax.set_ylabel('Count')
+                            n_points = count_unique_scans(structure_data)
 
-        # Restore original exact titles
-        title_str = 'Pipeline Distributions (Counts) - All Datasets Combined' if is_combined else f'Pipeline Distributions (Counts) - {dataset}'
-        fig.suptitle(title_str, fontsize=18, y=0.97)
-        
-        # Explicit footer with N and bin width
-        fig.text(0.5, 0.02, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=14, fontweight='bold')
-        
-        # Manual adjustment to ELIMINATE gaps:
-        # top=0.94 pulls plots up to the title; bottom=0.06 pulls plots down to footer
-        fig.subplots_adjust(top=0.93, bottom=0.06, left=0.08, right=0.92, hspace=0.4, wspace=0.5)
-        
-        suffix = "_ALL_DATASETS" if is_combined else f"_{dataset}"
-        # Save with minimum padding
-        plt.savefig(output_dir / f'distribution_comparison_counts{suffix}.png', bbox_inches='tight', pad_inches=0.05, dpi=300)
-        plt.close()
+            title_str = 'Pipeline Distributions (Counts) - All Datasets Combined' if is_combined else f'Pipeline Distributions (Counts) - {dataset}'
+            fig.suptitle(title_str, fontsize=18, y=0.98)
+            fig.text(0.5, 0.015, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=14, fontweight='bold')
+            fig.subplots_adjust(top=0.94, bottom=0.06, left=0.05, right=0.95, hspace=0.4, wspace=0.4)
+            
+            plt.savefig(output_dir / f'distribution_comparison_counts_{dataset}{suffix}.png', bbox_inches='tight', dpi=300)
+            plt.close()
 
 def create_correlation_figures(df_tidy, output_dir):
     """Create inter-pipeline Pearson and Spearman correlation matrix plots."""
