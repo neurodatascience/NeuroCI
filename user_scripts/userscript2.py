@@ -155,7 +155,7 @@ def create_distribution_figures(df_tidy, output_dir):
             n_points = 0 
             for row_idx, items in enumerate(rows_to_plot if n_cols == 2 else range(n_rows)):
                 if n_cols == 2:
-                    # PAPER VERSION (2-column paired/centered)
+                    # PAPER VERSION (2-column paired/centered) - NO CHANGES TO THIS LOGIC
                     for col_idx, struct in enumerate(items):
                         ax_idx = slice(0, 2) if (col_idx == 0 and len(items) == 2) else (slice(2, 4) if col_idx == 1 else slice(1, 3))
                         ax = fig.add_subplot(gs[row_idx, ax_idx])
@@ -187,8 +187,16 @@ def create_distribution_figures(df_tidy, output_dir):
 
             title_str = 'Pipeline Distributions (Counts) - All Datasets Combined' if is_combined else f'Pipeline Distributions (Counts) - {dataset}'
             fig.suptitle(title_str, fontsize=18, y=0.98)
-            fig.text(0.5, 0.015, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=14, fontweight='bold')
-            fig.subplots_adjust(top=0.94, bottom=0.06, left=0.05, right=0.95, hspace=0.4, wspace=0.4)
+            
+            # FOOTER SPACING: Moves footer down for Standard version
+            footer_y = 0.015 if n_cols == 2 else 0.01
+            fig.text(0.5, footer_y, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=14, fontweight='bold')
+            
+            # TOP/BOTTOM SPACING: Paper stays at 0.94/0.06; Standard moves to 0.90/0.10
+            if n_cols == 2:
+                fig.subplots_adjust(top=0.94, bottom=0.06, left=0.05, right=0.95, hspace=0.4, wspace=0.4)
+            else:
+                fig.subplots_adjust(top=0.90, bottom=0.10, left=0.05, right=0.95, hspace=0.4, wspace=0.4)
             
             plt.savefig(output_dir / f'distribution_comparison_counts_{dataset}{suffix}.png', bbox_inches='tight', dpi=300)
             plt.close()
