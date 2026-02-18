@@ -156,6 +156,7 @@ def create_distribution_figures(df_tidy, output_dir):
                                      hue_order=pipeline_order, binwidth=50, common_bins=True, 
                                      common_norm=False, element='step', fill=True, alpha=0.4, 
                                      palette=palette, ax=ax, stat='count')
+                        ax.legend(title=None)
                         ax.set_title(f"{struct}")
                         ax.set_xlabel('Volume (mm³)')
                         ax.set_ylabel('Count')
@@ -170,6 +171,7 @@ def create_distribution_figures(df_tidy, output_dir):
                                  hue_order=pipeline_order, binwidth=50, common_bins=True, 
                                  common_norm=False, element='step', fill=True, alpha=0.4, 
                                  palette=palette, ax=ax, stat='count')
+                    ax.legend(title=None)
                     ax.set_title(f"{struct}")
                     ax.set_xlabel('Volume (mm³)')
                     ax.set_ylabel('Count')
