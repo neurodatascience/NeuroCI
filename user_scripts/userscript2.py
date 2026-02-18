@@ -97,7 +97,7 @@ def count_unique_scans(structure_data):
     return len(structure_data[['dataset', 'subject', 'session']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
-    """Create overlapping histograms (counts) for all pipelines per structure."""
+    """Create overlapping histograms with side-by-side L/R structures and fixed binning."""
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
     plt.rcParams['font.size'] = 12
@@ -111,83 +111,106 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
-    # Define the two layouts
-    layouts = [
-        {'cols': 5, 'suffix': ''},      # Original "Slides" naming
-        {'cols': 3, 'suffix': '_paper'} # New Paper naming
-    ]
+    # 1. Organize structures into L/R pairs
+    all_present = get_sorted_structures(df_tidy['structure'].unique())
+    paired_rows = []
+    processed = set()
 
-    for layout in layouts:
-        n_cols = layout['cols']
-        suffix = layout['suffix']
+    for s in all_present:
+        if s in processed: continue
+        if s.startswith('Left-'):
+            right_name = s.replace('Left-', 'Right-')
+            if right_name in all_present:
+                paired_rows.append([s, right_name])
+                processed.update([s, right_name])
+            else:
+                paired_rows.append([s])
+                processed.add(s)
+        elif s.startswith('Right-'):
+            left_name = s.replace('Right-', 'Left-')
+            if left_name in all_present:
+                # This case is usually handled by the 'Left-' check, 
+                # but included for robustness.
+                continue 
+            else:
+                paired_rows.append([s])
+                processed.add(s)
+        else:
+            paired_rows.append([s])
+            processed.add(s)
 
-        # Dataset-specific figures
-        for dataset in df_tidy['dataset'].unique():
-            dataset_data = df_tidy[df_tidy['dataset'] == dataset]
-            plot_data = dataset_data.copy()
-            plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-            structures = get_sorted_structures(plot_data['structure'].unique())
-            
-            if len(structures) == 0: continue
-            
-            n_rows = (len(structures) + n_cols - 1) // n_cols
-            fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
-            
-            n_points = 0 
-            for i, structure in enumerate(structures):
-                ax = axes[i // n_cols, i % n_cols]
-                structure_data = plot_data[plot_data['structure'] == structure]
-                for j, pipeline in enumerate(pipeline_order):
-                    subset = structure_data[structure_data['pipeline_short'] == pipeline]
-                    if len(subset) > 0:
-                        sns.histplot(data=subset, x='volume_mm3', bins=30, element='step', 
-                                     fill=True, alpha=0.4, color=palette[j], label=pipeline, ax=ax, stat='count')
+    # 2. Plotting Logic
+    datasets = list(df_tidy['dataset'].unique()) + ['ALL_DATASETS']
+    
+    for dataset in datasets:
+        is_combined = (dataset == 'ALL_DATASETS')
+        plot_data = df_tidy.copy() if is_combined else df_tidy[df_tidy['dataset'] == dataset].copy()
+        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
+        
+        n_rows = len(paired_rows)
+        fig, axes = plt.subplots(n_rows, 2, figsize=(12, 4 * n_rows), squeeze=False)
+        
+        n_points = 0
+        for row_idx, pair in enumerate(paired_rows):
+            for col_idx in range(2):
+                ax = axes[row_idx, col_idx]
                 
-                if len(structure_data) > 0:
-                    n_points = len(structure_data[['subject', 'session']].drop_duplicates())
-                    ax.set_title(f"{structure}")
+                # Handle the "Brainstem" or solitary structures at the end
+                if col_idx >= len(pair):
+                    # If it's the last row and only one item (like Brainstem), 
+                    # we can center it by shifting the first plot and hiding this one.
+                    if len(pair) == 1:
+                        # Move the single plot to a "pseudo-center" or just leave as is.
+                        # Here we hide the empty right-hand axis.
+                        ax.axis('off')
+                        continue
+                    else:
+                        ax.axis('off')
+                        continue
+
+                struct = pair[col_idx]
+                struct_data = plot_data[plot_data['structure'] == struct]
+                
+                if not struct_data.empty:
+                    sns.histplot(
+                        data=struct_data,
+                        x='volume_mm3',
+                        hue='pipeline_short',
+                        hue_order=pipeline_order,
+                        binwidth=50,       # Fixed width ensures consistency
+                        common_bins=True,  # Forces pipelines onto the same grid
+                        common_norm=False, # Independent counts per pipeline
+                        element='step',
+                        fill=True,
+                        alpha=0.4,
+                        palette=palette,
+                        ax=ax,
+                        stat='count',
+                        legend=(row_idx == 0 and col_idx == 1) # Legend only on top-right
+                    )
+                    ax.set_title(struct)
                     ax.set_xlabel('Volume (mm³)')
                     ax.set_ylabel('Count')
-                    ax.legend()
-            
-            for k in range(len(structures), n_rows * n_cols):
-                fig.delaxes(axes[k // n_cols, k % n_cols])
-            
-            fig.suptitle(f'Pipeline Distributions (Counts) - {dataset}', fontsize=18)
-            fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
-            fig.tight_layout(rect=[0, 0.05, 1, 0.95])
-            plt.savefig(output_dir / f'distribution_comparison_counts_{dataset}{suffix}.png', bbox_inches='tight', dpi=300)
-            plt.close()
+                    n_points = count_unique_scans(struct_data)
+                else:
+                    ax.text(0.5, 0.5, "No Data", ha='center', va='center', transform=ax.transAxes)
 
-        # Combined dataset figure
-        plot_data = df_tidy.copy()
-        plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
-        structures = get_sorted_structures(plot_data['structure'].unique())
-        n_rows = (len(structures) + n_cols - 1) // n_cols
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows), squeeze=False)
+            # Special case: If row has only one item (Brainstem), center it visually
+            if len(pair) == 1:
+                # Get the position of both columns to find the middle
+                pos1 = axes[row_idx, 0].get_position()
+                pos2 = axes[row_idx, 1].get_position()
+                mid_x = (pos1.x0 + pos2.x1) / 2
+                width = pos1.width
+                # Re-center the first axis
+                axes[row_idx, 0].set_position([mid_x - width/2, pos1.y0, width, pos1.height])
+
+        fig.suptitle(f'Pipeline Distributions - {dataset}', fontsize=18, y=0.98)
+        fig.text(0.5, 0.01, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=12, fontweight='bold')
+        plt.tight_layout(rect=[0, 0.03, 1, 0.97])
         
-        for i, structure in enumerate(structures):
-            ax = axes[i // n_cols, i % n_cols]
-            structure_data = plot_data[plot_data['structure'] == structure]
-            for j, pipeline in enumerate(pipeline_order):
-                subset = structure_data[structure_data['pipeline_short'] == pipeline]
-                if len(subset) > 0:
-                    sns.histplot(data=subset, x='volume_mm3', bins=30, element='step', 
-                                 fill=True, alpha=0.4, color=palette[j], label=pipeline, ax=ax, stat='count')
-            if len(structure_data) > 0:
-                n_points = count_unique_scans(structure_data)
-                ax.set_title(f"{structure}")
-                ax.set_xlabel('Volume (mm³)')
-                ax.set_ylabel('Count')
-                ax.legend()
-
-        for k in range(len(structures), n_rows * n_cols):
-            fig.delaxes(axes[k // n_cols, k % n_cols])
-            
-        fig.suptitle('Pipeline Distributions (Counts) - All Datasets Combined', fontsize=18)
-        fig.text(0.5, 0.02, f"N = {n_points} Scans", ha='center', fontsize=14, fontweight='bold')
-        fig.tight_layout(rect=[0, 0.05, 1, 0.95])
-        plt.savefig(output_dir / f'distribution_comparison_counts_ALL_DATASETS{suffix}.png', bbox_inches='tight', dpi=300)
+        suffix = "_ALL_DATASETS" if is_combined else f"_{dataset}"
+        plt.savefig(output_dir / f'distribution_comparison_counts{suffix}.png', bbox_inches='tight', dpi=300)
         plt.close()
 
 def create_correlation_figures(df_tidy, output_dir):
