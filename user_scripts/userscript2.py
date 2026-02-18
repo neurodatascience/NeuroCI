@@ -97,10 +97,15 @@ def count_unique_scans(structure_data):
     return len(structure_data[['dataset', 'subject', 'session']].drop_duplicates())
 
 def create_distribution_figures(df_tidy, output_dir):
-    """Create overlapping histograms with side-by-side L/R structures and fixed binning."""
+    """
+    Create space-efficient histograms for a paper with 2 columns.
+    Pairs L/R structures side-by-side and centers the Brainstem.
+    Ensures consistent bin alignment across all pipelines.
+    """
+    import matplotlib.gridspec as gridspec
     sns.set_style("whitegrid")
     plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['font.size'] = 12
+    plt.rcParams['font.size'] = 10  # Standard for paper figures
 
     pipeline_mapping = {
         'fslanat6071ants243': 'FSL6071',
@@ -111,35 +116,25 @@ def create_distribution_figures(df_tidy, output_dir):
     pipeline_order = list(pipeline_mapping.values())
     palette = sns.color_palette("tab10", len(pipeline_order))
 
-    # 1. Organize structures into L/R pairs
-    all_present = get_sorted_structures(df_tidy['structure'].unique())
+    # 1. Group structures into L/R pairs from sorted list
+    all_structures = get_sorted_structures(df_tidy['structure'].unique())
     paired_rows = []
-    processed = set()
-
-    for s in all_present:
-        if s in processed: continue
-        if s.startswith('Left-'):
-            right_name = s.replace('Left-', 'Right-')
-            if right_name in all_present:
-                paired_rows.append([s, right_name])
-                processed.update([s, right_name])
+    i = 0
+    while i < len(all_structures):
+        s1 = all_structures[i]
+        if i + 1 < len(all_structures):
+            s2 = all_structures[i+1]
+            # Check if they form a Left/Right pair
+            if s1.replace('Left-', '') == s2.replace('Right-', ''):
+                paired_rows.append([s1, s2])
+                i += 2
             else:
-                paired_rows.append([s])
-                processed.add(s)
-        elif s.startswith('Right-'):
-            left_name = s.replace('Right-', 'Left-')
-            if left_name in all_present:
-                # This case is usually handled by the 'Left-' check, 
-                # but included for robustness.
-                continue 
-            else:
-                paired_rows.append([s])
-                processed.add(s)
+                paired_rows.append([s1])
+                i += 1
         else:
-            paired_rows.append([s])
-            processed.add(s)
+            paired_rows.append([s1])
+            i += 1
 
-    # 2. Plotting Logic
     datasets = list(df_tidy['dataset'].unique()) + ['ALL_DATASETS']
     
     for dataset in datasets:
@@ -148,65 +143,51 @@ def create_distribution_figures(df_tidy, output_dir):
         plot_data['pipeline_short'] = plot_data['pipeline'].map(pipeline_mapping)
         
         n_rows = len(paired_rows)
-        fig, axes = plt.subplots(n_rows, 2, figsize=(12, 4 * n_rows), squeeze=False)
+        # 4 virtual columns allow centering the single plot in the middle 2 slots
+        fig = plt.figure(figsize=(10, 3.5 * n_rows))
+        gs = gridspec.GridSpec(n_rows, 4, figure=fig, hspace=0.4, wspace=0.6)
         
-        n_points = 0
+        n_points = 0 
         for row_idx, pair in enumerate(paired_rows):
-            for col_idx in range(2):
-                ax = axes[row_idx, col_idx]
+            if len(pair) == 2:
+                # Bilateral Structures: Left (0:2) and Right (2:4)
+                for col_idx, struct in enumerate(pair):
+                    col_span = slice(0, 2) if col_idx == 0 else slice(2, 4)
+                    ax = fig.add_subplot(gs[row_idx, col_span])
+                    structure_data = plot_data[plot_data['structure'] == struct]
+                    
+                    if not structure_data.empty:
+                        sns.histplot(
+                            data=structure_data, x='volume_mm3', hue='pipeline_short', 
+                            hue_order=pipeline_order, binwidth=50, common_bins=True, 
+                            common_norm=False, element='step', fill=True, alpha=0.4, 
+                            palette=palette, ax=ax, stat='count'
+                        )
+                        ax.set_title(struct, fontweight='bold')
+                        ax.set_xlabel('Volume ($mm^3$)')
+                        ax.set_ylabel('Count')
+                        n_points = count_unique_scans(structure_data)
+            else:
+                # Solitary Structure (Brainstem): Center in middle 2 slots (1:3)
+                ax = fig.add_subplot(gs[row_idx, 1:3])
+                struct = pair[0]
+                structure_data = plot_data[plot_data['structure'] == struct]
                 
-                # Handle the "Brainstem" or solitary structures at the end
-                if col_idx >= len(pair):
-                    # If it's the last row and only one item (like Brainstem), 
-                    # we can center it by shifting the first plot and hiding this one.
-                    if len(pair) == 1:
-                        # Move the single plot to a "pseudo-center" or just leave as is.
-                        # Here we hide the empty right-hand axis.
-                        ax.axis('off')
-                        continue
-                    else:
-                        ax.axis('off')
-                        continue
-
-                struct = pair[col_idx]
-                struct_data = plot_data[plot_data['structure'] == struct]
-                
-                if not struct_data.empty:
+                if not structure_data.empty:
                     sns.histplot(
-                        data=struct_data,
-                        x='volume_mm3',
-                        hue='pipeline_short',
-                        hue_order=pipeline_order,
-                        binwidth=50,       # Fixed width ensures consistency
-                        common_bins=True,  # Forces pipelines onto the same grid
-                        common_norm=False, # Independent counts per pipeline
-                        element='step',
-                        fill=True,
-                        alpha=0.4,
-                        palette=palette,
-                        ax=ax,
-                        stat='count',
-                        legend=(row_idx == 0 and col_idx == 1) # Legend only on top-right
+                        data=structure_data, x='volume_mm3', hue='pipeline_short', 
+                        hue_order=pipeline_order, binwidth=50, common_bins=True, 
+                        common_norm=False, element='step', fill=True, alpha=0.4, 
+                        palette=palette, ax=ax, stat='count'
                     )
-                    ax.set_title(struct)
-                    ax.set_xlabel('Volume (mm³)')
+                    ax.set_title(struct, fontweight='bold')
+                    ax.set_xlabel('Volume ($mm^3$)')
                     ax.set_ylabel('Count')
-                    n_points = count_unique_scans(struct_data)
-                else:
-                    ax.text(0.5, 0.5, "No Data", ha='center', va='center', transform=ax.transAxes)
+                    n_points = count_unique_scans(structure_data)
 
-            # Special case: If row has only one item (Brainstem), center it visually
-            if len(pair) == 1:
-                # Get the position of both columns to find the middle
-                pos1 = axes[row_idx, 0].get_position()
-                pos2 = axes[row_idx, 1].get_position()
-                mid_x = (pos1.x0 + pos2.x1) / 2
-                width = pos1.width
-                # Re-center the first axis
-                axes[row_idx, 0].set_position([mid_x - width/2, pos1.y0, width, pos1.height])
-
-        fig.suptitle(f'Pipeline Distributions - {dataset}', fontsize=18, y=0.98)
-        fig.text(0.5, 0.01, f"N = {n_points} Scans | Bin Width = 50mm³", ha='center', fontsize=12, fontweight='bold')
+        fig.suptitle(f'Pipeline Distributions (Counts) - {dataset}', fontsize=16, y=0.98)
+        fig.text(0.5, 0.01, f"N = {n_points} Scans | Bin Width = 50$mm^3$", ha='center', fontsize=12, fontweight='bold')
+        
         plt.tight_layout(rect=[0, 0.03, 1, 0.97])
         
         suffix = "_ALL_DATASETS" if is_combined else f"_{dataset}"
